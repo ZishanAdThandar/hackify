@@ -1,6 +1,6 @@
 # Hackify v201
 
-Hackify by Zishan Ahamed Thandar is a Open Source script for Debian Based OS Coded in bash to Pentesting Wordlists and Tools.
+Hackify by Zishan Ahamed Thandar is a Open Source script for Debian Based OS Coded in bash to install Pentesting Wordlists and Tools with single command.
 
 ## Installation Command
 
