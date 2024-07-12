@@ -180,18 +180,41 @@ done
 #[ ! -f "/usr/bin/pipx" ] && apt install pipx && pipx ensurepath  && pipx ensurepath --global  && printf "${Purple}PIPX Installed successfully\n${Nc}"
 # pipx install sublist3r && pipx install hashid && pipx install dirsearch  && pipx install pwntools && pipx install arsenal-cli && pipx install sqlmap -global
 
-#At the end Installing python3 tools
+
+# Upgrade pip and install tools
+
 printf "\n${Cyan}Installing Python Tools for user ROOT.${Nc}\n"
 sleep 1
 
 #apt -qq install python3-debian -y > /dev/null 2>&1 #removing warning 1
 
+python3 -m pip install --upgrade pip -q
 
-pip3 install --upgrade pip -q
-yes | python3 -m pip install --quiet --upgrade pipenv --root-user-action=ignore
-yes | python3 -m pip install -U pip --quiet --root-user-action=ignore #update pip
-yes | python3 -m pip install https://github.com/SamJoan/droopescan/archive/master.zip --quiet --root-user-action=ignore
-yes | python3 -m pip install sublist3r hashid dirsearch pwntools arsenal-cli --quiet --root-user-action=ignore
+# List of packages to install
+packages=(
+    "pipenv"
+    "sublist3r"
+    "hashid"
+    "dirsearch"
+    "pwntools"
+    "arsenal-cli"
+)
+
+# Function to install package if not already installed
+install_package() {
+    local package=$1
+    if ! python3 -c "import $package" &> /dev/null; then
+        printf "Installing $package...\n"
+        python3 -m pip install --quiet --upgrade "$package"
+    else
+        printf "$package is already installed.\n"
+    fi
+}
+
+# Install packages
+for pkg in "${packages[@]}"; do
+    install_package "$pkg"
+done
 
 # python tool installation
 function pygitinstall {
@@ -218,28 +241,23 @@ apt purge youtube-dl -y -qq > /dev/null 2>&1
 [ ! -f "/usr/local/bin/youtube-dl" ] && yes | python3 -m pip install https://github.com/ytdl-org/youtube-dl/archive/master.zip --quiet --root-user-action=ignore && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl && printf "${Purple}Youtube-dl Installed successfully\n${Nc}"
 
 
-#=======ACTIVE Directory 
-#======Impacket========
-#[ ! -f "/usr/bin/impacket-wmiexec" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /tmp/impacket && sudo pip3 install -r /tmp/impacket/requirements.txt && cd /tmp/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed successfully\n${Nc}"
-[ ! -f "/usr/bin/impacket-wmiexec" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /opt/impacket && sudo pip3 install -r /opt/impacket/requirements.txt && cd /opt/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed successfully\n${Nc}"
-#=====mitm6======
-[ ! -f "/usr/local/bin/mitm6" ] && sudo git clone https://github.com/dirkjanm/mitm6 /opt/mitm6 && sudo pip3 install -r /opt/mitm6/requirements.txt && cd /opt/mitm6 && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed successfully\n${Nc}"
-#======crackmapexec======= /usr/local/bin/netexec
-[ ! -f "/usr/local/bin/crackmapexec" ] && python3 -m pip install git+https://github.com/byt3bl33d3r/CrackMapExec && printf "${Purple}CrackMapExec Installed successfully\n${Nc}"
-[ ! -f "/usr/local/bin/netexec" ] && python3 -m pip install git+https://github.com/Pennyw0rth/NetExec && printf "${Purple}NetExec Installed successfully\n${Nc}"
-
 # ===================================RUBY======================== 
-apt-get install ruby-full >/dev/null
+
+# wget -O /tmp/ruby.tar.gz https://cache.ruby-lang.org/pub/ruby/3.3/ruby-3.3.4.tar.gz && tar -xzvf ruby.tar.gz -C /tmp/ruby && cd /tmp/ruby && 
+
+[ ! -f "/usr/bin/ruby" ] && apt-get install ruby-full >/dev/null
 gem sources --add https://rubygems.org/ > /dev/null
 gem cleanup > /dev/null
 
 
 # =====Ruby Based Tools======
 # =====WPScan Installation======
+[ -f "/usr/local/bin/wpscan" ] && printf "${Green}WPScan already installed${Nc}\n"
 [ ! -f "/usr/local/bin/wpscan" ] && sudo apt install -y curl git libcurl4-openssl-dev make zlib1g-dev gawk g++ gcc libreadline6-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 autoconf libgdbm-dev libncurses5-dev automake libtool bison pkg-config ruby ruby-bundler ruby-dev > /dev/null && sudo gem install wpscan 
 
 
 # =====metasploit installation======
+
 if ! command -v msfconsole &> /dev/null
 then
   curl -s https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
@@ -270,7 +288,28 @@ fi
 
 
 # ====ARES cipher tool https://github.com/bee-san/Ares =======
+[ -f "/usr/local/bin/ares" ] && printf "${Green}Ares already installed${Nc}\n"
 [ ! -f "/usr/local/bin/ares" ] && apt install cargo -y && cargo install project_ares && cp /root/.cargo/bin/ares /usr/local/bin/ares && printf "${Purple}ARES Installed successfully\n${Nc}"
+
+
+#=======ACTIVE Directory 
+#======Impacket========
+#[ ! -f "/usr/bin/impacket-wmiexec" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /tmp/impacket && sudo pip3 install -r /tmp/impacket/requirements.txt && cd /tmp/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed successfully\n${Nc}"
+[ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n"
+[ ! -f "/usr/bin/impacket-netview" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /opt/impacket && sudo pip3 install -r /opt/impacket/requirements.txt && cd /opt/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed successfully\n${Nc}"
+#=====mitm6======
+[ -f "/usr/local/bin/mitm6" ] && printf "${Green}MITM6 already installed${Nc}\n"
+[ ! -f "/usr/local/bin/mitm6" ] && sudo git clone https://github.com/dirkjanm/mitm6 /opt/mitm6 && sudo pip3 install -r /opt/mitm6/requirements.txt && cd /opt/mitm6 && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed successfully\n${Nc}"
+#======crackmapexec netexec======= 
+#[ -f "/usr/local/bin/crackmapexec" ] && printf "${Green}CrackMapExec already installed${Nc}\n"
+#[ ! -f "/usr/local/bin/crackmapexec" ] && python3 -m pip install git+https://github.com/byt3bl33d3r/CrackMapExec && printf "${Purple}CrackMapExec Installed successfully\n${Nc}"
+[ -f "/usr/local/bin/nxc" ] && printf "${Green}NetExec already installed${Nc}\n"
+[ ! -f "/usr/local/bin/nxc" ] && python3 -m pip install git+https://github.com/Pennyw0rth/NetExec && printf "${Purple}NetExec Installed successfully\n${Nc}"
+#======evil-winrm======= 
+[ -f "/usr/local/bin/eevil-winrm" ] && printf "${Green}evil-winrm.rb already installed${Nc}\n"
+[ ! -f "/usr/local/bin/evil-winrm" ] && gem install evil-winrm && printf "${Purple}evil-winrm Installed successfully\n${Nc}"
+
+
 
 
 
