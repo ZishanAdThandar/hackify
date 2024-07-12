@@ -1,7 +1,8 @@
-# Hackify v1
+# Hackify by Zishan Ahamed Thandar
 
-## A one click installer for Pentesting Wordlists and Tools
+Hackify is an open-source script for Debian-based operating systems, coded in bash. This script streamlines the installation of pentesting wordlists and tools with a single command, making it easier for cybersecurity enthusiasts and professionals to set up their pentesting environment quickly and efficiently.
 
+## Installation Command
 
 ```bash
 git clone https://github.com/ZishanAdThandar/hackify.git
@@ -9,6 +10,12 @@ cd hackify
 chmod +x hackify.sh
 bash hackify.sh
 ```
+
+
+⚠️ **Warning** Use this tool at your own risk. 
+
+⚠️ **Warning** Misuse of this tool or installed tool can lead to legal complications.
+
 
 # Sponsor me anonymously 
 
