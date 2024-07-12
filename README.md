@@ -12,9 +12,9 @@ bash hackify.sh
 ```
 
 
-☢️ **Warning** Use this tool at your own risk. 
+⚠️ **Warning** Use this tool at your own risk. 
 
-☢️ **Warning** Misuse of this tool or installed tool can lead to legal complications.
+⚠️ **Warning** Misuse of this tool or installed tool can lead to legal complications.
 
 
 # Sponsor me anonymously 
