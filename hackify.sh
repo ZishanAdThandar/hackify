@@ -123,6 +123,9 @@ done
 sleep 1 #stage 2 break
 
 
+# ==============NODEJS NPM REACT =======================
+[ -x "$(command -v npm)" ] && printf "${Green}nodejs already installed${Nc}\n" || { sudo apt purge -y nodejs && sudo rm -f /usr/bin/npm /usr/bin/nodejs /usr/local/bin/npm /usr/local/bin/nodejs && sudo apt autoremove -y && sudo apt autoclean && curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash - && sudo apt install -y nodejs && sudo rm -f /etc/apt/sources.list.d/nodesource.list && sudo apt update -y && sudo npm install -g electron-packager && printf "${Purple}nodejs Installed Successfully.${Nc}\n"; }
+
 
 
 # ===================================GO LANG======================== 
@@ -138,7 +141,7 @@ printf "\n${Cyan}Installing Go Tools for user ${Red}ROOT${Nc}${Cyan} (Current Us
 sleep 1
 function goinstall {
 [ -f "$HOME/go/bin/$1" ] && printf "${Green}$1 already installed.\n${Nc}"
-[ ! -f "$HOME/go/bin/$1" ] &&  go install -v $2 && printf "$1 installed successfully.\n"
+[ ! -f "$HOME/go/bin/$1" ] &&  go install -v $2 && printf "$1 Installed Successfully.\n"
 }
 declare -A goinstallarray=( [amass]="github.com/owasp-amass/amass/v3/...@master" [assetfinder]="github.com/tomnomnom/assetfinder@latest" [chaos]="github.com/projectdiscovery/chaos-client/cmd/chaos@latest" [dalfox]="github.com/hahwul/dalfox@latest" [ffuf]="github.com/ffuf/ffuf@latest" [gf]="github.com/tomnomnom/gf@latest" [git-hound]="github.com/tillson/git-hound@latest" [gobuster]="github.com/OJ/gobuster/v3@latest" [hakrawler]="github.com/hakluke/hakrawler@latest" [httprobe]="github.com/tomnomnom/httprobe@master" [httpx]="github.com/projectdiscovery/httpx/cmd/httpx@latest" [interactsh-client]="github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest" [naabu]="github.com/projectdiscovery/naabu/v2/cmd/naabu@latest" [nuclei]="github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest" [qsreplace]="github.com/tomnomnom/qsreplace@latest" [waybackurls]="github.com/tomnomnom/waybackurls@latest" [subfinder]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest" [subzy]="github.com/LukaSikic/subzy@latest" [tlsx]="github.com/projectdiscovery/tlsx/cmd/tlsx@latest")
 
@@ -164,10 +167,10 @@ done
 
 # setting gf patterns by 1ndianl33t
 [ -d "$HOME/.gf" ] && printf "${Green}gf patterns by 1ndianl33t already installed.\n${Nc}"
-[ ! -d "$HOME/.gf" ] && git clone https://github.com/1ndianl33t/Gf-Patterns ~/.gf && printf "gf patterns by 1ndianl33t installed succesfully.\n"
+[ ! -d "$HOME/.gf" ] && git clone https://github.com/1ndianl33t/Gf-Patterns ~/.gf && printf "gf patterns by 1ndianl33t Installed Successfully.\n"
 
 [ -f "$HOME/.gf/base64.json" ] && printf "${Green}gf patterns by tomnomnom already installed.\n${Nc}"
-[ ! -f "$HOME/.gf/base64.json" ] && git clone https://github.com/tomnomnom/gf /tmp/gf && mv /tmp/gf/examples/* ~/.gf/ && printf "gf patterns by tomnomnom installed succesfully.\n"
+[ ! -f "$HOME/.gf/base64.json" ] && git clone https://github.com/tomnomnom/gf /tmp/gf && mv /tmp/gf/examples/* ~/.gf/ && printf "gf patterns by tomnomnom Installed Successfully.\n"
 
 
 
@@ -177,7 +180,7 @@ done
 
 #PIPX
 #[ -f "/usr/bin/pipx" ] && printf "${Green}PIPX already installed${Nc}\n"
-#[ ! -f "/usr/bin/pipx" ] && apt install pipx && pipx ensurepath  && pipx ensurepath --global  && printf "${Purple}PIPX Installed successfully\n${Nc}"
+#[ ! -f "/usr/bin/pipx" ] && apt install pipx && pipx ensurepath  && pipx ensurepath --global  && printf "${Purple}PIPX Installed Successfully\n${Nc}"
 # pipx install sublist3r && pipx install hashid && pipx install dirsearch  && pipx install pwntools && pipx install arsenal-cli && pipx install sqlmap -global
 
 
@@ -188,7 +191,7 @@ sleep 1
 
 #apt -qq install python3-debian -y > /dev/null 2>&1 #removing warning 1
 
-python3 -m pip install --upgrade pip -q
+python3 -m pip install --upgrade pip -q &> /dev/null
 
 # List of packages to install
 packages=(
@@ -205,7 +208,7 @@ install_package() {
     local package=$1
     if ! python3 -c "import $package" &> /dev/null; then
         printf "Installing $package...\n"
-        python3 -m pip install --quiet --upgrade "$package"
+        python3 -m pip install --quiet --upgrade "$package" &> /dev/null
     else
         printf "$package is already installed.\n"
     fi
@@ -232,13 +235,13 @@ done
 
 
 # ======SQLMap======
-[ -d /opt/sqlmap ] || { sudo apt-get remove -y sqlmap; python3 -m pip uninstall -y sqlmap; sudo rm -f /usr/local/bin/sqlmap /usr/bin/sqlmap; sudo git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /opt/sqlmap; echo -e '#!/bin/bash\npython3 /opt/sqlmap/sqlmap.py "$@"' | sudo tee /usr/local/bin/sqlmap > /dev/null; sudo chmod +x /usr/local/bin/sqlmap; printf "\033[0;35mSQLMap Installed successfully\033[0m'\n";}
+[ -d /opt/sqlmap ] || { sudo apt-get remove -y sqlmap; python3 -m pip uninstall -y sqlmap; sudo rm -f /usr/local/bin/sqlmap /usr/bin/sqlmap; sudo git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /opt/sqlmap; echo -e '#!/bin/bash\npython3 /opt/sqlmap/sqlmap.py "$@"' | sudo tee /usr/local/bin/sqlmap > /dev/null; sudo chmod +x /usr/local/bin/sqlmap; printf "\033[0;35mSQLMap Installed Successfully\033[0m'\n";}
 grep -q 'MAX_NUMBER_OF_THREADS = 500' /opt/sqlmap/lib/core/settings.py || sudo sed -i 's/MAX_NUMBER_OF_THREADS = [0-9]\+/MAX_NUMBER_OF_THREADS = 500/' /opt/sqlmap/lib/core/settings.py
 
 
 # =======youtube_dl  [youtube-dl]="https://github.com/ytdl-org/youtube-dl/archive/master.zip"
 apt purge youtube-dl -y -qq > /dev/null 2>&1
-[ ! -f "/usr/local/bin/youtube-dl" ] && yes | python3 -m pip install https://github.com/ytdl-org/youtube-dl/archive/master.zip --quiet --root-user-action=ignore && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl && printf "${Purple}Youtube-dl Installed successfully\n${Nc}"
+[ ! -f "/usr/local/bin/youtube-dl" ] && yes | python3 -m pip install https://github.com/ytdl-org/youtube-dl/archive/master.zip --quiet --root-user-action=ignore && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl && printf "${Purple}Youtube-dl Installed Successfully\n${Nc}"
 
 
 # ===================================RUBY======================== 
@@ -273,41 +276,62 @@ fi
 # ===================================OTHER======================== 
 
 # exploitdb and searchsploit
-[ ! -d "/opt/exploit-database" ] && git clone https://gitlab.com/exploit-database/exploitdb.git /opt/exploit-database && ln -sf /opt/exploit-database/searchsploit /usr/local/bin/searchsploit && printf "${Purple}exploitDB Installed successfully\n${Nc}"
+[ ! -d "/opt/exploit-database" ] && git clone https://gitlab.com/exploit-database/exploitdb.git /opt/exploit-database && ln -sf /opt/exploit-database/searchsploit /usr/local/bin/searchsploit && printf "${Purple}exploitDB Installed Successfully\n${Nc}"
 
 # ======NMap======
 [ -f "/usr/local/bin/nmap" ] && printf "${Green}NMap already installed${Nc}\n"
-[ ! -f "/usr/local/bin/nmap" ] && wget https://nmap.org/dist/nmap-7.94.tar.bz2 --directory-prefix=/tmp/ && cd /tmp && tar xvjf /tmp/nmap-7.94.tar.bz2 && cd /tmp/nmap-7.94 && /tmp/nmap-7.94/configure && make install -C /tmp/nmap-7.94 && cp /usr/local/bin/nmap && /usr/bin/nmap && rm -rf /tmp/nmap-7.94 && printf "${Purple}NMap Installed successfully\n${Nc}"
+[ ! -f "/usr/local/bin/nmap" ] && wget https://nmap.org/dist/nmap-7.94.tar.bz2 --directory-prefix=/tmp/ && cd /tmp && tar xvjf /tmp/nmap-7.94.tar.bz2 && cd /tmp/nmap-7.94 && /tmp/nmap-7.94/configure && make install -C /tmp/nmap-7.94 && cp /usr/local/bin/nmap && /usr/bin/nmap && rm -rf /tmp/nmap-7.94 && printf "${Purple}NMap Installed Successfully\n${Nc}"
 
 # ======john======
 # [ ! -f "/usr/local/bin/nmap" ] && wget https://github.com/openwall/john/archive/refs/tags/1.9.0-Jumbo-1.zip --directory-prefix=/opt/ && cd /opt && unzip 1.9.0-Jumbo-1.zip
 
 # ====JoomScan Joomla Scanner=======
 [ -f "/usr/local/bin/joomscan" ] && printf "${Green}JoomScan already installed${Nc}\n"
-[ ! -f "/usr/local/bin/joomscan" ] && git clone https://github.com/OWASP/joomscan /opt/joomscan && echo "perl /opt/joomscan/joomscan.pl \$@" >/usr/local/bin/joomscan && chmod +x /usr/local/bin/joomscan && printf "${Purple}JoomScan Installed successfully\n${Nc}"
+[ ! -f "/usr/local/bin/joomscan" ] && git clone https://github.com/OWASP/joomscan /opt/joomscan && echo "perl /opt/joomscan/joomscan.pl \$@" >/usr/local/bin/joomscan && chmod +x /usr/local/bin/joomscan && printf "${Purple}JoomScan Installed Successfully\n${Nc}"
 
 
 # ====ARES cipher tool https://github.com/bee-san/Ares =======
 [ -f "/usr/local/bin/ares" ] && printf "${Green}Ares already installed${Nc}\n"
-[ ! -f "/usr/local/bin/ares" ] && apt install cargo -y && cargo install project_ares && cp /root/.cargo/bin/ares /usr/local/bin/ares && printf "${Purple}ARES Installed successfully\n${Nc}"
+[ ! -f "/usr/local/bin/ares" ] && apt install cargo -y && cargo install project_ares && cp /root/.cargo/bin/ares /usr/local/bin/ares && printf "${Purple}ARES Installed Successfully\n${Nc}"
 
 
 #=======ACTIVE Directory 
 #======Impacket========
-#[ ! -f "/usr/bin/impacket-wmiexec" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /tmp/impacket && sudo pip3 install -r /tmp/impacket/requirements.txt && cd /tmp/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed successfully\n${Nc}"
+#[ ! -f "/usr/bin/impacket-wmiexec" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /tmp/impacket && sudo pip3 install -r /tmp/impacket/requirements.txt && cd /tmp/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 [ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n"
-[ ! -f "/usr/bin/impacket-netview" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /opt/impacket && sudo pip3 install -r /opt/impacket/requirements.txt && cd /opt/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed successfully\n${Nc}"
+[ ! -f "/usr/bin/impacket-netview" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /opt/impacket && sudo pip3 install -r /opt/impacket/requirements.txt && cd /opt/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 #=====mitm6======
 [ -f "/usr/local/bin/mitm6" ] && printf "${Green}MITM6 already installed${Nc}\n"
-[ ! -f "/usr/local/bin/mitm6" ] && sudo git clone https://github.com/dirkjanm/mitm6 /opt/mitm6 && sudo pip3 install -r /opt/mitm6/requirements.txt && cd /opt/mitm6 && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed successfully\n${Nc}"
+[ ! -f "/usr/local/bin/mitm6" ] && sudo git clone https://github.com/dirkjanm/mitm6 /opt/mitm6 && sudo pip3 install -r /opt/mitm6/requirements.txt && cd /opt/mitm6 && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 #======crackmapexec netexec======= 
 #[ -f "/usr/local/bin/crackmapexec" ] && printf "${Green}CrackMapExec already installed${Nc}\n"
-#[ ! -f "/usr/local/bin/crackmapexec" ] && python3 -m pip install git+https://github.com/byt3bl33d3r/CrackMapExec && printf "${Purple}CrackMapExec Installed successfully\n${Nc}"
+#[ ! -f "/usr/local/bin/crackmapexec" ] && python3 -m pip install git+https://github.com/byt3bl33d3r/CrackMapExec && printf "${Purple}CrackMapExec Installed Successfully\n${Nc}"
 [ -f "/usr/local/bin/nxc" ] && printf "${Green}NetExec already installed${Nc}\n"
-[ ! -f "/usr/local/bin/nxc" ] && python3 -m pip install git+https://github.com/Pennyw0rth/NetExec && printf "${Purple}NetExec Installed successfully\n${Nc}"
+[ ! -f "/usr/local/bin/nxc" ] && python3 -m pip install git+https://github.com/Pennyw0rth/NetExec && printf "${Purple}NetExec Installed Successfully\n${Nc}"
 #======evil-winrm======= 
-[ -f "/usr/local/bin/eevil-winrm" ] && printf "${Green}evil-winrm.rb already installed${Nc}\n"
-[ ! -f "/usr/local/bin/evil-winrm" ] && gem install evil-winrm && printf "${Purple}evil-winrm Installed successfully\n${Nc}"
+[ -f "/usr/local/bin/evil-winrm" ] && printf "${Green}evil-winrm.rb already installed${Nc}\n"
+[ ! -f "/usr/local/bin/evil-winrm" ] && gem install evil-winrm && printf "${Purple}evil-winrm Installed Successfully\n${Nc}"
+#======Enum4Linux======= 
+[ -f "/usr/bin/enum4linux" ] && printf "${Green}Enum4Linux already installed${Nc}\n"
+[ ! -f "/usr/bin/enum4linux" ] && curl https://raw.githubusercontent.com/CiscoCXSecurity/enum4linux/master/enum4linux.pl -s -k > /usr/bin/enum4linux && chmod +x /usr/bin/enum4linux && printf "${Purple}Enum4Linux Installed Successfully\n${Nc}"
+#======Certipy======= 
+[ -f "/usr/local/bin/certipy" ] && printf "${Green}Certipy already installed${Nc}\n"
+[ ! -f "/usr/local/bin/certipy" ] && python3 -m pip install certipy-ad &> /dev/null && printf "${Purple}Certipy Installed Successfully\n${Nc}"
+#======ldap3======= 
+package=ldap3
+python3 -c "import $package" &> /dev/null && printf "${Green}${package} already installed${Nc}\n" || { python3 -m pip install $package &> /dev/null && printf "${Purple}${package} Installed Successfully.${Nc}\n"; }
+
+#======rpcclient======= 
+[ -f "/usr/bin/rpcclient" ] && printf "${Green}rpcclient already installed${Nc}\n"
+[ ! -f "/usr/bin/rpcclient" ] && apt install samba-common-bin smbclient -y &> /dev/null && printf "${Purple}rpcclient Installed Successfully\n${Nc}"
+
+#======responder======= 
+[ -d "/opt/responder" ] && printf "${Green}Responder already installed${Nc}\n" || { git clone https://github.com/lgandx/Responder.git /opt/responder &> /dev/null &&  echo "python3 /opt/responder/Responder.py \$@" >/usr/local/bin/responder && chmod +x /usr/local/bin/responder && printf "${Purple}Responder Installed Successfully.${Nc}\n"; }
+
+
+#======bloodhound======= 
+
+# echo 'deb https://debian.neo4j.com stable 4' | sudo tee /etc/apt/sources.list.d/neo4j.list > /dev/null && apt update && systemctl start neo4j.service && curl -sSL -o /tmp/bloodhound.zip https://github.com/SpecterOps/BloodHound/archive/refs/tags/v5.11.0.zip && unzip /tmp/bloodhound.zip -d /tmp/bloodhound && mv /tmp/bloodhound /opt/bloodhound && cd /opt/bloodhound && npm cache clean --force && npm install --legacy-peer-deps && npm run build:linux && mv /tmp/bloodhound/BloodHound-5.11.0 /opt/bloodhound && rm /etc/apt/sources.list.d/neo4j.list && add-apt-repository --remove "deb https://debian.neo4j.com stable 4.4" -y && apt update -y
 
 
 
