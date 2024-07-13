@@ -298,8 +298,9 @@ fi
 #=======ACTIVE Directory 
 #======Impacket========
 #[ ! -f "/usr/bin/impacket-wmiexec" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /tmp/impacket && sudo pip3 install -r /tmp/impacket/requirements.txt && cd /tmp/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
-[ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n"
-[ ! -f "/usr/bin/impacket-netview" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /opt/impacket && sudo pip3 install -r /opt/impacket/requirements.txt && cd /opt/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
+#[ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n"
+#[ ! -f "/usr/bin/impacket-netview" ] && git clone https://github.com/SecureAuthCorp/impacket.git /opt/impacket && pip3 install -r /opt/impacket/requirements.txt && cd /opt/impacket && sudo pip3 install . && python3 setup.py install && printf "${Purple}Impacket Installed 
+[ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n" || python3 -m pip install git+https://github.com/SecureAuthCorp/impacket && python3 -m pip install impacket && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 #=====mitm6======
 [ -f "/usr/local/bin/mitm6" ] && printf "${Green}MITM6 already installed${Nc}\n"
 [ ! -f "/usr/local/bin/mitm6" ] && sudo git clone https://github.com/dirkjanm/mitm6 /opt/mitm6 && sudo pip3 install -r /opt/mitm6/requirements.txt && cd /opt/mitm6 && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
@@ -336,7 +337,6 @@ python3 -c "import $package" &> /dev/null && printf "${Green}${package} already 
 
 
 
-
 printf "\n${Cyan}Stage 3 Finished!\nOne by One Installation Finished.\nRun this script 4-5 times. ${Red}WITH REOPENING TERMINAL AS ROOT. \n${Cyan}Check for missing tools in output and manually install.${Nc}\n\n"
 
-printf "${Green}Thank you for using.\nHackify by ZɪsʜᴀɴAᴅTʜᴀɴᴅᴀʀ\n\n${nc}"
+printf "${Green}Thank you for using.\nHackify by ZishanAdThandar\n\n${nc}"
