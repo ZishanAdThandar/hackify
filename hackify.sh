@@ -331,7 +331,7 @@ python3 -c "import $package" &> /dev/null && printf "${Green}${package} already 
 
 #======bloodhound======= 
 
-# echo 'deb https://debian.neo4j.com stable 4' | sudo tee /etc/apt/sources.list.d/neo4j.list > /dev/null && apt update && systemctl start neo4j.service && curl -sSL -o /tmp/bloodhound.zip https://github.com/SpecterOps/BloodHound/archive/refs/tags/v5.11.0.zip && unzip /tmp/bloodhound.zip -d /tmp/bloodhound && mv /tmp/bloodhound /opt/bloodhound && cd /opt/bloodhound && npm cache clean --force && npm install --legacy-peer-deps && npm run build:linux && mv /tmp/bloodhound/BloodHound-5.11.0 /opt/bloodhound && rm /etc/apt/sources.list.d/neo4j.list && add-apt-repository --remove "deb https://debian.neo4j.com stable 4.4" -y && apt update -y
+#echo 'deb https://debian.neo4j.com stable 4' | sudo tee /etc/apt/sources.list.d/neo4j.list > /dev/null && apt update && systemctl start neo4j.service && git clone https://github.com/BloodHoundAD/BloodHound /opt/bloodhound && cd /opt/bloodhound && npm cache clean --force && npm install --legacy-peer-deps && npm run build:linux && mv /tmp/bloodhound/BloodHound-5.11.0 /opt/bloodhound && rm /etc/apt/sources.list.d/neo4j.list && add-apt-repository --remove "deb https://debian.neo4j.com stable 4.4" -y && apt update -y
 
 
 
