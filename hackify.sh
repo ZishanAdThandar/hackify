@@ -79,7 +79,7 @@ sleep 1 #stage 1 break
 # ===================================APT========================  
 
 
-declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cowpatty" "crunch" "dirb" "dnsenum" "dnsrecon" "ffmpeg" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "john" "jq" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python2" "python3" "reaver" "rlwrap" "stegcracker" "steghide" "tmux" "tor" "whatweb" "whois" "wifite" "wireshark")
+declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "ffmpeg" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "john" "jq" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python2" "python3" "reaver" "rlwrap" "stegcracker" "steghide" "tmux" "tor" "whatweb" "whois" "wifite" "wireshark")
 
 #Function to check if installed and install it
 function aptinstall {
@@ -300,13 +300,14 @@ fi
 #[ ! -f "/usr/bin/impacket-wmiexec" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /tmp/impacket && sudo pip3 install -r /tmp/impacket/requirements.txt && cd /tmp/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 #[ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n"
 #[ ! -f "/usr/bin/impacket-netview" ] && git clone https://github.com/SecureAuthCorp/impacket.git /opt/impacket && pip3 install -r /opt/impacket/requirements.txt && cd /opt/impacket && sudo pip3 install . && python3 setup.py install && printf "${Purple}Impacket Installed 
-[ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n" || python3 -m pip install git+https://github.com/SecureAuthCorp/impacket && python3 -m pip install impacket && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
+[ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n"  
+[ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/SecureAuthCorp/impacket && python3 -m pip install impacket && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 #=====mitm6======
 [ -f "/usr/local/bin/mitm6" ] && printf "${Green}MITM6 already installed${Nc}\n"
 [ ! -f "/usr/local/bin/mitm6" ] && sudo git clone https://github.com/dirkjanm/mitm6 /opt/mitm6 && sudo pip3 install -r /opt/mitm6/requirements.txt && cd /opt/mitm6 && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 #======crackmapexec netexec======= 
-#[ -f "/usr/local/bin/crackmapexec" ] && printf "${Green}CrackMapExec already installed${Nc}\n"
-#[ ! -f "/usr/local/bin/crackmapexec" ] && python3 -m pip install git+https://github.com/byt3bl33d3r/CrackMapExec && printf "${Purple}CrackMapExec Installed Successfully\n${Nc}"
+[ -f "/usr/local/bin/crackmapexec" ] && printf "${Green}CrackMapExec already installed${Nc}\n"
+[ ! -f "/usr/local/bin/crackmapexec" ] && python3 -m pip install git+https://github.com/byt3bl33d3r/CrackMapExec && printf "${Purple}CrackMapExec Installed Successfully\n${Nc}"
 [ -f "/usr/local/bin/nxc" ] && printf "${Green}NetExec already installed${Nc}\n"
 [ ! -f "/usr/local/bin/nxc" ] && python3 -m pip install git+https://github.com/Pennyw0rth/NetExec && printf "${Purple}NetExec Installed Successfully\n${Nc}"
 #======evil-winrm======= 
