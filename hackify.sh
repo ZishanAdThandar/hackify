@@ -290,9 +290,14 @@ fi
 [ ! -f "/usr/local/bin/joomscan" ] && git clone https://github.com/OWASP/joomscan /opt/joomscan && echo "perl /opt/joomscan/joomscan.pl \$@" >/usr/local/bin/joomscan && chmod +x /usr/local/bin/joomscan && printf "${Purple}JoomScan Installed Successfully\n${Nc}"
 
 
+
+# =========RUST TOOLS=====================
 # ====ARES cipher tool https://github.com/bee-san/Ares =======
 [ -f "/usr/local/bin/ares" ] && printf "${Green}Ares already installed${Nc}\n"
-[ ! -f "/usr/local/bin/ares" ] && apt install cargo -y && cargo install project_ares && cp /root/.cargo/bin/ares /usr/local/bin/ares && printf "${Purple}ARES Installed Successfully\n${Nc}"
+[ ! -f "/usr/local/bin/ares" ] && cargo install project_ares && cp /root/.cargo/bin/ares /usr/local/bin/ares && printf "${Purple}ARES Installed Successfully\n${Nc}"
+# ====RUSTSCAN port scanner https://github.com/RustScan/RustScan =======
+[ -f "/usr/local/bin/rustscan" ] && printf "${Green}Rustscan already installed${Nc}\n"
+[ ! -f "/usr/local/bin/rustscan" ] && cargo install rustscan && cp /root/.cargo/bin/rustscan /usr/local/bin/rustscan && printf "${Purple}RUSTSCAN Installed Successfully\n${Nc}"
 
 
 #=======ACTIVE Directory 
