@@ -23,7 +23,7 @@ cat << "EOF"
  /___|_/__|_||_\__,_|_||_/_/ \_\__,_| |_| |_||_\__,_|_||_\__,_\__,_|_|  
  
 EOF
-printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkedIn: https://linkedin.com/in/zishanadthandar${Nc}\n\n"
+printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkTree: https://zishanadthandar.github.io/linktree\nLinkedIn: https://linkedin.com/in/zishanadthandar${Nc}\n\n"
 sleep 2 #banner break  
                               
 # one liner bash if loop to check root user
@@ -178,29 +178,21 @@ done
 
 # ===================================PYTHON======================== 
 
-#PIPX
-#[ -f "/usr/bin/pipx" ] && printf "${Green}PIPX already installed${Nc}\n"
-#[ ! -f "/usr/bin/pipx" ] && apt install pipx && pipx ensurepath  && pipx ensurepath --global  && printf "${Purple}PIPX Installed Successfully\n${Nc}"
-# pipx install sublist3r && pipx install hashid && pipx install dirsearch  && pipx install pwntools && pipx install arsenal-cli && pipx install sqlmap -global
-
-
 # Upgrade pip and install tools
 
 printf "\n${Cyan}Installing Python Tools for user ROOT.${Nc}\n"
-sleep 1
-
-#apt -qq install python3-debian -y > /dev/null 2>&1 #removing warning 1
 
 python3 -m pip install --upgrade pip -q &> /dev/null
+python3 -m pip install --upgrade setuptools wheel twine check-wheel-contents -q &> /dev/null
+
+apt install python-is-python3 -y  &> /dev/null
+python3 -m pip cache purge  &> /dev/null #cache removing
 
 # List of packages to install
 packages=(
-    "pipenv"
     "sublist3r"
     "hashid"
     "dirsearch"
-    "pwntools"
-    "arsenal-cli"
 )
 
 # Function to install package if not already installed
@@ -219,23 +211,21 @@ for pkg in "${packages[@]}"; do
     install_package "$pkg"
 done
 
-# python tool installation
-function pygitinstall {
-yes | python3 -m pip install $2 --quiet --root-user-action=ignore
-echo "python3 -m $1 \$@" >/usr/local/bin/$1
-chmod +x /usr/local/bin/$1
-}
-# pythongit array
-declare -A pygitarray=( [wafw00f]="https://github.com/EnableSecurity/wafw00f/archive/master.zip" )
-# pygitloop
-for i in "${!pygitarray[@]}"
-do
-  pygitinstall $i ${pygitarray[$i]}
-done
 
+python3 -m pip cache purge  &> /dev/null #cache removing
+
+# setup error fixing, setuptools, each module needs proper setuptools version to avoid build error
+python3 -m pip install setuptools==60.0.0 &> /dev/null # Replace with a version that works TO AVOID SETUP.PY error
+
+# ======PWNTools======
+python3 -c "import pwn" 2>/dev/null && printf "${Green}PwnTools already installed${Nc}\n" || (python3 -m pip install pwntools && printf "${Purple}PWNTools Installed Successfully\n${Nc}")
+
+# ======wafw00f======
+[ -f "/usr/local/bin/wafw00f" ] && printf "${Green}Wafw00f already installed${Nc}\n" 
+[ ! -f "/usr/local/bin/wafw00f" ] && python3 -m pip install git+https://github.com/EnableSecurity/wafw00f.git && printf "${Purple}Wafw00f Installed Successfully\n${Nc}"
 
 # ======SQLMap======
-[ -d /opt/sqlmap ] || { sudo apt-get remove -y sqlmap; python3 -m pip uninstall -y sqlmap; sudo rm -f /usr/local/bin/sqlmap /usr/bin/sqlmap; sudo git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /opt/sqlmap; echo -e '#!/bin/bash\npython3 /opt/sqlmap/sqlmap.py "$@"' | sudo tee /usr/local/bin/sqlmap > /dev/null; sudo chmod +x /usr/local/bin/sqlmap; printf "\033[0;35mSQLMap Installed Successfully\033[0m'\n";}
+[ -d /opt/sqlmap ] && printf "${Green}SQLMap already installed${Nc}\n" || { sudo apt-get remove -y sqlmap; python3 -m pip uninstall -y sqlmap; sudo rm -f /usr/local/bin/sqlmap /usr/bin/sqlmap; sudo git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /opt/sqlmap; echo -e '#!/bin/bash\npython3 /opt/sqlmap/sqlmap.py "$@"' | sudo tee /usr/local/bin/sqlmap > /dev/null; sudo chmod +x /usr/local/bin/sqlmap; printf "\033[0;35mSQLMap Installed Successfully\033[0m'\n";}
 grep -q 'MAX_NUMBER_OF_THREADS = 500' /opt/sqlmap/lib/core/settings.py || sudo sed -i 's/MAX_NUMBER_OF_THREADS = [0-9]\+/MAX_NUMBER_OF_THREADS = 500/' /opt/sqlmap/lib/core/settings.py
 
 
@@ -308,8 +298,9 @@ fi
 [ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n"  
 [ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/SecureAuthCorp/impacket && python3 -m pip install impacket && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 #=====mitm6======
+python3 -m pip install --upgrade setuptools  &> /dev/null
 [ -f "/usr/local/bin/mitm6" ] && printf "${Green}MITM6 already installed${Nc}\n"
-[ ! -f "/usr/local/bin/mitm6" ] && sudo git clone https://github.com/dirkjanm/mitm6 /opt/mitm6 && sudo pip3 install -r /opt/mitm6/requirements.txt && cd /opt/mitm6 && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
+[ ! -f "/usr/local/bin/mitm6" ] && rm -r /opt/mitm6 && sudo git clone https://github.com/dirkjanm/mitm6 /opt/mitm6 && sudo pip3 install -r /opt/mitm6/requirements.txt && cd /opt/mitm6 && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 #======crackmapexec netexec======= 
 [ -f "/usr/local/bin/crackmapexec" ] && printf "${Green}CrackMapExec already installed${Nc}\n"
 [ ! -f "/usr/local/bin/crackmapexec" ] && python3 -m pip install git+https://github.com/byt3bl33d3r/CrackMapExec && printf "${Purple}CrackMapExec Installed Successfully\n${Nc}"
