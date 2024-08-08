@@ -202,7 +202,7 @@ install_package() {
         printf "Installing $package...\n"
         python3 -m pip install --quiet --upgrade "$package" &> /dev/null
     else
-        printf "$package is already installed.\n"
+        printf "${Green}$package is already installed.${Nc}\n"
     fi
 }
 
@@ -292,16 +292,14 @@ fi
 
 #=======ACTIVE Directory 
 #======Impacket========
-#[ ! -f "/usr/bin/impacket-wmiexec" ] && sudo git clone https://github.com/SecureAuthCorp/impacket.git /tmp/impacket && sudo pip3 install -r /tmp/impacket/requirements.txt && cd /tmp/impacket && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
-#[ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n"
-#[ ! -f "/usr/bin/impacket-netview" ] && git clone https://github.com/SecureAuthCorp/impacket.git /opt/impacket && pip3 install -r /opt/impacket/requirements.txt && cd /opt/impacket && sudo pip3 install . && python3 setup.py install && printf "${Purple}Impacket Installed 
 [ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n"  
 [ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/SecureAuthCorp/impacket && python3 -m pip install impacket && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 #=====mitm6======
-python3 -m pip install --upgrade setuptools  &> /dev/null
+python3 -m pip install setuptools==60.0.0 &> /dev/null
 [ -f "/usr/local/bin/mitm6" ] && printf "${Green}MITM6 already installed${Nc}\n"
-[ ! -f "/usr/local/bin/mitm6" ] && rm -r /opt/mitm6 && sudo git clone https://github.com/dirkjanm/mitm6 /opt/mitm6 && sudo pip3 install -r /opt/mitm6/requirements.txt && cd /opt/mitm6 && sudo pip3 install . && sudo python3 setup.py install && printf "${Purple}Impacket Installed Successfully\n${Nc}"
+[ ! -f "/usr/local/bin/mitm6" ] && python3 -m pip install mitm6 && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 #======crackmapexec netexec======= 
+python3 -m pip install setuptools==60.0.0 &> /dev/null
 [ -f "/usr/local/bin/crackmapexec" ] && printf "${Green}CrackMapExec already installed${Nc}\n"
 [ ! -f "/usr/local/bin/crackmapexec" ] && python3 -m pip install git+https://github.com/byt3bl33d3r/CrackMapExec && printf "${Purple}CrackMapExec Installed Successfully\n${Nc}"
 [ -f "/usr/local/bin/nxc" ] && printf "${Green}NetExec already installed${Nc}\n"
@@ -316,6 +314,7 @@ python3 -m pip install --upgrade setuptools  &> /dev/null
 [ -f "/usr/local/bin/certipy" ] && printf "${Green}Certipy already installed${Nc}\n"
 [ ! -f "/usr/local/bin/certipy" ] && python3 -m pip install certipy-ad &> /dev/null && printf "${Purple}Certipy Installed Successfully\n${Nc}"
 #======ldap3======= 
+python3 -m pip install --upgrade setuptools  &> /dev/null
 package=ldap3
 python3 -c "import $package" &> /dev/null && printf "${Green}${package} already installed${Nc}\n" || { python3 -m pip install $package &> /dev/null && printf "${Purple}${package} Installed Successfully.${Nc}\n"; }
 
