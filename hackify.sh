@@ -218,7 +218,10 @@ python3 -m pip cache purge  &> /dev/null #cache removing
 python3 -m pip install setuptools==60.0.0 &> /dev/null # Replace with a version that works TO AVOID SETUP.PY error
 
 # ======PWNTools======
-python3 -c "import pwn" 2>/dev/null && printf "${Green}PwnTools already installed${Nc}\n" || (python3 -m pip install pwntools && printf "${Purple}PWNTools Installed Successfully\n${Nc}")
+python3 -c "import pwn" 2>/dev/null && printf "${Green}PwnTools is already installed${Nc}\n" || (python3 -m pip install pwntools && printf "${Purple}PWNTools Installed Successfully\n${Nc}")
+
+# ======LFIMap======
+python3 -c "import lfimap" 2>/dev/null && printf "${Green}LFIMap is already installed${Nc}\n" || (python3 -m pip install lfimap && printf "${Purple}LFIMap Installed Successfully\n${Nc}")
 
 # ======wafw00f======
 [ -f "/usr/local/bin/wafw00f" ] && printf "${Green}Wafw00f already installed${Nc}\n" 
