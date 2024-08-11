@@ -300,6 +300,9 @@ fi
 # ====RUSTSCAN port scanner https://github.com/RustScan/RustScan =======
 [ -f "/usr/local/bin/rustscan" ] && printf "${Green}Rustscan already installed${Nc}\n"
 [ ! -f "/usr/local/bin/rustscan" ] && cargo install rustscan && cp /root/.cargo/bin/rustscan /usr/local/bin/rustscan && printf "${Purple}RUSTSCAN Installed Successfully\n${Nc}"
+# ====x8 parameter discovery https://github.com/Sh1Yo/x8 =======
+[ -f "/usr/local/bin/x8" ] && printf "${Green}x8 already installed${Nc}\n"
+[ ! -f "/usr/local/bin/x8" ] && cargo install x8 && cp /root/.cargo/bin/x8 /usr/local/bin/x8 && printf "${Purple}x8 Installed Successfully\n${Nc}"
 
 
 #=======ACTIVE Directory 
