@@ -123,6 +123,12 @@ done
 sleep 1 #stage 2 break
 
 
+# ================Custom Script Installation=================
+[ -f "/usr/local/bin/subauto" ] && printf "${Nc}${Green}SubAuto already installed.\n${Nc}" 
+[ ! -f "/usr/local/bin/subauto" ] && curl -ks https://raw.githubusercontent.com/ZishanAdThandar/pentest/main/scripts/subauto.sh > /usr/local/bin/subauto && chmod +x /usr/local/bin/subauto  && printf "${Purple}SubAuto Installed Successfully.\n${nc}"
+
+
+
 # ==============NODEJS NPM REACT =======================
 [ -x "$(command -v npm)" ] && printf "${Green}nodejs already installed${Nc}\n" || { sudo apt purge -y nodejs && sudo rm -f /usr/bin/npm /usr/bin/nodejs /usr/local/bin/npm /usr/local/bin/nodejs && sudo apt autoremove -y && sudo apt autoclean && curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash - && sudo apt install -y nodejs && sudo rm -f /etc/apt/sources.list.d/nodesource.list && sudo apt update -y && sudo npm install -g electron-packager && printf "${Purple}nodejs Installed Successfully.${Nc}\n"; }
 
@@ -155,11 +161,10 @@ done
 # rm /usr/local/bin/amass
 
 
-
 #Manual GoTOOLS starts here
 
 [ -f "/usr/bin/kerbrute" ] && printf "${Nc}${Green}Ropnop Kerbrute already installed.\n${Nc}"
-[ ! -f "/usr/bin/kerbrute" ] && wget -q https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64 -O /usr/bin/kerbrute && chmod +x /usr/bin/kerbrute && printf "Ropnop Kerbrute Just Installed Successfully.\n"
+[ ! -f "/usr/bin/kerbrute" ] && wget -q https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64 -O /usr/bin/kerbrute && chmod +x /usr/bin/kerbrute && printf "${Purple}Ropnop Kerbrute Just Installed Successfully.\n${Nc}"
 
 
 #Manual GoTOOLS ends here
@@ -167,10 +172,10 @@ done
 
 # setting gf patterns by 1ndianl33t
 [ -d "$HOME/.gf" ] && printf "${Green}gf patterns by 1ndianl33t already installed.\n${Nc}"
-[ ! -d "$HOME/.gf" ] && git clone https://github.com/1ndianl33t/Gf-Patterns ~/.gf && printf "gf patterns by 1ndianl33t Installed Successfully.\n"
+[ ! -d "$HOME/.gf" ] && git clone https://github.com/1ndianl33t/Gf-Patterns ~/.gf && printf "${Purple}gf patterns by 1ndianl33t Installed Successfully.\n${Nc}"
 
 [ -f "$HOME/.gf/base64.json" ] && printf "${Green}gf patterns by tomnomnom already installed.\n${Nc}"
-[ ! -f "$HOME/.gf/base64.json" ] && git clone https://github.com/tomnomnom/gf /tmp/gf && mv /tmp/gf/examples/* ~/.gf/ && printf "gf patterns by tomnomnom Installed Successfully.\n"
+[ ! -f "$HOME/.gf/base64.json" ] && git clone https://github.com/tomnomnom/gf /tmp/gf && mv /tmp/gf/examples/* ~/.gf/ && printf "${Purple}gf patterns by tomnomnom Installed Successfully.\n${Nc}"
 
 
 
