@@ -241,7 +241,7 @@ grep -q 'MAX_NUMBER_OF_THREADS = 500' /opt/sqlmap/lib/core/settings.py || sudo s
 apt purge youtube-dl -y -qq > /dev/null 2>&1
 [ -f "/usr/local/bin/youtube-dl" ] && printf "${Green}Youtube-dl already installed${Nc}\n" 
 [ ! -f "/usr/local/bin/youtube-dl" ] && yes | python3 -m pip install https://github.com/ytdl-org/youtube-dl/archive/master.zip --quiet --root-user-action=ignore && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl && printf "${Purple}Youtube-dl Installed Successfully\n${Nc}"
-#======= [yt-dlp]=""
+#======= [yt-dlp]="https://github.com/yt-dlp/yt-dlp"
 [ -f "/usr/local/bin/yt-dlp" ] && printf "${Green}yt-dlp already installed${Nc}\n" 
 [ ! -f "/usr/local/bin/yt-dlp" ] && python3 -m pip install -U pip hatchling wheel && python3 -m pip install --force-reinstall "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" && printf "${Purple}Youtube-dl Installed Successfully\n${Nc}"
 
