@@ -138,8 +138,10 @@ sleep 1 #stage 2 break
 
 
 # installing and setting up Golang
-[ -d "/usr/local/go" ] && printf "\n${Green}GoLang already downloaded${Nc}\n"
-[ ! -d "/usr/local/go" ] && cd /tmp && wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz && tar -C /usr/local/ -xzf go1.22.0.linux-amd64.tar.gz && cd /usr/local/ && printf "export PATH=\$PATH:/usr/local/go/bin:\$HOME/go/bin \nexport GOROOT=/usr/local/go" >> ~/.bashrc && printf "export PATH=\$PATH:/usr/local/go/bin:\$HOME/go/bin \nexport GOROOT=/usr/local/go" >> /home/*/.bashrc && source ~/.bashrc && source /home/*/.bashrc
+#[ -f "/usr/local/go/bin/go" ] && echo -e "\n${Green}GoLang already downloaded${Nc}\n" || (cd /tmp && wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz && sudo tar -C /usr/local/ -xzf go1.23.0.linux-amd64.tar.gz && echo 'export PATH=$PATH:/usr/local/go/bin:/usr/local/go/bin' >> ~/.bashrc && echo 'export GOROOT=/usr/local/go' >> ~/.bashrc && source ~/.bashrc && sudo bash -c 'for i in /home/*; do echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> $i/.bashrc && echo "export GOROOT=/usr/local/go" >> $i/.bashrc; done')
+[ -f "/usr/local/go/bin/go" ] && echo -e "\n${Green}GoLang already downloaded${Nc}\n" || (cd /tmp && wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz && sudo tar -C /usr/local/ -xzf go1.23.0.linux-amd64.tar.gz && echo 'export PATH=$PATH:/usr/local/go/bin:/usr/local/go/bin' >> ~/.bashrc && echo 'export GOROOT=/usr/local/go' >> ~/.bashrc && echo 'export GOBIN=/usr/local/go/bin' >> ~/.bashrc && source ~/.bashrc && sudo bash -c 'for i in /home/*; do echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> $i/.bashrc && echo "export GOROOT=/usr/local/go" >> $i/.bashrc && echo "export GOBIN=/usr/local/go/bin" >> $i/.bashrc && source $i/.bashrc; done' && sudo bash -c 'echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> /root/.bashrc && echo "export GOROOT=/usr/local/go" >> /root/.bashrc && echo "export GOBIN=/usr/local/go/bin" >> /root/.bashrc && source /root/.bashrc')
+
+
 
 export GO111MODULE="on" #Go Module on
 # Installing GoLang tools
@@ -149,7 +151,7 @@ function goinstall {
 [ -f "$HOME/go/bin/$1" ] && printf "${Green}$1 already installed.\n${Nc}"
 [ ! -f "$HOME/go/bin/$1" ] &&  go install -v $2 && printf "$1 Installed Successfully.\n"
 }
-declare -A goinstallarray=( [afrog]="github.com/zan8in/afrog/v3/cmd/afrog@latest" [amass]="github.com/owasp-amass/amass/v3/...@master" [assetfinder]="github.com/tomnomnom/assetfinder@latest" [chaos]="github.com/projectdiscovery/chaos-client/cmd/chaos@latest" [crlfuzz]="github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest" [dalfox]="github.com/hahwul/dalfox@latest" [ffuf]="github.com/ffuf/ffuf@latest" [gau]="github.com/lc/gau/v2/cmd/gau@latest" [gf]="github.com/tomnomnom/gf@latest" [git-hound]="github.com/tillson/git-hound@latest" [gobuster]="github.com/OJ/gobuster/v3@latest" [hakrawler]="github.com/hakluke/hakrawler@latest" [httprobe]="github.com/tomnomnom/httprobe@master" [httpx]="github.com/projectdiscovery/httpx/cmd/httpx@latest" [interactsh-client]="github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest" [naabu]="github.com/projectdiscovery/naabu/v2/cmd/naabu@latest" [nuclei]="github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest" [qsreplace]="github.com/tomnomnom/qsreplace@latest" [waybackurls]="github.com/tomnomnom/waybackurls@latest" [subfinder]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest" [subzy]="github.com/LukaSikic/subzy@latest" [tlsx]="github.com/projectdiscovery/tlsx/cmd/tlsx@latest")
+declare -A goinstallarray=( [afrog]="github.com/zan8in/afrog/v3/cmd/afrog@latest" [amass]="github.com/owasp-amass/amass/v3/...@master" [assetfinder]="github.com/tomnomnom/assetfinder@latest" [chaos]="github.com/projectdiscovery/chaos-client/cmd/chaos@latest" [crlfuzz]="github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest" [dalfox]="github.com/hahwul/dalfox@latest" [ffuf]="github.com/ffuf/ffuf@latest" [gau]="github.com/lc/gau/v2/cmd/gau@latest" [gf]="github.com/tomnomnom/gf@latest" [git-hound]="github.com/tillson/git-hound@latest" [gobuster]="github.com/OJ/gobuster/v3@latest" [hakrawler]="github.com/hakluke/hakrawler@latest" [httprobe]="github.com/tomnomnom/httprobe@master" [httpx]="github.com/projectdiscovery/httpx/cmd/httpx@latest" [interactsh-client]="github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest" [katana]="github.com/projectdiscovery/katana/cmd/katana@latest" [naabu]="github.com/projectdiscovery/naabu/v2/cmd/naabu@latest" [nuclei]="github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest" [qsreplace]="github.com/tomnomnom/qsreplace@latest" [waybackurls]="github.com/tomnomnom/waybackurls@latest" [subfinder]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest" [subzy]="github.com/LukaSikic/subzy@latest" [tlsx]="github.com/projectdiscovery/tlsx/cmd/tlsx@latest")
 
 for i in "${!goinstallarray[@]}"
 do
@@ -246,6 +248,11 @@ apt purge youtube-dl -y -qq > /dev/null 2>&1
 [ ! -f "/usr/local/bin/yt-dlp" ] && python3 -m pip install -U pip hatchling wheel && python3 -m pip install --force-reinstall "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" && printf "${Purple}Youtube-dl Installed Successfully\n${Nc}"
 
 
+
+#=======waymore==========
+#python3 -m pip install --upgrade pip setuptools > /dev/null && python3 -m pip install git+https://github.com/xnl-h4ck3r/waymore.git
+
+
 # ===================================RUBY======================== 
 
 # wget -O /tmp/ruby.tar.gz https://cache.ruby-lang.org/pub/ruby/3.3/ruby-3.3.4.tar.gz && tar -xzvf ruby.tar.gz -C /tmp/ruby && cd /tmp/ruby && 
@@ -303,7 +310,9 @@ fi
 # ====x8 parameter discovery https://github.com/Sh1Yo/x8 =======
 [ -f "/usr/local/bin/x8" ] && printf "${Green}x8 already installed${Nc}\n"
 [ ! -f "/usr/local/bin/x8" ] && cargo install x8 && cp /root/.cargo/bin/x8 /usr/local/bin/x8 && printf "${Purple}x8 Installed Successfully\n${Nc}"
-
+# ==========FeroxBuster=============
+[ -f "/usr/local/bin/feroxbuster" ] && printf "${Green}feroxbuster already installed${Nc}\n"
+[ ! -f "/usr/local/bin/feroxbuster" ] && cd /usr/local/bin && curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/main/install-nix.sh | bash && printf "${Purple}feroxbuster Installed Successfully\n${Nc}"
 
 #=======ACTIVE Directory 
 #======Impacket========
