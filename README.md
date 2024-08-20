@@ -6,8 +6,8 @@ Hackify is an open-source script for Debian-based operating systems, coded in ba
 [![ZishanAdThandar's Hackify Repo stars](https://img.shields.io/github/stars/ZishanAdThandar/hackify)](https://github.com/ZishanAdThandar/hackify)
 [![License: GPL v3](https://img.shields.io/github/license/ZishanAdThandar/pentest)](https://www.gnu.org/licenses/gpl-3.0)
 [![YouTube](https://img.shields.io/youtube/channel/subscribers/UChgqXa2j7ZKkHX2Y76tSxoA)](https://youtube.com/@hackerstation)
-[![LinkTree](https://img.shields.io/badge/Link-Tree-bbd343)](https://zishanadthandar.github.io/linktree/)
 ![made-with-bash](https://img.shields.io/badge/Made_with-Bash-1f425f.svg)
+[![LinkTree](https://img.shields.io/badge/Link-Tree-bbd343)](https://zishanadthandar.github.io/linktree/)
 
 ## Installation Command
 
