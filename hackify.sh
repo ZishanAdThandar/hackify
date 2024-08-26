@@ -79,7 +79,7 @@ sleep 1 #stage 1 break
 # ===================================APT========================  
 
 
-declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "ffmpeg" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "john" "jq" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python2" "python3" "reaver" "rlwrap" "stegcracker" "steghide" "tmux" "tor" "whatweb" "whois" "wifite" "wireshark")
+declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "figlet" "ffmpeg" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "john" "jq" "lolcat" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python2" "python3" "reaver" "rlwrap" "stegcracker" "steghide" "tmux" "tor" "toilet" "whatweb" "whois" "wifite" "wireshark")
 
 #Function to check if installed and install it
 function aptinstall {
@@ -139,7 +139,7 @@ sleep 1 #stage 2 break
 
 # installing and setting up Golang
 #[ -f "/usr/local/go/bin/go" ] && echo -e "\n${Green}GoLang already downloaded${Nc}\n" || (cd /tmp && wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz && sudo tar -C /usr/local/ -xzf go1.23.0.linux-amd64.tar.gz && echo 'export PATH=$PATH:/usr/local/go/bin:/usr/local/go/bin' >> ~/.bashrc && echo 'export GOROOT=/usr/local/go' >> ~/.bashrc && source ~/.bashrc && sudo bash -c 'for i in /home/*; do echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> $i/.bashrc && echo "export GOROOT=/usr/local/go" >> $i/.bashrc; done')
-[ -f "/usr/local/go/bin/go" ] && echo -e "\n${Green}GoLang already downloaded${Nc}\n" || (cd /tmp && wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz && sudo tar -C /usr/local/ -xzf go1.23.0.linux-amd64.tar.gz && echo 'export PATH=$PATH:/usr/local/go/bin:/usr/local/go/bin' >> ~/.bashrc && echo 'export GOROOT=/usr/local/go' >> ~/.bashrc && echo 'export GOBIN=/usr/local/go/bin' >> ~/.bashrc && source ~/.bashrc && sudo bash -c 'for i in /home/*; do echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> $i/.bashrc && echo "export GOROOT=/usr/local/go" >> $i/.bashrc && echo "export GOBIN=/usr/local/go/bin" >> $i/.bashrc && source $i/.bashrc; done' && sudo bash -c 'echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> /root/.bashrc && echo "export GOROOT=/usr/local/go" >> /root/.bashrc && echo "export GOBIN=/usr/local/go/bin" >> /root/.bashrc && source /root/.bashrc')
+[ -f "/usr/local/go/bin/go" ] && echo -e "${Green}GoLang already downloaded${Nc}\n" || (cd /tmp && wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz && sudo tar -C /usr/local/ -xzf go1.23.0.linux-amd64.tar.gz && sudo bash -c 'for i in /home/*; do echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> $i/.bashrc && echo "export GOROOT=/usr/local/go" >> $i/.bashrc && echo "export GOBIN=/usr/local/go/bin" >> $i/.bashrc && source $i/.bashrc; done' && sudo bash -c 'echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> /root/.bashrc && echo "export GOROOT=/usr/local/go" >> /root/.bashrc && echo "export GOBIN=/usr/local/go/bin" >> /root/.bashrc && source /root/.bashrc' && printf "${Purple}GoLang Installed Successfully.${Nc}\n" )
 sudo chmod -R 755 /usr/local/go/bin
 
 export GO111MODULE="on" #Go Module on
@@ -160,8 +160,6 @@ done
 
 #Manual GoTOOLS starts here
 #Manual GoTOOLS ends here
-
-#sudo chmod -R 755 /usr/local/go/bin/* #Setting proper permission
 
 # setting gf patterns by 1ndianl33t
 [ -d "$HOME/.gf" ] && printf "${Green}gf patterns by 1ndianl33t already installed.\n${Nc}"
@@ -212,8 +210,14 @@ done
 
 python3 -m pip cache purge  &> /dev/null #cache removing
 
+
+sudo rm -rf /usr/local/lib/python3.10/dist-packages/setuptools-72.1.0.dist-info
+sudo rm -rf /usr/local/lib/python3.10/dist-packages/setuptools
 # setup error fixing, setuptools, each module needs proper setuptools version to avoid build error
 python3 -m pip install setuptools==60.0.0 &> /dev/null # Replace with a version that works TO AVOID SETUP.PY error
+
+# ======ciphey======
+#python3 -c "import ciphey" 2>/dev/null && printf "${Green}ciphey is already installed${Nc}\n" || (python3 -m pip install git+https://github.com/Ciphey/Ciphey && printf "${Purple}ciphey Installed Successfully\n${Nc}")
 
 # ======PWNTools======
 python3 -c "import pwn" 2>/dev/null && printf "${Green}PwnTools is already installed${Nc}\n" || (python3 -m pip install pwntools && printf "${Purple}PWNTools Installed Successfully\n${Nc}")
