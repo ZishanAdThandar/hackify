@@ -147,10 +147,10 @@ export GO111MODULE="on" #Go Module on
 printf "\n${Cyan}Installing Go Tools for user ${Red}ROOT${Nc}${Cyan} (Current User).${Nc}\n\n"
 sleep 1
 function goinstall {
-[ -f "$HOME/go/bin/$1" ] && printf "${Green}$1 already installed.\n${Nc}"
-[ ! -f "$HOME/go/bin/$1" ] &&  go install -v $2 && printf "$1 Installed Successfully.\n"
+[ -f "/usr/local/go/bin/$1" ] && printf "${Green}$1 already installed.\n${Nc}"
+[ ! -f "/usr/local/go/bin/$1" ] &&  go install -v $2 && printf "$1 Installed Successfully.\n"
 }
-declare -A goinstallarray=( [afrog]="github.com/zan8in/afrog/v3/cmd/afrog@latest" [amass]="github.com/owasp-amass/amass/v3/...@master" [assetfinder]="github.com/tomnomnom/assetfinder@latest" [chaos]="github.com/projectdiscovery/chaos-client/cmd/chaos@latest" [crlfuzz]="github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest" [dalfox]="github.com/hahwul/dalfox@latest" [ffuf]="github.com/ffuf/ffuf@latest" [gau]="github.com/lc/gau/v2/cmd/gau@latest" [gf]="github.com/tomnomnom/gf@latest" [git-hound]="github.com/tillson/git-hound@latest" [gobuster]="github.com/OJ/gobuster/v3@latest" [hakrawler]="github.com/hakluke/hakrawler@latest" [httprobe]="github.com/tomnomnom/httprobe@master" [httpx]="github.com/projectdiscovery/httpx/cmd/httpx@latest" [interactsh-client]="github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest" [katana]="github.com/projectdiscovery/katana/cmd/katana@latest" [kerbrute]="github.com/ropnop/kerbrute@latest" [naabu]="github.com/projectdiscovery/naabu/v2/cmd/naabu@latest" [nuclei]="github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest" [qsreplace]="github.com/tomnomnom/qsreplace@latest" [waybackurls]="github.com/tomnomnom/waybackurls@latest" [subfinder]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest" [subzy]="github.com/LukaSikic/subzy@latest" [tlsx]="github.com/projectdiscovery/tlsx/cmd/tlsx@latest")
+declare -A goinstallarray=( [afrog]="github.com/zan8in/afrog/v3/cmd/afrog@latest" [amass]="github.com/owasp-amass/amass/v3/...@master" [assetfinder]="github.com/tomnomnom/assetfinder@latest" [chaos]="github.com/projectdiscovery/chaos-client/cmd/chaos@latest" [crlfuzz]="github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest" [dalfox]="github.com/hahwul/dalfox@latest" [ffuf]="github.com/ffuf/ffuf@latest" [gau]="github.com/lc/gau/v2/cmd/gau@latest" [gf]="github.com/tomnomnom/gf@latest" [git-hound]="github.com/tillson/git-hound@latest" [gobuster]="github.com/OJ/gobuster/v3@latest" [hakrawler]="github.com/hakluke/hakrawler@latest" [httprobe]="github.com/tomnomnom/httprobe@master" [httpx]="github.com/projectdiscovery/httpx/cmd/httpx@latest" [interactsh-client]="github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest" [katana]="github.com/projectdiscovery/katana/cmd/katana@latest" [kerbrute]="github.com/ropnop/kerbrute@latest" [naabu]="github.com/projectdiscovery/naabu/v2/cmd/naabu@latest" [nuclei]="github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest" [qsreplace]="github.com/tomnomnom/qsreplace@latest" [waybackurls]="github.com/tomnomnom/waybackurls@latest" [subfinder]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest" [subzy]="github.com/PentestPad/subzy@latest" [tlsx]="github.com/projectdiscovery/tlsx/cmd/tlsx@latest")
 
 for i in "${!goinstallarray[@]}"
 do
@@ -178,11 +178,16 @@ done
 
 printf "\n${Cyan}Installing Python Tools for user ROOT.${Nc}\n"
 
-python3 -m pip install --upgrade pip -q &> /dev/null
-python3 -m pip install --upgrade setuptools wheel twine check-wheel-contents -q &> /dev/null
+[ ! -f "/usr/bin/python3" ] && apt install python-is-python3 -y  
 
-apt install python-is-python3 -y  &> /dev/null
-python3 -m pip cache purge  &> /dev/null #cache removing
+python3 -m pip install --upgrade pip -q #&> /dev/null
+
+sudo rm -rf /usr/local/lib/python3.10/dist-packages/setuptools-72.1.0.dist-info
+sudo rm -rf /usr/local/lib/python3.10/dist-packages/setuptools
+
+python3 -m pip install --upgrade setuptools wheel twine check-wheel-contents # -q &> /dev/null
+
+python3 -m pip cache purge  
 
 # List of packages to install
 packages=(
@@ -208,19 +213,18 @@ for pkg in "${packages[@]}"; do
 done
 
 
-python3 -m pip cache purge  &> /dev/null #cache removing
-
-
-sudo rm -rf /usr/local/lib/python3.10/dist-packages/setuptools-72.1.0.dist-info
-sudo rm -rf /usr/local/lib/python3.10/dist-packages/setuptools
 # setup error fixing, setuptools, each module needs proper setuptools version to avoid build error
-python3 -m pip install setuptools==60.0.0 &> /dev/null # Replace with a version that works TO AVOID SETUP.PY error
+python3 -m pip install setuptools==60.0.0 # &> /dev/null # Replace with a version that works TO AVOID SETUP.PY error
 
 # ======ciphey======
 #python3 -c "import ciphey" 2>/dev/null && printf "${Green}ciphey is already installed${Nc}\n" || (python3 -m pip install git+https://github.com/Ciphey/Ciphey && printf "${Purple}ciphey Installed Successfully\n${Nc}")
 
 # ======PWNTools======
 python3 -c "import pwn" 2>/dev/null && printf "${Green}PwnTools is already installed${Nc}\n" || (python3 -m pip install pwntools && printf "${Purple}PWNTools Installed Successfully\n${Nc}")
+
+# =====PWNCat==========
+[ -f "/usr/local/bin/pwncat" ] && printf "${Green}PWNCat already installed${Nc}\n" 
+[ ! -f "/usr/local/bin/pwncat" ] && python3 -m pip install pwncat && printf "${Purple}PWNCAT Installed Successfully\n${Nc}"
 
 # ======LFIMap======
 python3 -c "import lfimap" 2>/dev/null && printf "${Green}LFIMap is already installed${Nc}\n" || (python3 -m pip install lfimap && printf "${Purple}LFIMap Installed Successfully\n${Nc}")
@@ -235,9 +239,11 @@ grep -q 'MAX_NUMBER_OF_THREADS = 500' /opt/sqlmap/lib/core/settings.py || sudo s
 
 
 # =======youtube_dl  [youtube-dl]="https://github.com/ytdl-org/youtube-dl/archive/master.zip"
+python3 -m pip install --upgrade pip setuptools > /dev/null
 apt purge youtube-dl -y -qq > /dev/null 2>&1
 [ -f "/usr/local/bin/youtube-dl" ] && printf "${Green}Youtube-dl already installed${Nc}\n" 
 [ ! -f "/usr/local/bin/youtube-dl" ] && yes | python3 -m pip install https://github.com/ytdl-org/youtube-dl/archive/master.zip --quiet --root-user-action=ignore && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl && printf "${Purple}Youtube-dl Installed Successfully\n${Nc}"
+
 #======= [yt-dlp]="https://github.com/yt-dlp/yt-dlp"
 [ -f "/usr/local/bin/yt-dlp" ] && printf "${Green}yt-dlp already installed${Nc}\n" 
 [ ! -f "/usr/local/bin/yt-dlp" ] && python3 -m pip install -U pip hatchling wheel && python3 -m pip install --force-reinstall "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" && printf "${Purple}Youtube-dl Installed Successfully\n${Nc}"
@@ -349,6 +355,11 @@ python3 -c "import $package" &> /dev/null && printf "${Green}${package} already 
 
 #echo 'deb https://debian.neo4j.com stable 4' | sudo tee /etc/apt/sources.list.d/neo4j.list > /dev/null && apt update && systemctl start neo4j.service && git clone https://github.com/BloodHoundAD/BloodHound /opt/bloodhound && cd /opt/bloodhound && npm cache clean --force && npm install --legacy-peer-deps && npm run build:linux && mv /tmp/bloodhound/BloodHound-5.11.0 /opt/bloodhound && rm /etc/apt/sources.list.d/neo4j.list && add-apt-repository --remove "deb https://debian.neo4j.com stable 4.4" -y && apt update -y
 
+#=====bloodyAD and autoBloody======
+package=bloodyAD
+python3 -c "import $package" &> /dev/null && printf "${Green}${package} already installed${Nc}\n" || { python3 -m pip install $package &> /dev/null && printf "${Purple}${package} Installed Successfully.${Nc}\n"; }
+package=autobloody
+python3 -c "import $package" &> /dev/null && printf "${Green}${package} already installed${Nc}\n" || { python3 -m pip install $package &> /dev/null && printf "${Purple}${package} Installed Successfully.${Nc}\n"; }
 
 
 
