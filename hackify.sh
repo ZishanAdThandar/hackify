@@ -79,7 +79,7 @@ sleep 1 #stage 1 break
 # ===================================APT========================  
 
 
-declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "figlet" "ffmpeg" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "john" "jq" "lolcat" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python2" "python3" "reaver" "rlwrap" "stegcracker" "steghide" "tmux" "tor" "toilet" "whatweb" "whois" "wifite" "wireshark")
+declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "figlet" "ffmpeg" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "john" "jq" "lolcat" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python2" "python3" "reaver" "rlwrap" "snmp" "stegcracker" "steghide" "tmux" "tor" "toilet" "whatweb" "whois" "wifite" "wireshark")
 
 #Function to check if installed and install it
 function aptinstall {
@@ -317,8 +317,8 @@ fi
 
 #=======ACTIVE Directory 
 #======Impacket========
-[ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacker already installed${Nc}\n"  
-[ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/SecureAuthCorp/impacket && python3 -m pip install impacket && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
+[ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacket already installed${Nc}\n"  
+[ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/fortra/impacket && python3 -m pip install impacket && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 #=====mitm6======
 python3 -m pip install setuptools==60.0.0 &> /dev/null
 [ -f "/usr/local/bin/mitm6" ] && printf "${Green}MITM6 already installed${Nc}\n"
