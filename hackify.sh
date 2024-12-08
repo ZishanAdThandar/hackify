@@ -219,6 +219,9 @@ python3 -m pip install setuptools==60.0.0 # &> /dev/null # Replace with a versio
 # ======ciphey======
 #python3 -c "import ciphey" 2>/dev/null && printf "${Green}ciphey is already installed${Nc}\n" || (python3 -m pip install git+https://github.com/Ciphey/Ciphey && printf "${Purple}ciphey Installed Successfully\n${Nc}")
 
+# ======ciphey======
+[ -f "/usr/local/bin/git-dumper" ] && printf "${Green}git-dumper is already installed${Nc}\n" || (python3 -m pip install git-dumper && printf "${Purple}git-dumper Installed Successfully\n${Nc}")
+
 # ======PWNTools======
 python3 -c "import pwn" 2>/dev/null && printf "${Green}PwnTools is already installed${Nc}\n" || (python3 -m pip install pwntools && printf "${Purple}PWNTools Installed Successfully\n${Nc}")
 
