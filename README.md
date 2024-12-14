@@ -16,6 +16,9 @@ git clone https://github.com/ZishanAdThandar/hackify.git
 cd hackify
 chmod +x hackify.sh
 bash hackify.sh
+# To install wordlists
+chmod +x wordlist.sh
+bash wordlist.sh
 ```
 
 
