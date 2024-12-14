@@ -9,6 +9,7 @@ Hackify is an open-source script for Debian-based operating systems, coded in ba
 ![made-with-bash](https://img.shields.io/badge/Made_with-Bash-1f425f.svg)
 [![LinkTree](https://img.shields.io/badge/Link-Tree-bbd343)](https://zishanadthandar.github.io/linktree/)
 
+![Banner Hackify](./banner.png)
 ## Installation Command
 
 ```bash
