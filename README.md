@@ -32,8 +32,8 @@ bash wordlist.sh
 
 
 ## Firefox Themes
-[CyebrTerminux Theme](https://addons.mozilla.org/en-US/firefox/addon/zishanadthandar-cyberterminus/)
-[MrRobot Theme](https://addons.mozilla.org/en-US/firefox/addon/mrrobothacker/)
+- [CyebrTerminux Theme](https://addons.mozilla.org/en-US/firefox/addon/zishanadthandar-cyberterminus/)
+- [MrRobot Theme](https://addons.mozilla.org/en-US/firefox/addon/mrrobothacker/)
 
 
 ⚠️ **Warning** Use this tool at your own risk. 
