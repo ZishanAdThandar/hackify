@@ -10,6 +10,11 @@ Hackify is an open-source script for Debian-based operating systems, coded in ba
 [![LinkTree](https://img.shields.io/badge/Link-Tree-bbd343)](https://zishanadthandar.github.io/linktree/)
 
 ![Banner Hackify](./banner.png)
+
+- [Installation Command (Tools and Wordlist)](#installation-command)
+- [Dockers](#dockers)
+- [Firefox Themes](#firefox-themes)
+
 ## Installation Command
 
 ```bash
@@ -21,6 +26,14 @@ bash hackify.sh
 chmod +x wordlist.sh
 bash wordlist.sh
 ```
+
+## Dockers
+- [https://hub.docker.com/r/kasmweb/remnux-focal-desktop](https://github.com/ZishanAdThandar/hacknotes/tree/main/RevEng)
+
+
+## Firefox Themes
+[CyebrTerminux Theme](https://addons.mozilla.org/en-US/firefox/addon/zishanadthandar-cyberterminus/)
+[MrRobot Theme](https://addons.mozilla.org/en-US/firefox/addon/mrrobothacker/)
 
 
 ⚠️ **Warning** Use this tool at your own risk. 
