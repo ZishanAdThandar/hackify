@@ -14,6 +14,7 @@ Hackify is an open-source script for Debian-based operating systems, coded in ba
 - [Installation Command (Tools and Wordlist)](#installation-command)
 - [Dockers](#dockers)
 - [Firefox Themes](#firefox-themes)
+- [Firefox Addon](#firefox-addon)
 
 ## Installation Command
 
@@ -34,6 +35,9 @@ bash wordlist.sh
 ## Firefox Themes
 - [CyebrTerminux Theme](https://addons.mozilla.org/en-US/firefox/addon/zishanadthandar-cyberterminus/)
 - [MrRobot Theme](https://addons.mozilla.org/en-US/firefox/addon/mrrobothacker/)
+
+## Firefox Addon
+- [Burp Suite Proxy Switch](https://addons.mozilla.org/en-US/firefox/addon/burp-proxy-toggler-lite/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search)
 
 
 ⚠️ **Warning** Use this tool at your own risk. 
