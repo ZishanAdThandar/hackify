@@ -39,6 +39,11 @@ bash wordlist.sh
 ## Firefox Addon
 - [Burp Suite Proxy Switch](https://addons.mozilla.org/en-US/firefox/addon/burp-proxy-toggler-lite/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search)
 
+## Theme (Personal peference)
+- Plank Dock
+- Dark Background Solid color wallpaper
+- Conky clock
+- add generic monitor to the panel to get ips with code `sh -c 'ip a | grep -q "tun0" && ip -4 addr show tun0 | awk "/inet/ {print \$2}" | cut -d/ -f1 || curl -s ifconfig.me'`
 
 ⚠️ **Warning** Use this tool at your own risk. 
 
