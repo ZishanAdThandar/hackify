@@ -33,7 +33,7 @@ bash wordlist.sh
 
 
 ## Firefox Themes
-- [CyebrTerminux Theme](https://addons.mozilla.org/en-US/firefox/addon/zishanadthandar-cyberterminus/)
+- [CyebrTerminus Theme](https://addons.mozilla.org/en-US/firefox/addon/zishanadthandar-cyberterminus/)
 - [MrRobot Theme](https://addons.mozilla.org/en-US/firefox/addon/mrrobothacker/)
 
 ## Firefox Addon
