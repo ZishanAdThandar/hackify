@@ -7,7 +7,7 @@ Cyan='\033[0;36m'     White='\033[0;37m'  Nc='\033[0m' # No Color
 
 # ====================== BANNER ======================
 clear
-printf "\n\n${Green}Hacking Tools and Wordlist Installer by,\n\n\n"
+printf "\n\n${Green}Hacking Wordlist Installer by,\n\n\n"
 printf "${Red}" # banner bg and fg color
 cat << "EOF"
   _____    _                _      _ _____ _                 _          
@@ -32,6 +32,8 @@ printf "We are in $(pwd).\n\n$WORDLIST_DIR/ contains:\n"
 ls
 
 # ====================== FUNCTIONS ======================
+git config --global http.version HTTP/1.1 ##fixing git error
+
 download_git() {
     local name=$1
     local repo=$2
