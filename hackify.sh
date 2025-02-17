@@ -24,7 +24,7 @@ cat << "EOF"
  
 EOF
 printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkTree: https://zishanadthandar.github.io/linktree\nLinkedIn: https://linkedin.com/in/zishanadthandar${Nc}\n\n"
-sleep 1 #banner break  
+# sleep 1 banner break  
                               
 # one liner bash if loop to check root user
 [ "$EUID" -ne 0 ] && printf "\n\033[30;5;41mPlease run as root.${Nc}\n" && sudo su
@@ -128,85 +128,108 @@ done
 
 
 # ===================================PYTHON======================== 
-
 # Upgrade pip and install tools
 
 printf "\n${Cyan}Installing Python Tools for user ROOT.${Nc}\n"
 
-[ ! -f "/usr/bin/python3" ] && apt install python-is-python3 -y  
+[ ! -f "/usr/bin/python3" ] && apt install python3 -y  
 
-python3 -m pip install --upgrade pip -q #&> /dev/null
+#python3 -m pip install --upgrade pip -q #&> /dev/null
+#python3 -m pip install --upgrade setuptools wheel twine check-wheel-contents # -q &> /dev/null
+python3 -m pip cache purge  &> /dev/null 
 
-sudo rm -rf /usr/local/lib/python3.10/dist-packages/setuptools-72.1.0.dist-info
-sudo rm -rf /usr/local/lib/python3.10/dist-packages/setuptools
 
-python3 -m pip install --upgrade setuptools wheel twine check-wheel-contents # -q &> /dev/null
 
-python3 -m pip cache purge  
+#python3 -m pip install setuptools==60.0.0 &> /dev/null
+# setup error fixing, setuptools, each module needs proper setuptools version to avoid build error
+#python3 -m pip install setuptools==60.0.0 # &> /dev/null # Replace with a version that works TO AVOID SETUP.PY error
 
-# List of packages to install
-packages=(
-    "sublist3r"
-    "hashid"
-    "dirsearch"
-)
 
-# Function to install package if not already installed
-install_package() {
-    local package=$1
-    if ! python3 -c "import $package" &> /dev/null; then
-        printf "Installing $package...\n"
-        python3 -m pip install --quiet --upgrade "$package" &> /dev/null
-    else
-        printf "${Green}$package is already installed.${Nc}\n"
-    fi
+# Function to check and install a Python module (separate import and install names)
+install_python_module() {
+  local import_name="$1"    # Module to import (e.g., "pwn")
+  local install_name="$2"   # Module to install (e.g., "pwntools")
+
+  # Check if the Python module is already installed
+  python3 -c "import $import_name" 2>/dev/null && \
+    printf "\e[32m%s is already installed\e[0m\n" "$import_name" || \
+    (python3 -m pip install "$install_name" --break-system-packages && printf "\e[35m%s Installed Successfully\e[0m\n" "$install_name")
 }
 
-# Install packages
-for pkg in "${packages[@]}"; do
-    install_package "$pkg"
-done
 
-### --break-system-packages
-# setup error fixing, setuptools, each module needs proper setuptools version to avoid build error
-python3 -m pip install setuptools==60.0.0 # &> /dev/null # Replace with a version that works TO AVOID SETUP.PY error
+# Function to check and install a tool from git
+install_git_tool() {
+  local tool_path="$1"      
+  local tool_source="$2"      
+  local tool_name="$3"      
+  if [ -f "$tool_path" ]; then
+    printf "\e[32m%s already installed\e[0m\n" "$tool_name"
+  else
+    printf "Installing %s...\n" "$tool_name"
+    python3 -m pip install "$tool_source" --break-system-packages
+    if [ -f "$tool_path" ]; then
+      printf "\e[35m%s Installed Successfully\e[0m\n" "$tool_name"
+    fi
+  fi
+}
 
-# ======ciphey======
-#python3 -c "import ciphey" 2>/dev/null && printf "${Green}ciphey is already installed${Nc}\n" || (python3 -m pip install git+https://github.com/Ciphey/Ciphey && printf "${Purple}ciphey Installed Successfully\n${Nc}")
+# Function to check and install a tool via filename
+install_tool() {
+  local tool_path="$1"      
+  local tool_name="$2"      
+  if [ -f "$tool_path" ]; then
+    printf "\e[32m%s already installed\e[0m\n" "$tool_name"
+  else
+    printf "Installing %s...\n" "$tool_name"
+    python3 -m pip install "$tool_name" --break-system-packages
+    if [ -f "$tool_path" ]; then
+      printf "\e[35m%s Installed Successfully\e[0m\n" "$tool_name"
+    fi
+  fi
+}
 
-# ======ciphey======
-[ -f "/usr/local/bin/git-dumper" ] && printf "${Green}git-dumper is already installed${Nc}\n" || (python3 -m pip install git-dumper && printf "${Purple}git-dumper Installed Successfully\n${Nc}")
 
-# ======PWNTools======
-python3 -c "import pwn" 2>/dev/null && printf "${Green}PwnTools is already installed${Nc}\n" || (python3 -m pip install pwntools && printf "${Purple}PWNTools Installed Successfully\n${Nc}")
 
-# =====PWNCat==========
-[ -f "/usr/local/bin/pwncat" ] && printf "${Green}PWNCat already installed${Nc}\n" 
-[ ! -f "/usr/local/bin/pwncat" ] && python3 -m pip install pwncat && printf "${Purple}PWNCAT Installed Successfully\n${Nc}"
+install_tool "/usr/local/bin/git-dumper" "git-dumper"    
+install_tool "/usr/local/bin/pwncat" "pwncat"    
+install_tool "/usr/local/bin/wafw00f" "wafw00f"    
+install_tool "/usr/local/bin/sherlock" "sherlock-project"   
+install_tool "/usr/local/bin/mitm6" "mitm6"     
+install_tool "/usr/local/bin/waymore" "waymore"  
 
-# ======LFIMap======
-python3 -c "import lfimap" 2>/dev/null && printf "${Green}LFIMap is already installed${Nc}\n" || (python3 -m pip install lfimap && printf "${Purple}LFIMap Installed Successfully\n${Nc}")
+   
+install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtube-dl/archive/master.zip" "youtube-dl" && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl  
+install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" "yt-dlp"
 
-# ======wafw00f======
-[ -f "/usr/local/bin/wafw00f" ] && printf "${Green}Wafw00f already installed${Nc}\n" 
-[ ! -f "/usr/local/bin/wafw00f" ] && python3 -m pip install git+https://github.com/EnableSecurity/wafw00f.git && printf "${Purple}Wafw00f Installed Successfully\n${Nc}"
+
+
+install_python_module "pwn" "pwntools"
+install_python_module "sublist3r" "sublist3r"
+install_python_module "hashid" "hashid"
+install_python_module "dirsearch" "dirsearch"
+install_python_module "lfimap" "lfimap"
+
+
+
+#======crackmapexec netexec======= 
+
+[ -f "/usr/local/bin/crackmapexec" ] && printf "${Green}CrackMapExec already installed${Nc}\n"
+[ ! -f "/usr/local/bin/crackmapexec" ] && python3 -m pip install git+https://github.com/byt3bl33d3r/CrackMapExec --ignore-installed --break-system-packages  && printf "${Purple}CrackMapExec Installed Successfully\n${Nc}"
+
+[ -f "/usr/local/bin/nxc" ] && printf "${Green}NetExec already installed${Nc}\n"
+[ ! -f "/usr/local/bin/nxc" ] && python3 -m pip install git+https://github.com/Pennyw0rth/NetExec --ignore-installed --break-system-packages  && printf "${Purple}NetExec Installed Successfully\n${Nc}"
+
+#======Impacket========
+[ -f "" ] && printf "${Green}ImPacket already installed${Nc}\n"  
+[ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/fortra/impacket --ignore-installed --break-system-packages && python3 -m pip install impacket --ignore-installed --break-system-packages && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 
 # ======SQLMap======
 [ -d /opt/sqlmap ] && printf "${Green}SQLMap already installed${Nc}\n" || { sudo apt-get remove -y sqlmap; python3 -m pip uninstall -y sqlmap; sudo rm -f /usr/local/bin/sqlmap /usr/bin/sqlmap; sudo git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /opt/sqlmap; echo -e '#!/bin/bash\npython3 /opt/sqlmap/sqlmap.py "$@"' | sudo tee /usr/local/bin/sqlmap > /dev/null; sudo chmod +x /usr/local/bin/sqlmap; printf "\033[0;35mSQLMap Installed Successfully\033[0m'\n";}
 grep -q 'MAX_NUMBER_OF_THREADS = 500' /opt/sqlmap/lib/core/settings.py || sudo sed -i 's/MAX_NUMBER_OF_THREADS = [0-9]\+/MAX_NUMBER_OF_THREADS = 500/' /opt/sqlmap/lib/core/settings.py
 
 
-# =======youtube_dl  [youtube-dl]="https://github.com/ytdl-org/youtube-dl/archive/master.zip"
-python3 -m pip install --upgrade pip setuptools > /dev/null
-apt purge youtube-dl -y -qq > /dev/null 2>&1
-[ -f "/usr/local/bin/youtube-dl" ] && printf "${Green}Youtube-dl already installed${Nc}\n" 
-[ ! -f "/usr/local/bin/youtube-dl" ] && yes | python3 -m pip install https://github.com/ytdl-org/youtube-dl/archive/master.zip --quiet --root-user-action=ignore && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl && printf "${Purple}Youtube-dl Installed Successfully\n${Nc}"
-
-#======= [yt-dlp]="https://github.com/yt-dlp/yt-dlp"
-[ -f "/usr/local/bin/yt-dlp" ] && printf "${Green}yt-dlp already installed${Nc}\n" 
-[ ! -f "/usr/local/bin/yt-dlp" ] && python3 -m pip install -U pip hatchling wheel && python3 -m pip install --force-reinstall "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" && printf "${Purple}Youtube-dl Installed Successfully\n${Nc}"
-
-
+# ======ciphey======
+#python3 -c "import ciphey" 2>/dev/null && printf "${Green}ciphey is already installed${Nc}\n" || (python3 -m pip install git+https://github.com/Ciphey/Ciphey && printf "${Purple}ciphey Installed Successfully\n${Nc}")
 
 #=======waymore==========
 #python3 -m pip install --upgrade pip setuptools > /dev/null && python3 -m pip install git+https://github.com/xnl-h4ck3r/waymore.git
@@ -274,19 +297,7 @@ fi
 [ ! -f "/usr/local/bin/feroxbuster" ] && cd /usr/local/bin && curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/main/install-nix.sh | bash && printf "${Purple}feroxbuster Installed Successfully\n${Nc}"
 
 #=======ACTIVE Directory 
-#======Impacket========
-[ -f "/usr/bin/impacket-netview" ] && printf "${Green}ImPacket already installed${Nc}\n"  
-[ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/fortra/impacket && python3 -m pip install impacket && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
-#=====mitm6======
-python3 -m pip install setuptools==60.0.0 &> /dev/null
-[ -f "/usr/local/bin/mitm6" ] && printf "${Green}MITM6 already installed${Nc}\n"
-[ ! -f "/usr/local/bin/mitm6" ] && python3 -m pip install mitm6 && printf "${Purple}Impacket Installed Successfully\n${Nc}"
-#======crackmapexec netexec======= 
-python3 -m pip install setuptools==60.0.0 &> /dev/null
-[ -f "/usr/local/bin/crackmapexec" ] && printf "${Green}CrackMapExec already installed${Nc}\n"
-[ ! -f "/usr/local/bin/crackmapexec" ] && python3 -m pip install git+https://github.com/byt3bl33d3r/CrackMapExec && printf "${Purple}CrackMapExec Installed Successfully\n${Nc}"
-[ -f "/usr/local/bin/nxc" ] && printf "${Green}NetExec already installed${Nc}\n"
-[ ! -f "/usr/local/bin/nxc" ] && python3 -m pip install git+https://github.com/Pennyw0rth/NetExec && printf "${Purple}NetExec Installed Successfully\n${Nc}"
+
 #======evil-winrm======= 
 [ -f "/usr/local/bin/evil-winrm" ] && printf "${Green}evil-winrm.rb already installed${Nc}\n"
 [ ! -f "/usr/local/bin/evil-winrm" ] && gem install evil-winrm && printf "${Purple}evil-winrm Installed Successfully\n${Nc}"
