@@ -33,8 +33,10 @@ printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkTree: https:/
 
 # ===================================APT========================  
 
+apt install docker.io docker-compose -y >/dev/null 2>&1
 
-declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "figlet" "ffmpeg" "firejail" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "john" "jq" "lolcat" "ltrace" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python3" "reaver" "rlwrap" "sshpass" "sshuttle" "stegcracker" "steghide" "strace" "tmux" "tor" "toilet" "whatweb" "whois" "wifite" "wireshark")
+
+declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "fcrackzip" "figlet" "ffmpeg" "firejail" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "john" "jq" "lolcat" "ltrace" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python3" "reaver" "rlwrap" "sshpass" "sshuttle" "stegcracker" "steghide" "strace" "tmux" "tor" "toilet" "whatweb" "whois" "wifite" "wireshark")
 
 #Function to check if installed and install it
 function aptinstall {
@@ -68,7 +70,7 @@ function aptinstall1 {
 [ ! -f "$1" ] && apt-get -y install "$2"
 return 0
 }
-declare -A aptarray1=( [/usr/bin/exiftool]="libimage-exiftool-perl" [/usr/bin/pip3]="python3-pip" [/usr/bin/uget-gtk]="uget" [/usr/share/doc/libpcap0.8-dev/copyright]="libpcap-dev" )
+declare -A aptarray1=( [/usr/bin/exiftool]="libimage-exiftool-perl" [/usr/bin/pip3]="python3-pip" [/usr/bin/uget-gtk]="uget" [/usr/share/doc/libpcap0.8-dev/copyright]="libpcap-dev" [/usr/sbin/ntpdate]="ntpsec-ntpdate")
 for i in "${!aptarray1[@]}"
 do
   aptinstall1 $i ${aptarray1[$i]}
