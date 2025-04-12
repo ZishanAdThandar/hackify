@@ -77,7 +77,7 @@ do
 done
 
 
-sleep 1 #stage 2 break
+#sleep 1 #stage 2 break
 
 
 # ================Custom Script Installation=================
@@ -102,7 +102,9 @@ sudo chmod -R 755 /usr/local/go/bin
 export GO111MODULE="on" #Go Module on
 # Installing GoLang tools
 printf "\n${Cyan}Installing Go Tools for user ${Red}ROOT${Nc}${Cyan} (Current User).${Nc}\n\n"
-sleep 1
+
+# sleep 1
+
 function goinstall {
 [ -f "/usr/local/go/bin/$1" ] && printf "${Green}$1 already installed.\n${Nc}"
 [ ! -f "/usr/local/go/bin/$1" ] &&  go install -v $2 && printf "$1 Installed Successfully.\n"
@@ -198,6 +200,7 @@ install_tool "/usr/local/bin/wafw00f" "wafw00f"
 install_tool "/usr/local/bin/sherlock" "sherlock-project"   
 install_tool "/usr/local/bin/mitm6" "mitm6"     
 install_tool "/usr/local/bin/waymore" "waymore"  
+install_tool "/usr/local/bin/arjun" "arjun"  
 
    
 install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtube-dl/archive/master.zip" "youtube-dl" && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl  
