@@ -81,9 +81,14 @@ done
 
 
 # ================Custom Script Installation=================
+
+# subauto by ZishanAdThandar
 [ -f "/usr/local/bin/subauto" ] && printf "${Nc}${Green}SubAuto already installed.\n${Nc}" 
 [ ! -f "/usr/local/bin/subauto" ] && curl -ks https://raw.githubusercontent.com/ZishanAdThandar/pentest/main/scripts/subauto.sh > /usr/local/bin/subauto && chmod +x /usr/local/bin/subauto  && printf "${Purple}SubAuto Installed Successfully.\n${nc}"
 
+# NmapAutomator by Ziyad
+[ -f "/usr/local/bin/nmapAutomator" ] && printf "${Nc}${Green}NmapAutomator already installed.\n${Nc}" 
+[ ! -f "/usr/local/bin/nmapAutomator" ] && curl -ks https://raw.githubusercontent.com/21y4d/nmapAutomator/refs/heads/master/nmapAutomator.sh > /usr/local/bin/nmapAutomator && chmod +x /usr/local/bin/nmapAutomator  && printf "${Purple}NmapAutomator Installed Successfully.\n${nc}"
 
 
 # ==============NODEJS NPM REACT =======================
@@ -215,6 +220,10 @@ install_python_module "dirsearch" "dirsearch"
 install_python_module "lfimap" "lfimap"
 
 
+
+#======AutoRecon Tib3rus======= 
+[ -f "/usr/local/bin/autorecon" ] && printf "${Green}AutoRecon already installed${Nc}\n"
+[ ! -f "/usr/local/bin/autorecon" ] && python3 -m pip install git+https://github.com/Tib3rius/AutoRecon.git --ignore-installed --break-system-packages  && printf "${Purple}AutoRecon Installed Successfully\n${Nc}"
 
 #======crackmapexec netexec======= 
 
