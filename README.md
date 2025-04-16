@@ -43,7 +43,9 @@ bash wordlist.sh
 - Plank Dock
 - Dark Background Solid color wallpaper
 - Conky clock
-- add generic monitor to the panel to get ips with code `sh -c 'ip a | grep -q "tun0" && ip -4 addr show tun0 | awk "/inet/ {print \$2}" | cut -d/ -f1 || curl -s ifconfig.me'`
+- add generic monitor `apt install xfce4-genmon-plugin -y` to the panel to get ips with code `sh -c 'ip a | grep -q "tun0" && ip -4 addr show tun0 | awk "/inet/ {print \$2}" | cut -d/ -f1 || curl -s ifconfig.me'`
+
+---
 
 ⚠️ **Warning** Use this tool at your own risk. 
 
