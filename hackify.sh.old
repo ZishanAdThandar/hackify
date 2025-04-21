@@ -205,8 +205,7 @@ install_tool "/usr/local/bin/wafw00f" "wafw00f"
 install_tool "/usr/local/bin/sherlock" "sherlock-project"   
 install_tool "/usr/local/bin/mitm6" "mitm6"     
 install_tool "/usr/local/bin/waymore" "waymore"  
-install_tool "/usr/local/bin/arjun" "arjun" 
-install_tool "/usr/local/bin/certipy" "certipy-ad"  
+install_tool "/usr/local/bin/arjun" "arjun"  
 
    
 install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtube-dl/archive/master.zip" "youtube-dl" && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl  
@@ -219,8 +218,6 @@ install_python_module "sublist3r" "sublist3r"
 install_python_module "hashid" "hashid"
 install_python_module "dirsearch" "dirsearch"
 install_python_module "lfimap" "lfimap"
-install_python_module "bloodyad" "bloodyad"
-install_python_module "autobloody" "autobloody"
 
 
 
@@ -234,7 +231,7 @@ install_python_module "autobloody" "autobloody"
 [ ! -f "/usr/local/bin/crackmapexec" ] && python3 -m pip install git+https://github.com/byt3bl33d3r/CrackMapExec --ignore-installed --break-system-packages  && printf "${Purple}CrackMapExec Installed Successfully\n${Nc}"
 
 [ -f "/usr/local/bin/nxc" ] && printf "${Green}NetExec already installed${Nc}\n"
-[ ! -f "/usr/local/bin/nxc" ] && python3 -m pip install git+https://github.com/Pennyw0rth/NetExec.git --ignore-installed --break-system-packages  && printf "${Purple}NetExec Installed Successfully\n${Nc}"
+[ ! -f "/usr/local/bin/nxc" ] && python3 -m pip install git+https://github.com/Pennyw0rth/NetExec --ignore-installed --break-system-packages  && printf "${Purple}NetExec Installed Successfully\n${Nc}"
 
 #======Impacket========
 [ -f "" ] && printf "${Green}ImPacket already installed${Nc}\n"  
