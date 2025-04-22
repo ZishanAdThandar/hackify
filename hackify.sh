@@ -36,7 +36,7 @@ printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkTree: https:/
 apt install docker.io docker-compose -y >/dev/null 2>&1
 
 
-declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "fcrackzip" "figlet" "ffmpeg" "firejail" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "john" "jq" "lolcat" "ltrace" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python3" "reaver" "rlwrap" "sshpass" "sshuttle" "stegcracker" "steghide" "strace" "tmux" "tor" "toilet" "whatweb" "whois" "wifite" "wireshark")
+declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "fcrackzip" "figlet" "ffmpeg" "firejail" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "jq" "lolcat" "ltrace" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python3" "reaver" "rlwrap" "sshpass" "sshuttle" "stegcracker" "steghide" "strace" "tmux" "tor" "toilet" "whatweb" "whois" "wifite" "wireshark")
 
 #Function to check if installed and install it
 function aptinstall {
@@ -291,7 +291,9 @@ fi
 [ ! -f "/usr/local/bin/nmap" ] && wget https://nmap.org/dist/nmap-7.95.tar.bz2 --directory-prefix=/tmp/ && cd /tmp && tar xvjf /tmp/nmap-7.95.tar.bz2 && cd /tmp/nmap-7.95 && /tmp/nmap-7.95/configure && make install -C /tmp/nmap-7.95 && cp /usr/local/bin/nmap && /usr/bin/nmap && rm -rf /tmp/nmap-7.95 && printf "${Purple}NMap Installed Successfully\n${Nc}"
 
 # ======john======
-# [ ! -f "/usr/local/bin/nmap" ] && wget https://github.com/openwall/john/archive/refs/tags/1.9.0-Jumbo-1.zip --directory-prefix=/opt/ && cd /opt && unzip 1.9.0-Jumbo-1.zip
+## Crafted for Ubuntu based OS, Source https://github.com/openwall/john/blob/bleeding-jumbo/doc/INSTALL-UBUNTU 
+[ -f "/opt/john/run/john" ] && printf "${Green}john already installed${Nc}\n"
+[ ! -f "/opt/john/run/john" ] && apt purge john -y  &> /dev/null && git clone https://github.com/openwall/john -b bleeding-jumbo /opt/john && cd /opt/john/src && ./configure && make -s clean && make -sj4 && make shell-completion && chmod +x /opt/john/run/john && echo -e '#!/bin/bash\n/opt/john/run/john "$@"' | sudo tee /usr/local/bin/john > /dev/null && chmod +x /usr/local/bin/john && printf "${Purple}John Installed Successfully\n${Nc}"
 
 # ====JoomScan Joomla Scanner=======
 [ -f "/usr/local/bin/joomscan" ] && printf "${Green}JoomScan already installed${Nc}\n"
