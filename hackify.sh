@@ -207,6 +207,8 @@ install_tool "/usr/local/bin/mitm6" "mitm6"
 install_tool "/usr/local/bin/waymore" "waymore"  
 install_tool "/usr/local/bin/arjun" "arjun" 
 install_tool "/usr/local/bin/certipy" "certipy-ad"  
+install_tool "/usr/local/bin/bloodyAD" "bloodyad"  
+# install_tool "/usr/local/bin/autobloody" "autobloody"  
 
    
 install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtube-dl/archive/master.zip" "youtube-dl" && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl  
@@ -219,8 +221,6 @@ install_python_module "sublist3r" "sublist3r"
 install_python_module "hashid" "hashid"
 install_python_module "dirsearch" "dirsearch"
 install_python_module "lfimap" "lfimap"
-install_python_module "bloodyad" "bloodyad"
-install_python_module "autobloody" "autobloody"
 
 
 
@@ -288,7 +288,7 @@ fi
 
 # ======NMap======
 [ -f "/usr/local/bin/nmap" ] && printf "${Green}NMap already installed${Nc}\n"
-[ ! -f "/usr/local/bin/nmap" ] && wget https://nmap.org/dist/nmap-7.94.tar.bz2 --directory-prefix=/tmp/ && cd /tmp && tar xvjf /tmp/nmap-7.94.tar.bz2 && cd /tmp/nmap-7.94 && /tmp/nmap-7.94/configure && make install -C /tmp/nmap-7.94 && cp /usr/local/bin/nmap && /usr/bin/nmap && rm -rf /tmp/nmap-7.94 && printf "${Purple}NMap Installed Successfully\n${Nc}"
+[ ! -f "/usr/local/bin/nmap" ] && wget https://nmap.org/dist/nmap-7.95.tar.bz2 --directory-prefix=/tmp/ && cd /tmp && tar xvjf /tmp/nmap-7.95.tar.bz2 && cd /tmp/nmap-7.95 && /tmp/nmap-7.95/configure && make install -C /tmp/nmap-7.95 && cp /usr/local/bin/nmap && /usr/bin/nmap && rm -rf /tmp/nmap-7.95 && printf "${Purple}NMap Installed Successfully\n${Nc}"
 
 # ======john======
 # [ ! -f "/usr/local/bin/nmap" ] && wget https://github.com/openwall/john/archive/refs/tags/1.9.0-Jumbo-1.zip --directory-prefix=/opt/ && cd /opt && unzip 1.9.0-Jumbo-1.zip
@@ -321,6 +321,9 @@ fi
 #======Enum4Linux======= 
 [ -f "/usr/bin/enum4linux" ] && printf "${Green}Enum4Linux already installed${Nc}\n"
 [ ! -f "/usr/bin/enum4linux" ] && curl https://raw.githubusercontent.com/CiscoCXSecurity/enum4linux/master/enum4linux.pl -s -k > /usr/bin/enum4linux && chmod +x /usr/bin/enum4linux && printf "${Purple}Enum4Linux Installed Successfully\n${Nc}"
+[ -f "/usr/bin/enum4linux-ng" ] && printf "${Green}enum4linux-ng already installed${Nc}\n"
+[ ! -f "/usr/bin/enum4linux-ng" ] && curl https://raw.githubusercontent.com/cddmp/enum4linux-ng/refs/heads/master/enum4linux-ng.py -s -k > /usr/bin/enum4linux-ng && chmod +x /usr/bin/enum4linux-ng && printf "${Purple}enum4linux-ng Installed Successfully\n${Nc}"
+
 #======Certipy======= 
 [ -f "/usr/local/bin/certipy" ] && printf "${Green}Certipy already installed${Nc}\n"
 [ ! -f "/usr/local/bin/certipy" ] && python3 -m pip install certipy-ad &> /dev/null && printf "${Purple}Certipy Installed Successfully\n${Nc}"
@@ -341,19 +344,6 @@ python3 -c "import $package" &> /dev/null && printf "${Green}${package} already 
 
 #echo 'deb https://debian.neo4j.com stable 4' | sudo tee /etc/apt/sources.list.d/neo4j.list > /dev/null && apt update && systemctl start neo4j.service && git clone https://github.com/BloodHoundAD/BloodHound /opt/bloodhound && cd /opt/bloodhound && npm cache clean --force && npm install --legacy-peer-deps && npm run build:linux && mv /tmp/bloodhound/BloodHound-5.11.0 /opt/bloodhound && rm /etc/apt/sources.list.d/neo4j.list && add-apt-repository --remove "deb https://debian.neo4j.com stable 4.4" -y && apt update -y
 
-
-#=====certipy-ad======
-package=certipy-ad
-python3 -c "import $package" &> /dev/null && printf "${Green}${package} already installed${Nc}\n" || { python3 -m pip install $package &> /dev/null && printf "${Purple}${package} Installed Successfully.${Nc}\n"; }
-package=autobloody
-python3 -c "import $package" &> /dev/null && printf "${Green}${package} already installed${Nc}\n" || { python3 -m pip install $package &> /dev/null && printf "${Purple}${package} Installed Successfully.${Nc}\n"; }
-
-
-#=====bloodyAD and autoBloody======
-package=bloodyAD
-python3 -c "import $package" &> /dev/null && printf "${Green}${package} already installed${Nc}\n" || { python3 -m pip install $package &> /dev/null && printf "${Purple}${package} Installed Successfully.${Nc}\n"; }
-package=autobloody
-python3 -c "import $package" &> /dev/null && printf "${Green}${package} already installed${Nc}\n" || { python3 -m pip install $package &> /dev/null && printf "${Purple}${package} Installed Successfully.${Nc}\n"; }
 
 
 
