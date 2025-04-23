@@ -36,7 +36,7 @@ printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkTree: https:/
 apt install docker.io docker-compose -y >/dev/null 2>&1
 
 
-declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "fcrackzip" "figlet" "ffmpeg" "firejail" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "jq" "lolcat" "ltrace" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python3" "reaver" "rlwrap" "sshpass" "sshuttle" "stegcracker" "steghide" "strace" "tmux" "tor" "toilet" "whatweb" "whois" "wifite" "wireshark")
+declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "fcrackzip" "figlet" "ffmpeg" "firejail" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "jq" "lolcat" "ltrace" "masscan" "macchanger" "ndiff" "nikto" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python3" "reaver" "rlwrap" "sshpass" "sshuttle" "stegcracker" "steghide" "strace" "tmux" "tor" "toilet" "tree" "whatweb" "whois" "wifite" "wireshark")
 
 #Function to check if installed and install it
 function aptinstall {
