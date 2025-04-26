@@ -94,8 +94,12 @@ ${color3}RAM: ${mem} / ${memmax} ${membar 8}${color}
 
 ${alignc}${color3}Temp: ${hwmon 0 temp 1}°C${goto 150}${if_match ${hwmon 0 temp 1} >= 80}${color5}OVERHEAT!${color3}${endif}
 
-${alignc}${voffset 10}${color3}Net Up: ${upspeed enp3s0}   Down: ${downspeed enp3s0}${color}
+${alignc}${voffset 10}${color5}${execpi 10 bash -c '
+iface=$(ip route get 1.1.1.1 | awk '\''/dev/{print $5; exit}'\'');
+echo "Net Up: \${upspeed $iface}   Down: \${downspeed $iface}"
+'}${color}
 ]];
+
 
 ```
 
