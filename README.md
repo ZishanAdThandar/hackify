@@ -45,6 +45,60 @@ bash wordlist.sh
 - Conky clock
 - add generic monitor `apt install xfce4-genmon-plugin -y` to the panel to get ips with code `sh -c 'ip a | grep -q "tun0" && ip -4 addr show tun0 | awk "/inet/ {print \$2}" | cut -d/ -f1 || curl -s ifconfig.me'`
 
+- conky.conf
+Replace alignment for position and location for weather
+```conf
+conky.config = {
+    alignment = 'middle_left',
+    background = false,
+    update_interval = 1,
+    double_buffer = true,
+    no_buffers = true,
+    own_window = true,
+    own_window_type = 'desktop',
+    own_window_transparent = true,
+    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+    draw_shades = false,
+    draw_outline = false,
+    draw_borders = false,
+    draw_graph_borders = false,
+    use_xft = true,
+    font = 'DejaVu Sans:size=20',
+    minimum_width = 300,
+    minimum_height = 200,
+    gap_x = 10,
+    gap_y = 10,
+    border_inner_margin = 5,
+    border_outer_margin = 5,
+    cpu_avg_samples = 2,
+    net_avg_samples = 2,
+    override_utf8_locale = true,
+    default_color = 'FFFFFF', -- white
+    color1 = 'FFA500',         -- orange (Clock)
+    color2 = '00FFFF',         -- cyan (Weather)
+    color3 = '00FF00',         -- lime green (CPU/RAM bars)
+    color4 = 'FF69B4',         -- hot pink (IP)
+    color5 = 'FF0000',         -- red (Temp warning if needed later)
+};
+
+conky.text = [[
+${alignc}${font DejaVu Sans:bold:size=48}${color1}${time %H:%M:%S}${color}${font}
+${alignc}${font DejaVu Sans:size=20}${color}${time %A, %d %B %Y}${color}${font}
+
+${voffset 10}${alignc}${color4}IP: ${execpi 1800 bash -c 'ip a | grep -q "tun0" && ip -4 addr show tun0 | awk "/inet/ {print \$2}" | cut -d/ -f1 || curl -s ifconfig.me'}${color}
+
+${alignc}${color2}Weather: ${execpi 1800 curl -s 'https://wttr.in/Kolkata?format=1'}${color}
+
+${voffset 20}${color3}${font DejaVu Sans:bold:size=15}CPU: ${cpu}% ${cpubar 8}${color}
+${color3}RAM: ${mem} / ${memmax} ${membar 8}${color}
+
+${alignc}${color3}Temp: ${hwmon 0 temp 1}°C${goto 150}${if_match ${hwmon 0 temp 1} >= 80}${color5}OVERHEAT!${color3}${endif}
+
+${alignc}${voffset 10}${color3}Net Up: ${upspeed enp3s0}   Down: ${downspeed enp3s0}${color}
+]];
+
+```
+
 ---
 
 ⚠️ **Warning** Use this tool at your own risk. 
