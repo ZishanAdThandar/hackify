@@ -99,10 +99,10 @@ ${top_mem name 3} $alignr${top_mem cpu 3} % ${top_mem mem 3} %
 ${top_mem name 4} $alignr${top_mem cpu 4} % ${top_mem mem 4} %
 
 Location $alignr Time  
-Islamabad $alignr${execpi 60 date '+%H:%M:%S' -d 'TZ="Asia/Karachi"'}
-Dhaka $alignr${execpi 60 date '+%H:%M:%S' -d 'TZ="Asia/Dhaka"'}
-Riyadh $alignr${execpi 60 date '+%H:%M:%S' -d 'TZ="Asia/Riyadh"'}
-Sydney $alignr${execpi 60 date '+%H:%M:%S' -d 'TZ="Australia/Sydney"'}
+Sydney $alignr${execpi 1 TZ="Australia/Sydney" date '+%H:%M:%S'}
+Dhaka $alignr${execpi 1 TZ="Asia/Dhaka" date '+%H:%M:%S'}
+Islamabad $alignr${execpi 1 TZ="Asia/Karachi" date '+%H:%M:%S'}
+Madina $alignr${execpi 1 TZ="Asia/Riyadh" date '+%H:%M:%S'}
 
 ${voffset 10}${execpi 10 bash -c '
 iface=$(ip route get 1.1.1.1 | awk '\''/dev/{print $5; exit}'\'');
