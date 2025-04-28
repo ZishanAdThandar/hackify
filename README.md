@@ -42,11 +42,12 @@ bash wordlist.sh
 ## Theme (Personal peference)
 - Plank Dock
 - Dark Background Solid color wallpaper
-- Conky clock
 - add generic monitor `apt install xfce4-genmon-plugin -y` to the panel to get ips with code `sh -c 'ip a | grep -q "tun0" && ip -4 addr show tun0 | awk "/inet/ {print \$2}" | cut -d/ -f1 || curl -s ifconfig.me'`
 
-- conky.conf
-Replace alignment for position and location for weather
+- Conky Clock
+ - install `apt install conky-cli -y`
+ - Replace alignment for position and location for weather
+ - `~/.conkyrc`, `/etc/conky/conky.conf`, ` ~/.config/conky/conky.conf`
 ```conf
 conky.config = {
     alignment = 'middle_left',
@@ -92,14 +93,13 @@ ${alignc}${color2}Weather: ${execpi 1800 curl -s 'https://wttr.in/Kolkata?format
 ${voffset 20}${color3}${font DejaVu Sans:bold:size=15}CPU: ${cpu}% ${cpubar 8}${color}
 ${color3}RAM: ${mem} / ${memmax} ${membar 8}${color}
 
-${alignc}${color3}Temp: ${hwmon 0 temp 1}°C${goto 150}${if_match ${hwmon 0 temp 1} >= 80}${color5}OVERHEAT!${color3}${endif}
+${alignc}${color3}System Temp: ${hwmon 0 temp 1}°C${goto 150}${if_match ${hwmon 0 temp 1} >= 80}${color5}OVERHEAT!${color3}${endif}
 
 ${alignc}${voffset 10}${color5}${execpi 10 bash -c '
 iface=$(ip route get 1.1.1.1 | awk '\''/dev/{print $5; exit}'\'');
-echo "Net Up: \${upspeed $iface}   Down: \${downspeed $iface}"
+echo "Net: \${upspeed $iface} ⬆️ \${downspeed $iface} ⬇️"
 '}${color}
 ]];
-
 
 ```
 
