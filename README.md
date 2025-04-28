@@ -46,59 +46,70 @@ bash wordlist.sh
 
 - Conky Clock
  - install `apt install conky-cli conky-all conky -y`
- - Replace alignment for position and location for weather
+ - Replace alignment for position, location for weather of particular area and timezones if you need
  - `~/.conkyrc`, `/etc/conky/conky.conf`, ` ~/.config/conky/conky.conf`
 ```conf
 conky.config = {
-    alignment = 'middle_left',
+    alignment = 'middle_right',
     background = false,
     update_interval = 1,
     double_buffer = true,
     no_buffers = true,
     own_window = true,
     own_window_type = 'desktop',
-    own_window_transparent = true,
-    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+    own_window_transparent = false,
+    own_window_argb_visual = true,
+    own_window_argb_value = 150,
+    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager', 
     draw_shades = false,
     draw_outline = false,
     draw_borders = false,
     draw_graph_borders = false,
     use_xft = true,
-    font = 'DejaVu Sans:size=20',
+    font = 'dejavu sans:size=11',
     minimum_width = 300,
     minimum_height = 200,
-    gap_x = 10,
-    gap_y = 10,
+    gap_x = 20,
+    gap_y = 20,
     border_inner_margin = 5,
     border_outer_margin = 5,
     cpu_avg_samples = 2,
     net_avg_samples = 2,
     override_utf8_locale = true,
-    default_color = 'FFFFFF', -- white
-    color1 = 'FFA500',         -- orange (Clock)
-    color2 = '00FFFF',         -- cyan (Weather)
-    color3 = '00FF00',         -- lime green (CPU/RAM bars)
-    color4 = 'FF69B4',         -- hot pink (IP)
-    color5 = 'FF0000',         -- red (Temp warning if needed later)
+    default_color = '9fef00',
+    color1 = '9fef00'
 };
 
 conky.text = [[
-${alignc}${font DejaVu Sans:bold:size=48}${color1}${time %H:%M:%S}${color}${font}
-${alignc}${font DejaVu Sans:size=20}${color}${time %A, %d %B %Y}${color}${font}
+${alignc}${font Serif:bold:size=25}${color1}${time %H:%M:%S}${font}
+${alignc}${time %A, %d %B %Y}
 
-${voffset 10}${alignc}${color4}IP: ${execpi 1800 bash -c 'ip a | grep -q "tun0" && ip -4 addr show tun0 | awk "/inet/ {print \$2}" | cut -d/ -f1 || curl -s ifconfig.me'}${color}
+${voffset 10}IP $alignr ${if_existing /sys/class/net/eth0/operstate up}${addr eth0}${else}${if_existing /sys/class/net/wlan0/operstate up}${addr wlan0}${else}${execpi 1800 curl -s ifconfig.me}${endif}${endif}
+Weather $alignr ${execpi 1800 curl -ks 'https://wttr.in/Kolkata?format=%C+%t\nAir$alignr%w+\nPressure$alignr+%P\nHumidity$alignr+%h\nMoon+$alignr+%m\nSunrise+$alignr+%S\nSunset+$alignr+%s'}
 
-${alignc}${color2}Weather: ${execpi 1800 curl -s 'https://wttr.in/Kolkata?format=1'}${color}
+${font bold:size=9}CPU ${cpu}% ${cpubar 8}
+RAM ${mem} / ${memmax} ${membar 8}
+${font}
+Temp $alignr ${execpi 60 sensors | grep -m 1 'Package id 0:' | awk '{print $4}'}
 
-${voffset 20}${color3}${font DejaVu Sans:bold:size=15}CPU: ${cpu}% ${cpubar 8}${color}
-${color3}RAM: ${mem} / ${memmax} ${membar 8}${color}
+Memory Stats $alignr RAM       CPU 
+${top_mem name 1} $alignr${top_mem cpu 1} % ${top_mem mem 1} %
+${top_mem name 2} $alignr${top_mem cpu 2} % ${top_mem mem 2} %
+${top_mem name 3} $alignr${top_mem cpu 3} % ${top_mem mem 3} %
+${top_mem name 4} $alignr${top_mem cpu 4} % ${top_mem mem 4} %
 
-${alignc}${color3}System Temp: ${hwmon 0 temp 1}°C${goto 150}${if_match ${hwmon 0 temp 1} >= 80}${color5}OVERHEAT!${color3}${endif}
+Location $alignr Time  
+Islamabad $alignr${execpi 60 date '+%H:%M:%S' -d 'TZ="Asia/Karachi"'}
+Dhaka $alignr${execpi 60 date '+%H:%M:%S' -d 'TZ="Asia/Dhaka"'}
+Riyadh $alignr${execpi 60 date '+%H:%M:%S' -d 'TZ="Asia/Riyadh"'}
+Sydney $alignr${execpi 60 date '+%H:%M:%S' -d 'TZ="Australia/Sydney"'}
 
-${alignc}${voffset 10}${color5}${execpi 10 bash -c '
+${voffset 10}${execpi 10 bash -c '
 iface=$(ip route get 1.1.1.1 | awk '\''/dev/{print $5; exit}'\'');
-echo "Net: \${upspeed $iface} ⬆️ \${downspeed $iface} ⬇️"
-'}${color}
+echo "Net \$alignr \${upspeed $iface} ⬆️ \${downspeed $iface} ⬇️"
+'}
+Uptime $alignr $uptime
+${color}
 ]];
 
 ```
