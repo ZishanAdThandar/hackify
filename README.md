@@ -48,7 +48,7 @@ bash wordlist.sh
  - install `apt install conky-cli conky-all conky -y`
  - Replace alignment for position, location for weather of particular area and timezones if you need
  - `~/.conkyrc`, `/etc/conky/conky.conf`, ` ~/.config/conky/conky.conf`
-```conf
+```python
 conky.config = {
     alignment = 'middle_right',
     background = false,
