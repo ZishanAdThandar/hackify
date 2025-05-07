@@ -208,6 +208,7 @@ install_tool "/usr/local/bin/waymore" "waymore"
 install_tool "/usr/local/bin/arjun" "arjun" 
 install_tool "/usr/local/bin/certipy" "certipy-ad"  
 install_tool "/usr/local/bin/bloodyAD" "bloodyad"  
+install_tool "/usr/local/bin/smtp-user-enum" "smtp-user-enum"
 # install_tool "/usr/local/bin/autobloody" "autobloody"  
 
    
