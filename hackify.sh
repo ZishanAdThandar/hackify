@@ -211,17 +211,23 @@ install_tool "/usr/local/bin/bloodyAD" "bloodyad"
 install_tool "/usr/local/bin/smtp-user-enum" "smtp-user-enum"
 # install_tool "/usr/local/bin/autobloody" "autobloody"  
 
-   
-install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtube-dl/archive/master.zip" "youtube-dl" && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl  
-install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" "yt-dlp"
-
-
 
 install_python_module "pwn" "pwntools"
 install_python_module "sublist3r" "sublist3r"
 install_python_module "hashid" "hashid"
 install_python_module "dirsearch" "dirsearch"
 install_python_module "lfimap" "lfimap"
+
+
+
+   
+install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtube-dl/archive/master.zip" "youtube-dl" && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl  
+
+install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" "yt-dlp"
+
+
+[ -f "/usr/local/bin/linkfinder" ] && printf "${Green}linkfinder already installed${Nc}\n"
+[ ! -f "/usr/local/bin/linkfinder" ] && install_tool "/usr/local/bin/linkfinder" "git+https://github.com/GerbenJavado/LinkFinder" && echo "python3 -m linkfinder \$@" >/usr/local/bin/linkfinder && chmod +x /usr/local/bin/linkfinder  && printf "${Purple}linkfinder Installed Successfully\n${Nc}"
 
 
 
