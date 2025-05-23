@@ -225,12 +225,13 @@ install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtub
 
 install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" "yt-dlp"
 
-
+# linkfinder
 [ -f "/usr/local/bin/linkfinder" ] && printf "${Green}linkfinder already installed${Nc}\n"
 [ ! -f "/usr/local/bin/linkfinder" ] && install_tool "/usr/local/bin/linkfinder" "git+https://github.com/GerbenJavado/LinkFinder" && echo "python3 -m linkfinder \$@" >/usr/local/bin/linkfinder && chmod +x /usr/local/bin/linkfinder  && printf "${Purple}linkfinder Installed Successfully\n${Nc}"
 
-
-
+# Reconsider
+[ -f "/usr/local/bin/ReconSpider.py" ] && printf "${Green}ReconSpider.py already installed${Nc}\n"
+[ ! -f "/usr/local/bin/ReconSpider.py" ] && curl -ks https://gist.githubusercontent.com/ZishanAdThandar/27217f687e742293ce54f67b97101e0a/raw/860bccc9808627c2ae45e2f469b2f3094347fdaf/ReconSpider.py >/usr/local/bin/ReconSpider.py && chmod +x /usr/local/bin/ReconSpider.py  && printf "${Purple}ReconSpider.py Installed Successfully\n${Nc}"
 #======AutoRecon Tib3rus======= 
 [ -f "/usr/local/bin/autorecon" ] && printf "${Green}AutoRecon already installed${Nc}\n"
 [ ! -f "/usr/local/bin/autorecon" ] && python3 -m pip install git+https://github.com/Tib3rius/AutoRecon.git --ignore-installed --break-system-packages  && printf "${Purple}AutoRecon Installed Successfully\n${Nc}"
