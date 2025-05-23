@@ -13,6 +13,7 @@ Hackify is an open-source script for Debian-based operating systems, coded in ba
 
 - [Installation Command (Tools and Wordlist)](#installation-command)
 - [Dockers](#dockers)
+- [Manual Install](#manual-install)
 - [Firefox Themes](#firefox-themes)
 - [Firefox Addon](#firefox-addon)
 
@@ -31,6 +32,11 @@ bash wordlist.sh
 ## Dockers
 - [https://hub.docker.com/r/kasmweb/remnux-focal-desktop](https://github.com/ZishanAdThandar/hacknotes/tree/main/RevEng)
 
+## Manual Install
+- Crypto Graphy: [Ciphey](https://github.com/bee-san/Ciphey), [Katana](https://github.com/JohnHammond/katana)
+- Web: [Arachni](https://github.com/Arachni/arachni/wiki/Installation#linux), Acunetix, BurpSuitePro
+- Recon: [Reconpider](https://github.com/bhavsec/reconspider), [theHarvester](https://github.com/laramies/theHarvester), [FinalRecon](https://github.com/thewhiteh4t/FinalRecon), [Recon-ng](https://github.com/lanmaster53/recon-ng), [SpiderFoot](https://github.com/smicallef/spiderfoot)
+- Reverse: [ghidra](https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_11.3.2_build)
 
 ## Firefox Themes
 - [CyebrTerminus Theme](https://addons.mozilla.org/en-US/firefox/addon/zishanadthandar-cyberterminus/)
