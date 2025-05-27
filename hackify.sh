@@ -24,8 +24,7 @@ cat << "EOF"
  
 EOF
 printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkTree: https://zishanadthandar.github.io/linktree\nLinkedIn: https://linkedin.com/in/zishanadthandar${Nc}\n\n"
-# sleep 1 banner break  
-                              
+            
 # one liner bash if loop to check root user
 [ "$EUID" -ne 0 ] && printf "\n\033[30;5;41mPlease run as root.${Nc}\n" && sudo su
 
@@ -77,9 +76,6 @@ do
 done
 
 
-#sleep 1 #stage 2 break
-
-
 # ================Custom Script Installation=================
 
 # subauto by ZishanAdThandar
@@ -108,7 +104,6 @@ export GO111MODULE="on" #Go Module on
 # Installing GoLang tools
 printf "\n${Cyan}Installing Go Tools for user ${Red}ROOT${Nc}${Cyan} (Current User).${Nc}\n\n"
 
-# sleep 1
 
 function goinstall {
 [ -f "/usr/local/go/bin/$1" ] && printf "${Green}$1 already installed.\n${Nc}"
@@ -198,31 +193,35 @@ install_tool() {
 }
 
 
-
-install_tool "/usr/local/bin/git-dumper" "git-dumper"    
-install_tool "/usr/local/bin/pwncat" "pwncat"    
-install_tool "/usr/local/bin/wafw00f" "wafw00f"    
-install_tool "/usr/local/bin/sherlock" "sherlock-project"   
-install_tool "/usr/local/bin/mitm6" "mitm6"     
-install_tool "/usr/local/bin/waymore" "waymore"  
+     
 install_tool "/usr/local/bin/arjun" "arjun" 
-install_tool "/usr/local/bin/certipy" "certipy-ad"  
 install_tool "/usr/local/bin/bloodyAD" "bloodyad"  
-install_tool "/usr/local/bin/smtp-user-enum" "smtp-user-enum"
-# install_tool "/usr/local/bin/autobloody" "autobloody"  
+install_tool "/usr/local/bin/certipy" "certipy-ad" 
+install_tool "/usr/local/bin/git-dumper" "git-dumper"    
+install_tool "/usr/local/bin/mitm6" "mitm6"    
+install_tool "/usr/local/bin/pwncat" "pwncat"    
+install_tool "/usr/local/bin/sherlock" "sherlock-project" 
+install_tool "/usr/local/bin/smtp-user-enum" "smtp-user-enum" 
+install_tool "/usr/local/bin/uro" "uro"
+install_tool "/usr/local/bin/wafw00f" "wafw00f"   
+install_tool "/usr/local/bin/waymore" "waymore"  
+# install_tool "/usr/local/bin/autobloody" "autobloody" 
 
 
+install_python_module "dirsearch" "dirsearch"
+install_python_module "hashid" "hashid"
+install_python_module "lfimap" "lfimap"
 install_python_module "pwn" "pwntools"
 install_python_module "sublist3r" "sublist3r"
-install_python_module "hashid" "hashid"
-install_python_module "dirsearch" "dirsearch"
-install_python_module "lfimap" "lfimap"
 
 
+install_git_tool "/usr/local/bin/paramspider" "https://github.com/devanshbatham/ParamSpider/archive/master.zip" "paramspider"
 
-   
+
+# youtube-dl   
 install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtube-dl/archive/master.zip" "youtube-dl" && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl  
 
+# yt-dlp
 install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" "yt-dlp"
 
 # linkfinder
@@ -232,6 +231,7 @@ install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/y
 # Reconsider
 [ -f "/usr/local/bin/ReconSpider.py" ] && printf "${Green}ReconSpider.py already installed${Nc}\n"
 [ ! -f "/usr/local/bin/ReconSpider.py" ] && curl -ks https://gist.githubusercontent.com/ZishanAdThandar/27217f687e742293ce54f67b97101e0a/raw/860bccc9808627c2ae45e2f469b2f3094347fdaf/ReconSpider.py >/usr/local/bin/ReconSpider.py && chmod +x /usr/local/bin/ReconSpider.py  && printf "${Purple}ReconSpider.py Installed Successfully\n${Nc}"
+
 #======AutoRecon Tib3rus======= 
 [ -f "/usr/local/bin/autorecon" ] && printf "${Green}AutoRecon already installed${Nc}\n"
 [ ! -f "/usr/local/bin/autorecon" ] && python3 -m pip install git+https://github.com/Tib3rius/AutoRecon.git --ignore-installed --break-system-packages  && printf "${Purple}AutoRecon Installed Successfully\n${Nc}"
