@@ -204,7 +204,9 @@ install_tool "/usr/local/bin/sherlock" "sherlock-project"
 install_tool "/usr/local/bin/smtp-user-enum" "smtp-user-enum" 
 install_tool "/usr/local/bin/uro" "uro"
 install_tool "/usr/local/bin/wafw00f" "wafw00f"   
+install_tool "/usr/local/bin/wapiti" "wapiti3"   
 install_tool "/usr/local/bin/waymore" "waymore"  
+
 # install_tool "/usr/local/bin/autobloody" "autobloody" 
 
 
@@ -216,6 +218,7 @@ install_python_module "sublist3r" "sublist3r"
 
 
 install_git_tool "/usr/local/bin/paramspider" "https://github.com/devanshbatham/ParamSpider/archive/master.zip" "paramspider"
+install_git_tool "/usr/local/bin/ghauri" "https://github.com/r0oth3x49/ghauri/archive/master.zip" "ghauri"
 
 
 # youtube-dl   
