@@ -30,7 +30,7 @@ printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkTree: https:/
 
 
 
-# ===================================APT========================  
+# ========================APT========================  
 
 apt install docker.io docker-compose -y >/dev/null 2>&1
 
@@ -76,7 +76,7 @@ do
 done
 
 
-# ================Custom Script Installation=================
+# ========================Custom Script Installation========================
 
 # subauto by ZishanAdThandar
 [ -f "/usr/local/bin/subauto" ] && printf "${Nc}${Green}SubAuto already installed.\n${Nc}" 
@@ -212,6 +212,7 @@ install_tool "/usr/local/bin/waymore" "waymore"
 
 install_python_module "dirsearch" "dirsearch"
 install_python_module "hashid" "hashid"
+install_python_module "ldap3" "ldap3"
 install_python_module "lfimap" "lfimap"
 install_python_module "pwn" "pwntools"
 install_python_module "sublist3r" "sublist3r"
@@ -231,9 +232,13 @@ install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/y
 [ -f "/usr/local/bin/linkfinder" ] && printf "${Green}linkfinder already installed${Nc}\n"
 [ ! -f "/usr/local/bin/linkfinder" ] && install_tool "/usr/local/bin/linkfinder" "git+https://github.com/GerbenJavado/LinkFinder" && echo "python3 -m linkfinder \$@" >/usr/local/bin/linkfinder && chmod +x /usr/local/bin/linkfinder  && printf "${Purple}linkfinder Installed Successfully\n${Nc}"
 
-# Reconsider
+# Reconspider
 [ -f "/usr/local/bin/ReconSpider.py" ] && printf "${Green}ReconSpider.py already installed${Nc}\n"
 [ ! -f "/usr/local/bin/ReconSpider.py" ] && curl -ks https://gist.githubusercontent.com/ZishanAdThandar/27217f687e742293ce54f67b97101e0a/raw/860bccc9808627c2ae45e2f469b2f3094347fdaf/ReconSpider.py >/usr/local/bin/ReconSpider.py && chmod +x /usr/local/bin/ReconSpider.py  && printf "${Purple}ReconSpider.py Installed Successfully\n${Nc}"
+
+
+#======responder======= 
+[ -d "/opt/responder" ] && printf "${Green}Responder already installed${Nc}\n" || { git clone https://github.com/lgandx/Responder.git /opt/responder &> /dev/null &&  echo "python3 /opt/responder/Responder.py \$@" >/usr/local/bin/responder && chmod +x /usr/local/bin/responder && printf "${Purple}Responder Installed Successfully.${Nc}\n"; }
 
 #======AutoRecon Tib3rus======= 
 [ -f "/usr/local/bin/autorecon" ] && printf "${Green}AutoRecon already installed${Nc}\n"
@@ -251,34 +256,40 @@ install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/y
 [ -f "" ] && printf "${Green}ImPacket already installed${Nc}\n"  
 [ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/fortra/impacket --ignore-installed --break-system-packages && python3 -m pip install impacket --ignore-installed --break-system-packages && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 
-# ======SQLMap======
+# SQLMap
 [ -d /opt/sqlmap ] && printf "${Green}SQLMap already installed${Nc}\n" || { sudo apt-get remove -y sqlmap; python3 -m pip uninstall -y sqlmap; sudo rm -f /usr/local/bin/sqlmap /usr/bin/sqlmap; sudo git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /opt/sqlmap; echo -e '#!/bin/bash\npython3 /opt/sqlmap/sqlmap.py "$@"' | sudo tee /usr/local/bin/sqlmap > /dev/null; sudo chmod +x /usr/local/bin/sqlmap; printf "\033[0;35mSQLMap Installed Successfully\033[0m'\n";}
 grep -q 'MAX_NUMBER_OF_THREADS = 500' /opt/sqlmap/lib/core/settings.py || sudo sed -i 's/MAX_NUMBER_OF_THREADS = [0-9]\+/MAX_NUMBER_OF_THREADS = 500/' /opt/sqlmap/lib/core/settings.py
 
 
-# ======ciphey======
-#python3 -c "import ciphey" 2>/dev/null && printf "${Green}ciphey is already installed${Nc}\n" || (python3 -m pip install git+https://github.com/Ciphey/Ciphey && printf "${Purple}ciphey Installed Successfully\n${Nc}")
 
 #=======waymore==========
 #python3 -m pip install --upgrade pip setuptools > /dev/null && python3 -m pip install git+https://github.com/xnl-h4ck3r/waymore.git
 
 
-# ===================================RUBY======================== 
-
-# wget -O /tmp/ruby.tar.gz https://cache.ruby-lang.org/pub/ruby/3.3/ruby-3.3.4.tar.gz && tar -xzvf ruby.tar.gz -C /tmp/ruby && cd /tmp/ruby && 
+# ========================RUBY======================== 
 
 [ ! -f "/usr/bin/ruby" ] && apt-get install ruby-full >/dev/null
 gem sources --add https://rubygems.org/ > /dev/null
 gem cleanup > /dev/null
 
 
-# =====Ruby Based Tools======
-# =====WPScan Installation======
+# ========================Ruby Based Tools========================
+# WPScan Installation
 [ -f "/usr/local/bin/wpscan" ] && printf "${Green}WPScan already installed${Nc}\n"
 [ ! -f "/usr/local/bin/wpscan" ] && sudo apt install -y curl git libcurl4-openssl-dev make zlib1g-dev gawk g++ gcc libreadline6-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 autoconf libgdbm-dev libncurses5-dev automake libtool bison pkg-config ruby ruby-bundler ruby-dev > /dev/null && sudo gem install wpscan 
 
 
-# =====metasploit installation======
+# evil-winrm 
+[ -f "/usr/local/bin/evil-winrm" ] && printf "${Green}evil-winrm.rb already installed${Nc}\n"
+[ ! -f "/usr/local/bin/evil-winrm" ] && gem install evil-winrm && printf "${Purple}evil-winrm Installed Successfully\n${Nc}"
+
+# arachni https://github.com/Arachni/arachni
+
+#[ -f "/usr/local/bin/arachni" ] && printf "${Green}arachni already installed${Nc}\n"
+#[ ! -f "/usr/local/bin/arachni" ] && gem install arachni && printf "${Purple}arachni Installed Successfully\n${Nc}"
+
+
+# metasploit installation
 
 if ! command -v msfconsole &> /dev/null
 then
@@ -292,27 +303,35 @@ fi
 
 
 
-# ===================================OTHER======================== 
 
-# exploitdb and searchsploit
-[ ! -d "/opt/exploit-database" ] && git clone https://gitlab.com/exploit-database/exploitdb.git /opt/exploit-database && ln -sf /opt/exploit-database/searchsploit /usr/local/bin/searchsploit && printf "${Purple}exploitDB Installed Successfully\n${Nc}"
 
-# ======NMap======
+# ========================C TOOLS======================== 
+# NMap
 [ -f "/usr/local/bin/nmap" ] && printf "${Green}NMap already installed${Nc}\n"
 [ ! -f "/usr/local/bin/nmap" ] && wget https://nmap.org/dist/nmap-7.95.tar.bz2 --directory-prefix=/tmp/ && cd /tmp && tar xvjf /tmp/nmap-7.95.tar.bz2 && cd /tmp/nmap-7.95 && /tmp/nmap-7.95/configure && make install -C /tmp/nmap-7.95 && cp /usr/local/bin/nmap && /usr/bin/nmap && rm -rf /tmp/nmap-7.95 && printf "${Purple}NMap Installed Successfully\n${Nc}"
 
-# ======john======
+# john
 ## Crafted for Ubuntu based OS, Source https://github.com/openwall/john/blob/bleeding-jumbo/doc/INSTALL-UBUNTU 
 [ -f "/opt/john/run/john" ] && printf "${Green}john already installed${Nc}\n"
 [ ! -f "/opt/john/run/john" ] && apt purge john -y  &> /dev/null && git clone https://github.com/openwall/john -b bleeding-jumbo /opt/john && cd /opt/john/src && ./configure && make -s clean && make -sj4 && make shell-completion && chmod +x /opt/john/run/john && echo -e '#!/bin/bash\n/opt/john/run/john "$@"' | sudo tee /usr/local/bin/john > /dev/null && chmod +x /usr/local/bin/john && printf "${Purple}John Installed Successfully\n${Nc}"
 
-# ====JoomScan Joomla Scanner=======
+
+# ========================PERL TOOLS======================== 
+
+# JoomScan Joomla Scanner
 [ -f "/usr/local/bin/joomscan" ] && printf "${Green}JoomScan already installed${Nc}\n"
 [ ! -f "/usr/local/bin/joomscan" ] && git clone https://github.com/OWASP/joomscan /opt/joomscan && echo "perl /opt/joomscan/joomscan.pl \$@" >/usr/local/bin/joomscan && chmod +x /usr/local/bin/joomscan && printf "${Purple}JoomScan Installed Successfully\n${Nc}"
 
 
+#Enum4Linux 
+[ -f "/usr/bin/enum4linux" ] && printf "${Green}Enum4Linux already installed${Nc}\n"
+[ ! -f "/usr/bin/enum4linux" ] && curl https://raw.githubusercontent.com/CiscoCXSecurity/enum4linux/master/enum4linux.pl -s -k > /usr/bin/enum4linux && chmod +x /usr/bin/enum4linux && printf "${Purple}Enum4Linux Installed Successfully\n${Nc}"
+[ -f "/usr/bin/enum4linux-ng" ] && printf "${Green}enum4linux-ng already installed${Nc}\n"
+[ ! -f "/usr/bin/enum4linux-ng" ] && curl https://raw.githubusercontent.com/cddmp/enum4linux-ng/refs/heads/master/enum4linux-ng.py -s -k > /usr/bin/enum4linux-ng && chmod +x /usr/bin/enum4linux-ng && printf "${Purple}enum4linux-ng Installed Successfully\n${Nc}"
 
-# =========RUST TOOLS=====================
+
+
+# ========================RUST TOOLS========================
 # ====ARES cipher tool https://github.com/bee-san/Ares =======
 [ -f "/usr/local/bin/ares" ] && printf "${Green}Ares already installed${Nc}\n"
 [ ! -f "/usr/local/bin/ares" ] && cargo install project_ares && cp /root/.cargo/bin/ares /usr/local/bin/ares && printf "${Purple}ARES Installed Successfully\n${Nc}"
@@ -326,37 +345,22 @@ fi
 [ -f "/usr/local/bin/feroxbuster" ] && printf "${Green}feroxbuster already installed${Nc}\n"
 [ ! -f "/usr/local/bin/feroxbuster" ] && cd /usr/local/bin && curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/main/install-nix.sh | bash && printf "${Purple}feroxbuster Installed Successfully\n${Nc}"
 
-#=======ACTIVE Directory 
 
-#======evil-winrm======= 
-[ -f "/usr/local/bin/evil-winrm" ] && printf "${Green}evil-winrm.rb already installed${Nc}\n"
-[ ! -f "/usr/local/bin/evil-winrm" ] && gem install evil-winrm && printf "${Purple}evil-winrm Installed Successfully\n${Nc}"
-#======Enum4Linux======= 
-[ -f "/usr/bin/enum4linux" ] && printf "${Green}Enum4Linux already installed${Nc}\n"
-[ ! -f "/usr/bin/enum4linux" ] && curl https://raw.githubusercontent.com/CiscoCXSecurity/enum4linux/master/enum4linux.pl -s -k > /usr/bin/enum4linux && chmod +x /usr/bin/enum4linux && printf "${Purple}Enum4Linux Installed Successfully\n${Nc}"
-[ -f "/usr/bin/enum4linux-ng" ] && printf "${Green}enum4linux-ng already installed${Nc}\n"
-[ ! -f "/usr/bin/enum4linux-ng" ] && curl https://raw.githubusercontent.com/cddmp/enum4linux-ng/refs/heads/master/enum4linux-ng.py -s -k > /usr/bin/enum4linux-ng && chmod +x /usr/bin/enum4linux-ng && printf "${Purple}enum4linux-ng Installed Successfully\n${Nc}"
-
-#======Certipy======= 
-[ -f "/usr/local/bin/certipy" ] && printf "${Green}Certipy already installed${Nc}\n"
-[ ! -f "/usr/local/bin/certipy" ] && python3 -m pip install certipy-ad &> /dev/null && printf "${Purple}Certipy Installed Successfully\n${Nc}"
-#======ldap3======= 
-python3 -m pip install --upgrade setuptools  &> /dev/null
-package=ldap3
-python3 -c "import $package" &> /dev/null && printf "${Green}${package} already installed${Nc}\n" || { python3 -m pip install $package &> /dev/null && printf "${Purple}${package} Installed Successfully.${Nc}\n"; }
-
-#======rpcclient======= 
-[ -f "/usr/bin/rpcclient" ] && printf "${Green}rpcclient already installed${Nc}\n"
-[ ! -f "/usr/bin/rpcclient" ] && apt install samba-common-bin smbclient -y &> /dev/null && printf "${Purple}rpcclient Installed Successfully\n${Nc}"
-
-#======responder======= 
-[ -d "/opt/responder" ] && printf "${Green}Responder already installed${Nc}\n" || { git clone https://github.com/lgandx/Responder.git /opt/responder &> /dev/null &&  echo "python3 /opt/responder/Responder.py \$@" >/usr/local/bin/responder && chmod +x /usr/local/bin/responder && printf "${Purple}Responder Installed Successfully.${Nc}\n"; }
 
 
 #======bloodhound======= 
 
 #echo 'deb https://debian.neo4j.com stable 4' | sudo tee /etc/apt/sources.list.d/neo4j.list > /dev/null && apt update && systemctl start neo4j.service && git clone https://github.com/BloodHoundAD/BloodHound /opt/bloodhound && cd /opt/bloodhound && npm cache clean --force && npm install --legacy-peer-deps && npm run build:linux && mv /tmp/bloodhound/BloodHound-5.11.0 /opt/bloodhound && rm /etc/apt/sources.list.d/neo4j.list && add-apt-repository --remove "deb https://debian.neo4j.com stable 4.4" -y && apt update -y
 
+# ===================================OTHER======================== 
+
+# exploitdb and searchsploit
+[ ! -d "/opt/exploit-database" ] && git clone https://gitlab.com/exploit-database/exploitdb.git /opt/exploit-database && ln -sf /opt/exploit-database/searchsploit /usr/local/bin/searchsploit && printf "${Purple}exploitDB Installed Successfully\n${Nc}"
+
+
+#rpcclient 
+[ -f "/usr/bin/rpcclient" ] && printf "${Green}rpcclient already installed${Nc}\n"
+[ ! -f "/usr/bin/rpcclient" ] && apt install samba-common-bin smbclient -y &> /dev/null && printf "${Purple}rpcclient Installed Successfully\n${Nc}"
 
 
 
