@@ -253,8 +253,9 @@ install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/y
 [ ! -f "/usr/local/bin/nxc" ] && python3 -m pip install git+https://github.com/Pennyw0rth/NetExec.git --ignore-installed --break-system-packages  && printf "${Purple}NetExec Installed Successfully\n${Nc}"
 
 #======Impacket========
-[ -f "" ] && printf "${Green}ImPacket already installed${Nc}\n"  
-[ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/fortra/impacket --ignore-installed --break-system-packages && python3 -m pip install impacket --ignore-installed --break-system-packages && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
+[ -f "/usr/local/bin/owneredit.py" ] && printf "${Green}ImPacket already installed${Nc}\n"  
+[ ! -f "/usr/local/bin/owneredit.py" ] && python3 -m pip install git+https://github.com/fortra/impacket --ignore-installed --break-system-packages && printf "${Purple}Impacket Installed Successfully\n${Nc}"
+# [ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/fortra/impacket --ignore-installed --break-system-packages && python3 -m pip install impacket --ignore-installed --break-system-packages && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 
 # SQLMap
 [ -d /opt/sqlmap ] && printf "${Green}SQLMap already installed${Nc}\n" || { sudo apt-get remove -y sqlmap; python3 -m pip uninstall -y sqlmap; sudo rm -f /usr/local/bin/sqlmap /usr/bin/sqlmap; sudo git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /opt/sqlmap; echo -e '#!/bin/bash\npython3 /opt/sqlmap/sqlmap.py "$@"' | sudo tee /usr/local/bin/sqlmap > /dev/null; sudo chmod +x /usr/local/bin/sqlmap; printf "\033[0;35mSQLMap Installed Successfully\033[0m'\n";}
