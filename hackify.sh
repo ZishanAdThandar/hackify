@@ -32,7 +32,7 @@ printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkTree: https:/
 
 # ========================APT========================  
 
-apt install docker.io docker-compose -y >/dev/null 2>&1
+apt install docker.io -y >/dev/null 2>&1
 
 
 declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "braa" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "fcrackzip" "figlet" "ffmpeg" "firejail" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "jq" "lolcat" "ltrace" "masscan" "macchanger" "nbtscan" "ndiff" "nikto" "onesixtyone" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python3" "rdesktop" "reaver" "rlwrap" "smbmap" "sshpass" "sshuttle" "stegcracker" "steghide" "strace" "tmux" "tor" "toilet" "tree" "whatweb" "whois" "wifite" "wireshark")
@@ -85,6 +85,10 @@ done
 # NmapAutomator by Ziyad
 [ -f "/usr/local/bin/nmapAutomator" ] && printf "${Nc}${Green}NmapAutomator already installed.\n${Nc}" 
 [ ! -f "/usr/local/bin/nmapAutomator" ] && curl -ks https://raw.githubusercontent.com/21y4d/nmapAutomator/refs/heads/master/nmapAutomator.sh > /usr/local/bin/nmapAutomator && chmod +x /usr/local/bin/nmapAutomator  && printf "${Purple}NmapAutomator Installed Successfully.\n${nc}"
+
+# docker-compose install
+[ -f "/usr/local/bin/docker-compose" ] &&  printf "${Nc}${Green}docker-compose already installed.\n${Nc}" 
+[ ! -f "/usr/local/bin/docker-compose" ] &&  rm /usr/bin/docker-compose && curl -L "https://github.com/docker/compose/releases/download/v2.32.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && printf "${Purple}docker-compose Installed Successfully.\n${nc}"
 
 
 # ==============NODEJS NPM REACT =======================
