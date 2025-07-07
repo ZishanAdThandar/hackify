@@ -55,7 +55,7 @@ bash wordlist.sh
 - add generic monitor `apt install xfce4-genmon-plugin -y` to the panel to get ips with code `sh -c 'ip a | grep -q "tun0" && ip -4 addr show tun0 | awk "/inet/ {print \$2}" | cut -d/ -f1 || curl -s ifconfig.me'`
 
 - Conky Clock
-  - install `apt install conky-cli conky-all conky -y`
+  - Conky install with `apt install conky-all -y` or `apt install conky -y`
   - Replace alignment for position, location for weather of particular area and timezones if you need
   - `~/.conkyrc`, `/etc/conky/conky.conf`, ` ~/.config/conky/conky.conf`
 ```python
