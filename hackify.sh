@@ -88,7 +88,7 @@ done
 
 # docker-compose install
 [ -f "/usr/local/bin/docker-compose" ] &&  printf "${Nc}${Green}docker-compose already installed.\n${Nc}" 
-[ ! -f "/usr/local/bin/docker-compose" ] &&  rm /usr/bin/docker-compose && curl -L "https://github.com/docker/compose/releases/download/v2.32.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && printf "${Purple}docker-compose Installed Successfully.\n${nc}"
+[ ! -f "/usr/local/bin/docker-compose" ] &&  rm /usr/bin/docker-compose -f && curl -L "https://github.com/docker/compose/releases/download/v2.32.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && printf "${Purple}docker-compose Installed Successfully.\n${nc}"
 
 
 # ==============NODEJS NPM REACT =======================
@@ -208,7 +208,7 @@ install_tool "/usr/local/bin/sherlock" "sherlock-project"
 install_tool "/usr/local/bin/smtp-user-enum" "smtp-user-enum" 
 install_tool "/usr/local/bin/uro" "uro"
 install_tool "/usr/local/bin/wafw00f" "wafw00f"   
-install_tool "/usr/bin/wapiti" "wapiti3"   
+#install_tool "/usr/bin/wapiti" "wapiti3"   
 install_tool "/usr/local/bin/waymore" "waymore"  
 
 # install_tool "/usr/local/bin/autobloody" "autobloody" 
@@ -230,7 +230,7 @@ install_git_tool "/usr/local/bin/ghauri" "https://github.com/r0oth3x49/ghauri/ar
 install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtube-dl/archive/master.zip" "youtube-dl" && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl  
 
 # yt-dlp
-install_git_tool "/usr/bin/yt-dlp" "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" "yt-dlp"
+[ ! -f "/usr/local/bin/yt-dlp" ] && rapt purge yt-dlp -y && m /usr/bin/yt-dlp && install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" "yt-dlp"
 
 # linkfinder
 [ -f "/usr/local/bin/linkfinder" ] && printf "${Green}linkfinder already installed${Nc}\n"
