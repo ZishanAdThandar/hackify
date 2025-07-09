@@ -32,10 +32,8 @@ bash wordlist.sh
 ## Dockers
 - [https://hub.docker.com/r/kasmweb/remnux-focal-desktop](https://github.com/ZishanAdThandar/hacknotes/tree/main/RevEng)
 - BloodHound
-    - `curl -L https://ghst.ly/getbhce -o docker-compose.yml`
-    - `docker-compose -f docker-compose.yml up -d`
-    - Get ips with `docker ps` and `docker inspect <container id>`
-    - Then use credential inside docker compose file to login to neo4j then bloodhound
+    - `wget https://github.com/SpecterOps/bloodhound-cli/releases/latest/download/bloodhound-cli-linux-amd64.tar.gz && tar -xzf ./bloodhound-cli-linux-amd64.tar.gz && rm bloodhound-cli-linux-amd64.tar.gz`
+    - `./bloodhound-cli install`
 - Ciphey `docker run -it --rm remnux/ciphey`
 
 ## Manual Install
