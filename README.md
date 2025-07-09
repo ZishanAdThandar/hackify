@@ -31,7 +31,11 @@ bash wordlist.sh
 
 ## Dockers
 - [https://hub.docker.com/r/kasmweb/remnux-focal-desktop](https://github.com/ZishanAdThandar/hacknotes/tree/main/RevEng)
-- BloodHound `curl -L https://ghst.ly/getbhce -o docker-compose.yml && docker-compose -f docker-compose.yml up -d`
+- BloodHound
+    - `curl -L https://ghst.ly/getbhce -o docker-compose.yml`
+    - `docker-compose -f docker-compose.yml up -d`
+    - First time neo4j password change command `ALTER USER neo4j SET PASSWORD '<new_password>'`
+    - Then login to bloodhound with `admin` `admin` credential and change the password.
 - Ciphey `docker run -it --rm remnux/ciphey`
 
 ## Manual Install
