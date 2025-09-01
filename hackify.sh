@@ -101,7 +101,7 @@ done
 
 # installing and setting up Golang
 #[ -f "/usr/local/go/bin/go" ] && echo -e "\n${Green}GoLang already downloaded${Nc}\n" || (cd /tmp && wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz && sudo tar -C /usr/local/ -xzf go1.23.0.linux-amd64.tar.gz && echo 'export PATH=$PATH:/usr/local/go/bin:/usr/local/go/bin' >> ~/.bashrc && echo 'export GOROOT=/usr/local/go' >> ~/.bashrc && source ~/.bashrc && sudo bash -c 'for i in /home/*; do echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> $i/.bashrc && echo "export GOROOT=/usr/local/go" >> $i/.bashrc; done')
-[ -f "/usr/local/go/bin/go" ] && echo -e "${Green}GoLang already downloaded${Nc}\n" || (cd /tmp && wget https://go.dev/dl/go1.24.0.linux-amd64.tar.gz && sudo tar -C /usr/local/ -xzf go1.24.0.linux-amd64.tar.gz && sudo bash -c 'for i in /home/*; do echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> $i/.bashrc && echo "export GOROOT=/usr/local/go" >> $i/.bashrc && echo "export GOBIN=/usr/local/go/bin" >> $i/.bashrc && source $i/.bashrc; done' && sudo bash -c 'echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> /root/.bashrc && echo "export GOROOT=/usr/local/go" >> /root/.bashrc && echo "export GOBIN=/usr/local/go/bin" >> /root/.bashrc && source /root/.bashrc' && printf "${Purple}GoLang Installed Successfully.${Nc}\n" )
+[ -f "/usr/local/go/bin/go" ] && echo -e "${Green}GoLang already downloaded${Nc}\n" || (cd /tmp && wget https://go.dev/dl/go1.25.0.linux-amd64.tar.gz && sudo tar -C /usr/local/ -xzf go1.25.0.linux-amd64.tar.gz && sudo bash -c 'for i in /home/*; do echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> $i/.bashrc && echo "export GOROOT=/usr/local/go" >> $i/.bashrc && echo "export GOBIN=/usr/local/go/bin" >> $i/.bashrc && source $i/.bashrc; done' && sudo bash -c 'echo "export PATH=\$PATH:/usr/local/go/bin:/usr/local/go/bin" >> /root/.bashrc && echo "export GOROOT=/usr/local/go" >> /root/.bashrc && echo "export GOBIN=/usr/local/go/bin" >> /root/.bashrc && source /root/.bashrc' && printf "${Purple}GoLang Installed Successfully.${Nc}\n" )
 sudo chmod -R 755 /usr/local/go/bin
 
 export GO111MODULE="on" #Go Module on
@@ -257,9 +257,15 @@ install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtub
 [ ! -f "/usr/local/bin/nxc" ] && python3 -m pip install git+https://github.com/Pennyw0rth/NetExec.git --ignore-installed --break-system-packages  && printf "${Purple}NetExec Installed Successfully\n${Nc}"
 
 #======Impacket========
+(python -c 'import sys; exit(0) if sys.version_info.major == 3 else exit(1)') || (apt install -y python-is-python3) # as impacket scripts are started with /usr/bin/python
+
 [ -f "/usr/local/bin/owneredit.py" ] && printf "${Green}ImPacket already installed${Nc}\n"  
 [ ! -f "/usr/local/bin/owneredit.py" ] && python3 -m pip install git+https://github.com/fortra/impacket --ignore-installed --break-system-packages && printf "${Purple}Impacket Installed Successfully\n${Nc}"
-# [ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/fortra/impacket --ignore-installed --break-system-packages && python3 -m pip install impacket --ignore-installed --break-system-packages && apt install python3-impacket -y && printf "${Purple}Impacket Installed Successfully\n${Nc}"
+[ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/fortra/impacket --ignore-installed --break-system-packages && python3 -m pip install impacket --ignore-installed --break-system-packages && apt install python3-impacket -y 
+[ -f "/usr/local/bin/GetNPUsers.py" ] && git clone https://github.com/fortra/impacket /tmp/impacket && chmod +x /tmp/impacket/examples/*.py && mv /tmp/impacket/examples/*.py /usr/local/bin/ 
+
+
+
 
 # SQLMap
 [ -d /opt/sqlmap ] && printf "${Green}SQLMap already installed${Nc}\n" || { sudo apt-get remove -y sqlmap; python3 -m pip uninstall -y sqlmap; sudo rm -f /usr/local/bin/sqlmap /usr/bin/sqlmap; sudo git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /opt/sqlmap; echo -e '#!/bin/bash\npython3 /opt/sqlmap/sqlmap.py "$@"' | sudo tee /usr/local/bin/sqlmap > /dev/null; sudo chmod +x /usr/local/bin/sqlmap; printf "\033[0;35mSQLMap Installed Successfully\033[0m'\n";}
