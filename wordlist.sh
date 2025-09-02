@@ -83,6 +83,20 @@ else
     tar -xf "$WORDLIST_DIR/SecLists/Passwords/Leaked-Databases/rockyou.txt.tar.gz" -C "$WORDLIST_DIR/" && printf "${Purple}Unzipped rockyou.txt${Nc}\n"
 fi
 
+
+# ====== Directory fix for Kali and other security distros ===============
+
+# Create target directory if it doesn't exist
+mkdir -p "/usr/share/wordlists"
+
+# Check if SecLists directory exists and no symbolic link exists at target, then create link
+[ -d "/opt/wordlists/SecLists" ] && [ ! -L "/usr/share/seclists" ] && ln -s "/opt/wordlists/SecLists" "/usr/share/seclists"
+[ -d "/opt/wordlists/SecLists" ] && [ ! -L "/usr/share/wordlists/SecLists" ] && ln -s "/opt/wordlists/SecLists" "/usr/share/wordlists/SecLists"
+
+# Check if rockyou.txt file exists and no symbolic link exists at target, then create link
+[ -f "/opt/wordlists/rockyou.txt" ] && [ ! -L "/usr/share/wordlists/rockyou.txt" ] && ln -s "/opt/wordlists/rockyou.txt" "/usr/share/wordlists/rockyou.txt"
+
+
 # ====================== ASSETNOTE API WORDLIST (Optional) ======================
 # Uncomment to download (Warning: Large files, needs SSD & 12GB+ RAM)
 # if [[ ! -d "$WORDLIST_DIR/assetnote" ]]; then
