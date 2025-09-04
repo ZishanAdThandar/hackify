@@ -230,7 +230,7 @@ install_git_tool "/usr/local/bin/ghauri" "https://github.com/r0oth3x49/ghauri/ar
 install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtube-dl/archive/master.zip" "youtube-dl" && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl  
 
 # yt-dlp
-[ ! -f "/usr/local/bin/yt-dlp" ] && rapt purge yt-dlp -y && m /usr/bin/yt-dlp && install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" "yt-dlp"
+[ ! -f "/usr/local/bin/yt-dlp" ] && apt purge yt-dlp -y && rm /usr/bin/yt-dlp && install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" "yt-dlp"
 
 # linkfinder
 [ -f "/usr/local/bin/linkfinder" ] && printf "${Green}linkfinder already installed${Nc}\n"
@@ -345,11 +345,12 @@ fi
 # ========================RUST TOOLS========================
 
 # RUST installation command incase of issue of installing # curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
+# Setting Default directory to install binary
+export CARGO_TARGET_DIR="/usr/local/bin"
 
 # ====ARES cipher tool https://github.com/bee-san/Ares =======
-[ -f "/usr/local/bin/ares" ] && printf "${Green}Ares already installed${Nc}\n"
-[ ! -f "/usr/local/bin/ares" ] && cargo install project_ares && cp /root/.cargo/bin/ares /usr/local/bin/ares && printf "${Purple}ARES Installed Successfully\n${Nc}"
+[ -f "/usr/local/bin/ciphey" ] && printf "${Green}Ares ciphey already installed${Nc}\n"
+[ ! -f "/usr/local/bin/ciphey" ] && cargo install ciphey && cp /root/.cargo/bin/ciphey /usr/local/bin/ciphey && printf "${Purple}ARES ciphey Installed Successfully\n${Nc}"
 # ====RUSTSCAN port scanner https://github.com/RustScan/RustScan =======
 [ -f "/usr/local/bin/rustscan" ] && printf "${Green}Rustscan already installed${Nc}\n"
 [ ! -f "/usr/local/bin/rustscan" ] && cargo install rustscan && cp /root/.cargo/bin/rustscan /usr/local/bin/rustscan && printf "${Purple}RUSTSCAN Installed Successfully\n${Nc}"
