@@ -35,7 +35,7 @@ printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkTree: https:/
 apt install docker.io -y >/dev/null 2>&1
 
 
-declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "binwalk" "braa" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "fcrackzip" "figlet" "ffmpeg" "firejail" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "jq" "lolcat" "ltrace" "masscan" "macchanger" "nbtscan" "ndiff" "nikto" "onesixtyone" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python3" "rdesktop" "reaver" "rlwrap" "smbmap" "sshpass" "sshuttle" "stegcracker" "steghide" "strace" "tmux" "tor" "toilet" "tree" "whatweb" "whois" "wifite" "wireshark")
+declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "braa" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "fcrackzip" "figlet" "ffmpeg" "firejail" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "jq" "lolcat" "ltrace" "masscan" "macchanger" "nbtscan" "ndiff" "nikto" "onesixtyone" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python3" "rdesktop" "reaver" "rlwrap" "smbmap" "sshpass" "sshuttle" "stegcracker" "steghide" "strace" "tmux" "tor" "toilet" "tree" "whatweb" "whois" "wifite" "wireshark")
 
 #Function to check if installed and install it
 function aptinstall {
@@ -230,7 +230,8 @@ install_git_tool "/usr/local/bin/ghauri" "https://github.com/r0oth3x49/ghauri/ar
 install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtube-dl/archive/master.zip" "youtube-dl" && echo "python3 -m youtube_dl \$@" >/usr/local/bin/youtube-dl && chmod +x /usr/local/bin/youtube-dl  
 
 # yt-dlp
-[ ! -f "/usr/local/bin/yt-dlp" ] && apt purge yt-dlp -y && rm /usr/bin/yt-dlp && install_git_tool "/usr/local/bin/yt-dlp" "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" "yt-dlp"
+[ ! -f "/usr/local/bin/yt-dlp" ] && apt purge yt-dlp -y && rm -f /usr/bin/yt-dlp && python3 -m pip install --force-reinstall "yt-dlp[default] @ https://github.com/yt-dlp/yt-dlp/archive/master.tar.gz" --break-system-packages  && printf "${Purple}YT-dlp Installed Successfully\n${Nc}"
+#  curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && chmod +x /usr/local/bin/yt-dlp
 
 # linkfinder
 [ -f "/usr/local/bin/linkfinder" ] && printf "${Green}linkfinder already installed${Nc}\n"
@@ -262,7 +263,7 @@ install_git_tool "/usr/local/bin/youtube-dl" "https://github.com/ytdl-org/youtub
 [ -f "/usr/local/bin/owneredit.py" ] && printf "${Green}ImPacket already installed${Nc}\n"  
 [ ! -f "/usr/local/bin/owneredit.py" ] && python3 -m pip install git+https://github.com/fortra/impacket --ignore-installed --break-system-packages && printf "${Purple}Impacket Installed Successfully\n${Nc}"
 [ ! -f "/usr/bin/impacket-netview" ] && python3 -m pip install git+https://github.com/fortra/impacket --ignore-installed --break-system-packages && python3 -m pip install impacket --ignore-installed --break-system-packages && apt install python3-impacket -y 
-[ -f "/usr/local/bin/GetNPUsers.py" ] && git clone https://github.com/fortra/impacket /tmp/impacket && chmod +x /tmp/impacket/examples/*.py && mv /tmp/impacket/examples/*.py /usr/local/bin/ 
+[ ! -f "/usr/local/bin/GetNPUsers.py" ] && git clone https://github.com/fortra/impacket /tmp/impacket && chmod +x /tmp/impacket/examples/*.py && mv /tmp/impacket/examples/*.py /usr/local/bin/ 
 
 
 
@@ -345,12 +346,23 @@ fi
 # ========================RUST TOOLS========================
 
 # RUST installation command incase of issue of installing # curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
 # Setting Default directory to install binary
 export CARGO_TARGET_DIR="/usr/local/bin"
 
-# ====ARES cipher tool https://github.com/bee-san/Ares =======
-[ -f "/usr/local/bin/ciphey" ] && printf "${Green}Ares ciphey already installed${Nc}\n"
-[ ! -f "/usr/local/bin/ciphey" ] && cargo install ciphey && cp /root/.cargo/bin/ciphey /usr/local/bin/ciphey && printf "${Purple}ARES ciphey Installed Successfully\n${Nc}"
+# Installing Required packages
+for pkg in build-essential libssl-dev pkg-config liblzma-dev libfontconfig1-dev; do
+  dpkg -s "$pkg" &>/dev/null || sudo apt install -y "$pkg"
+done
+
+# ====ARES ciphey tool https://github.com/bee-san/Ares =======
+# [ -f "/usr/local/bin/ciphey" ] && printf "${Green}Ares ciphey already installed${Nc}\n"
+# [ ! -f "/usr/local/bin/ciphey" ] && cargo install ciphey && cp /root/.cargo/bin/ciphey /usr/local/bin/ciphey && printf "${Purple}ARES ciphey Installed Successfully\n${Nc}"
+
+# ====Binwalk  tool https://github.com/bee-san/Ares =======
+[ -f "/usr/local/bin/binwalk" ] && printf "${Green}binwalk already installed${Nc}\n"
+[ ! -f "/usr/local/bin/binwalk" ] && cargo install binwalk && cp /root/.cargo/bin/binwalk /usr/local/bin/binwalk && printf "${Purple}Binwalk Installed Successfully\n${Nc}"
+
 # ====RUSTSCAN port scanner https://github.com/RustScan/RustScan =======
 [ -f "/usr/local/bin/rustscan" ] && printf "${Green}Rustscan already installed${Nc}\n"
 [ ! -f "/usr/local/bin/rustscan" ] && cargo install rustscan && cp /root/.cargo/bin/rustscan /usr/local/bin/rustscan && printf "${Purple}RUSTSCAN Installed Successfully\n${Nc}"
