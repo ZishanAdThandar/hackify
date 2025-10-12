@@ -32,7 +32,7 @@ bash wordlist.sh
   - Create Directory `sudo mkdir -p /opt/bloodhoundce`
   - Download docker compose file `sudo curl -L -o /opt/bloodhoundce/docker-compose.yml https://ghst.ly/getbhce -ks`
   - pull images `sudo docker-compose -f /opt/bloodhoundce/docker-compose.yml pull`
-  - Start Docker `sudo docker-compose -f /opt/bloodhoundce/docker-compose.yml up -d`
+  - Start Docker `sudo docker-compose -f /opt/bloodhoundce/docker-compose.yml up` # first time tun will give temp password
   - To remove and start over `sudo docker-compose -f /opt/bloodhoundce/docker-compose.yml down`
 
 - Ciphey `docker run -it --rm remnux/ciphey`
