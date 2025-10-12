@@ -29,8 +29,10 @@ bash wordlist.sh
 ## Dockers
 - [https://hub.docker.com/r/kasmweb/remnux-focal-desktop](https://github.com/ZishanAdThandar/hacknotes/tree/main/RevEng)
 - BloodHound
-    - `wget https://github.com/SpecterOps/bloodhound-cli/releases/latest/download/bloodhound-cli-linux-amd64.tar.gz && tar -xzf ./bloodhound-cli-linux-amd64.tar.gz && rm bloodhound-cli-linux-amd64.tar.gz`
-    - `./bloodhound-cli install`
+    - Create Directory `sudo mkdir -p /opt/bloodhoundce`
+    - Download docker compose file `sudo curl -L -o /opt/bloodhoundce/docker-compose.yml https://ghst.ly/getbhce -ks`
+    - Start docker `sudo docker-compose -f /opt/bloodhoundce/docker-compose.yml up -d`
+    - 
 - Ciphey `docker run -it --rm remnux/ciphey`
 
 ## Manual Install
