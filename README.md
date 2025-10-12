@@ -29,10 +29,11 @@ bash wordlist.sh
 ## Dockers
 - [https://hub.docker.com/r/kasmweb/remnux-focal-desktop](https://github.com/ZishanAdThandar/hacknotes/tree/main/RevEng)
 - BloodHound
-  - Create Directory `sudo mkdir -p /opt/bloodhoundce`
-  - Download docker compose file `sudo curl -L -o /opt/bloodhoundce/docker-compose.yml https://ghst.ly/getbhce -ks`
-  - pull images `sudo docker-compose -f /opt/bloodhoundce/docker-compose.yml pull`
-  - Start Docker `sudo docker-compose -f /opt/bloodhoundce/docker-compose.yml up` # first time tun will give temp password
+  - Create Directory `sudo mkdir -p /opt/bloodhound`
+  - Download docker compose file `sudo curl -L -o /opt/bloodhound/docker-compose.yml https://ghst.ly/getbhce -ks`
+  - Goto the folder `sudo cd /opt/bloodhound`
+  - pull images `sudo docker-compose -f /opt/bloodhound/docker-compose.yml pull`
+  - Start Docker `sudo docker-compose -f /opt/bloodhound/docker-compose.yml up` # first time tun will give temp password
   - To remove and start over `sudo docker-compose -f /opt/bloodhoundce/docker-compose.yml down`
 
 - Ciphey `docker run -it --rm remnux/ciphey`
