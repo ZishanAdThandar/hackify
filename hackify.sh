@@ -88,7 +88,7 @@ done
 
 # docker-compose install
 [ -f "/usr/local/bin/docker-compose" ] &&  printf "${Nc}${Green}docker-compose already installed.\n${Nc}" 
-[ ! -f "/usr/local/bin/docker-compose" ] &&  rm /usr/bin/docker-compose -f && curl -L "https://github.com/docker/compose/releases/download/v2.32.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && printf "${Purple}docker-compose Installed Successfully.\n${nc}"
+[ ! -f "/usr/local/bin/docker-compose" ] &&  rm /usr/bin/docker-compose -f && curl -ks -L "https://github.com/docker/compose/releases/download/v2.32.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && printf "${Purple}docker-compose Installed Successfully.\n${nc}"
 
 
 # ==============NODEJS NPM REACT =======================
@@ -345,34 +345,100 @@ fi
 
 # ========================RUST TOOLS========================
 
-# RUST installation command incase of issue of installing # curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Install rustup if not present (skip path checks)
+if ! command -v rustup &> /dev/null; then
+    echo "Installing rustup..."
+    RUSTUP_INIT_SKIP_PATH_CHECK=yes curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source "$HOME/.cargo/env"
+fi
+
+# Update Rust to the latest stable version
+echo "Updating Rust to latest stable..."
+rustup install stable -y
+rustup default stable
+rustup update
+
+# Verify Rust version
+echo "Current Rust version:"
+rustc --version
+
+# Ensure cargo bin is in PATH
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # Setting Default directory to install binary
 export CARGO_TARGET_DIR="/usr/local/bin"
 
 # Installing Required packages
+echo "Installing required system packages..."
 for pkg in build-essential libssl-dev pkg-config liblzma-dev libfontconfig1-dev; do
-  dpkg -s "$pkg" &>/dev/null || sudo apt install -y "$pkg"
+    dpkg -s "$pkg" &>/dev/null || sudo apt install -y "$pkg"
 done
 
-# ====ARES ciphey tool https://github.com/bee-san/Ares =======
-# [ -f "/usr/local/bin/ciphey" ] && printf "${Green}Ares ciphey already installed${Nc}\n"
-# [ ! -f "/usr/local/bin/ciphey" ] && cargo install ciphey && cp /root/.cargo/bin/ciphey /usr/local/bin/ciphey && printf "${Purple}ARES ciphey Installed Successfully\n${Nc}"
+# Function to install Rust tool with error handling
+install_rust_tool() {
+    local tool_name=$1
+    local install_command=$2
+    
+    if [ -f "/usr/local/bin/$tool_name" ]; then
+        printf "${Green}$tool_name already installed${Nc}\n"
+    else
+        printf "${Purple}Installing $tool_name...${Nc}\n"
+        if eval "$install_command"; then
+            # Copy to /usr/local/bin if installed in cargo bin
+            if [ -f "$HOME/.cargo/bin/$tool_name" ]; then
+                sudo cp "$HOME/.cargo/bin/$tool_name" "/usr/local/bin/$tool_name"
+            fi
+            printf "${Purple}$tool_name Installed Successfully\n${Nc}"
+        else
+            printf "${Red}Failed to install $tool_name. Trying without --locked flag...${Nc}\n"
+            # Try without --locked flag if first attempt fails
+            if eval "${install_command//--locked/}"; then
+                if [ -f "$HOME/.cargo/bin/$tool_name" ]; then
+                    sudo cp "$HOME/.cargo/bin/$tool_name" "/usr/local/bin/$tool_name"
+                fi
+                printf "${Purple}$tool_name Installed Successfully (without --locked)\n${Nc}"
+            else
+                printf "${Red}Failed to install $tool_name after multiple attempts${Nc}\n"
+            fi
+        fi
+    fi
+}
 
-# ====Binwalk  tool https://github.com/bee-san/Ares =======
-[ -f "/usr/local/bin/binwalk" ] && printf "${Green}binwalk already installed${Nc}\n"
-[ ! -f "/usr/local/bin/binwalk" ] && cargo install binwalk && cp /root/.cargo/bin/binwalk /usr/local/bin/binwalk && printf "${Purple}Binwalk Installed Successfully\n${Nc}"
+# Define color codes if not already defined
+if [ -z "${Green}" ]; then
+    Green='\033[0;32m'
+    Purple='\033[0;35m'
+    Red='\033[0;31m'
+    Nc='\033[0m'
+fi
+
+# ====Binwalk tool https://github.com/bee-san/Ares =======
+install_rust_tool "binwalk" "cargo install binwalk --locked"
 
 # ====RUSTSCAN port scanner https://github.com/RustScan/RustScan =======
-[ -f "/usr/local/bin/rustscan" ] && printf "${Green}Rustscan already installed${Nc}\n"
-[ ! -f "/usr/local/bin/rustscan" ] && cargo install rustscan && cp /root/.cargo/bin/rustscan /usr/local/bin/rustscan && printf "${Purple}RUSTSCAN Installed Successfully\n${Nc}"
-# ====x8 parameter discovery https://github.com/Sh1Yo/x8 =======
-[ -f "/usr/local/bin/x8" ] && printf "${Green}x8 already installed${Nc}\n"
-[ ! -f "/usr/local/bin/x8" ] && cargo install x8 && cp /root/.cargo/bin/x8 /usr/local/bin/x8 && printf "${Purple}x8 Installed Successfully\n${Nc}"
-# ==========FeroxBuster=============
-[ -f "/usr/local/bin/feroxbuster" ] && printf "${Green}feroxbuster already installed${Nc}\n"
-[ ! -f "/usr/local/bin/feroxbuster" ] && cd /usr/local/bin && curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/main/install-nix.sh | bash && printf "${Purple}feroxbuster Installed Successfully\n${Nc}"
+install_rust_tool "rustscan" "cargo install rustscan --locked"
 
+# ====x8 parameter discovery https://github.com/Sh1Yo/x8 =======
+install_rust_tool "x8" "cargo install x8 --locked"
+
+# ==========FeroxBuster=============
+if [ -f "/usr/local/bin/feroxbuster" ]; then
+    printf "${Green}feroxbuster already installed${Nc}\n"
+else
+    printf "${Purple}Installing feroxbuster...${Nc}\n"
+    cd /tmp && curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/main/install-nix.sh | bash
+    if [ -f "$HOME/.cargo/bin/feroxbuster" ]; then
+        sudo cp "$HOME/.cargo/bin/feroxbuster" "/usr/local/bin/feroxbuster"
+    fi
+    printf "${Purple}feroxbuster Installed Successfully\n${Nc}"
+fi
+
+# Add cargo bin to PATH permanently if not already present
+if ! grep -q "\.cargo/bin" "$HOME/.bashrc"; then
+    echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "$HOME/.bashrc"
+fi
+
+echo "Rust tools installation completed!"
 
 
 
