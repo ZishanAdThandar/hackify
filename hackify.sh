@@ -421,6 +421,9 @@ install_rust_tool "rustscan" "cargo install rustscan --locked"
 # ====x8 parameter discovery https://github.com/Sh1Yo/x8 =======
 install_rust_tool "x8" "cargo install x8 --locked"
 
+# ====x8 parameter discovery https://github.com/Sh1Yo/x8 =======
+install_rust_tool "rcat" "cargo install rustcat --locked"
+
 # ==========FeroxBuster=============
 if [ -f "/usr/local/bin/feroxbuster" ]; then
     printf "${Green}feroxbuster already installed${Nc}\n"
