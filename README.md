@@ -47,7 +47,7 @@ bash wordlist.sh
 - Mobile: Android Studio, MobSF, Frida, 
 
 ## Firefox Themes
-- [CyebrTerminus Theme](https://addons.mozilla.org/en-US/firefox/addon/zishanadthandar-cyberterminus/)
+- [CyberTerminus Theme](https://addons.mozilla.org/en-US/firefox/addon/zishanadthandar-cyberterminus/)
 - [MrRobot Theme](https://addons.mozilla.org/en-US/firefox/addon/mrrobothacker/)
 
 ## Firefox Addon
