@@ -35,7 +35,7 @@ printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkTree: https:/
 apt install docker.io -y >/dev/null 2>&1
 
 
-declare -a aptarray=("aircrack-ng" "audacity" "axiom" "beef" "braa" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "fcrackzip" "figlet" "ffmpeg" "firejail" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "jq" "lolcat" "ltrace" "masscan" "macchanger" "nbtscan" "ndiff" "nikto" "onesixtyone" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python3" "rdesktop" "reaver" "rlwrap" "smbmap" "sshpass" "sshuttle" "stegcracker" "steghide" "stegseek" "strace" "tmux" "tor" "toilet" "tree" "whatweb" "whois" "wifite" "wireshark")
+declare -a aptarray=("aircrack-ng" "apktool" "audacity" "axiom" "beef" "braa" "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" "dnsmap" "dnsrecon" "fcrackzip" "figlet" "ffmpeg" "firejail" "git" "hashcat" "hcxdumptool" "httrack" "hydra" "jq" "lolcat" "ltrace" "masscan" "macchanger" "nbtscan" "ndiff" "nikto" "onesixtyone" "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" "python3" "rdesktop" "reaver" "rlwrap" "smbmap" "sshpass" "sshuttle" "stegcracker" "steghide" "stegseek" "strace" "tmux" "tor" "toilet" "tree" "whatweb" "whois" "wifite" "wireshark")
 
 #Function to check if installed and install it
 function aptinstall {
@@ -210,6 +210,7 @@ install_tool "/usr/local/bin/uro" "uro"
 install_tool "/usr/local/bin/wafw00f" "wafw00f"   
 #install_tool "/usr/bin/wapiti" "wapiti3"   
 install_tool "/usr/local/bin/waymore" "waymore"  
+install_tool "/usr/local/bin/wdp" "website-dorker-pro"  
 
 # install_tool "/usr/local/bin/autobloody" "autobloody" 
 
@@ -421,8 +422,11 @@ install_rust_tool "rustscan" "cargo install rustscan --locked"
 # ====x8 parameter discovery https://github.com/Sh1Yo/x8 =======
 install_rust_tool "x8" "cargo install x8 --locked"
 
-# ====x8 parameter discovery https://github.com/Sh1Yo/x8 =======
+# ====rustcat parameter discovery https://github.com/Sh1Yo/x8 =======
 install_rust_tool "rcat" "cargo install rustcat --locked"
+
+# ====rusthound-cs parameter discovery https://github.com/Sh1Yo/x8 =======
+install_rust_tool "rusthound-ce" "cargo install rusthound-ce --locked"
 
 # ==========FeroxBuster=============
 if [ -f "/usr/local/bin/feroxbuster" ]; then
