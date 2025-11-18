@@ -155,9 +155,10 @@ class XSSScanner:
         """Display tool banner and information"""
         banner = """
                                         
-              +++ XSSPy Advanced v2.0 +++
-              Enhanced Security Scanner
-          https://ZishanAdThandar.GitHub.io
+              +++ XSSPy Advanced v5.0 +++
+               Enhanced Security Scanner
+                Zishan Ahamed Thandar
+           https://ZishanAdThandar.GitHub.io
 
         """
         
