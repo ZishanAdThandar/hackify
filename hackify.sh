@@ -2,7 +2,7 @@
 
 # =============================================================================
 # HACKIFY - Ultimate Penetration Testing Tools Installer
-# Author: ZishanAdThandar
+# Author: Zishan Ahamed Thandar
 # Description: Automated installation of 200+ hacking tools for penetration testing
 # =============================================================================
 
@@ -74,20 +74,30 @@ install_apt_packages() {
         "tree" "whatweb" "whois" "wifite" "wireshark"
     )
 
+    local installed_count=0
+    local failed_packages=()
+    
     print_status "Installing ${#core_packages[@]} core packages via APT..."
 
     for pkg in "${core_packages[@]}"; do
-        if dpkg -l "$pkg" | grep -q "^ii"; then
+        if dpkg -l "$pkg" 2>/dev/null | grep -q "^ii"; then
+            print_info "Already installed: $pkg"
+            ((installed_count++))
             continue
         fi
+        
+        print_status "Installing: $pkg"
         if apt install -y "$pkg" >/dev/null 2>&1; then
-            print_success "Installed: $pkg"
+            print_success "Successfully installed: $pkg"
+            ((installed_count++))
         else
             print_error "Failed to install: $pkg"
+            failed_packages+=("$pkg")
         fi
     done
 
-    # Additional specific packages
+    # Additional specific packages with verbose output
+    print_status "Installing additional specific packages..."
     declare -A special_packages=(
         ["/usr/bin/exiftool"]="libimage-exiftool-perl"
         ["/usr/bin/pip3"]="python3-pip"
@@ -97,8 +107,30 @@ install_apt_packages() {
     )
 
     for bin_path in "${!special_packages[@]}"; do
-        [[ ! -f "$bin_path" ]] && apt install -y "${special_packages[$bin_path]}" >/dev/null 2>&1
+        if [[ ! -f "$bin_path" ]]; then
+            local pkg_name="${special_packages[$bin_path]}"
+            print_status "Installing: $pkg_name"
+            if apt install -y "$pkg_name" >/dev/null 2>&1; then
+                print_success "Successfully installed: $pkg_name"
+            else
+                print_error "Failed to install: $pkg_name"
+                failed_packages+=("$pkg_name")
+            fi
+        else
+            print_info "Already available: $(basename "$bin_path")"
+        fi
     done
+
+    # Summary report
+    print_success "APT installation completed: $installed_count/${#core_packages[@]} packages installed"
+    
+    if [ ${#failed_packages[@]} -gt 0 ]; then
+        print_warning "The following packages failed to install and may need manual installation:"
+        for failed_pkg in "${failed_packages[@]}"; do
+            print_error "  - $failed_pkg"
+        done
+        print_info "You can try installing them manually with: sudo apt install -y <package-name>"
+    fi
 }
 
 # =============================================================================
@@ -230,13 +262,23 @@ install_go_tools() {
         ["tlsx"]="github.com/projectdiscovery/tlsx/cmd/tlsx@latest"
     )
 
+    local installed_count=0
+    local failed_tools=()
+
     for tool in "${!go_tools[@]}"; do
-        if [[ ! -f "/usr/local/go/bin/$tool" ]]; then
-            if go install -v "${go_tools[$tool]}" >/dev/null 2>&1; then
-                print_success "Installed: $tool"
-            else
-                print_warning "Failed to install: $tool"
-            fi
+        if [[ -f "/usr/local/go/bin/$tool" ]] || command -v "$tool" >/dev/null 2>&1; then
+            print_info "Already installed: $tool"
+            ((installed_count++))
+            continue
+        fi
+        
+        print_status "Installing: $tool"
+        if go install -v "${go_tools[$tool]}" >/dev/null 2>&1; then
+            print_success "Successfully installed: $tool"
+            ((installed_count++))
+        else
+            print_warning "Failed to install: $tool"
+            failed_tools+=("$tool")
         fi
     done
 
@@ -246,6 +288,12 @@ install_go_tools() {
         git clone -q https://github.com/tomnomnom/gf /tmp/gf && cp /tmp/gf/examples/* ~/.gf/
         rm -rf /tmp/gf
         print_success "GF patterns configured"
+    fi
+
+    # Summary
+    print_success "Go tools installation completed: $installed_count/${#go_tools[@]} tools installed"
+    if [ ${#failed_tools[@]} -gt 0 ]; then
+        print_warning "Some Go tools failed to install. You can try installing them manually later."
     fi
 }
 
@@ -471,6 +519,7 @@ setup_rust_environment() {
     install_rust_tool "rustscan" "cargo install rustscan --locked"
     install_rust_tool "x8" "cargo install x8 --locked"
     install_rust_tool "rcat" "cargo install rustcat --locked"
+    install_rust_tool "rusthound-ce" "cargo install rusthound-ce --locked"
 
     # FeroxBuster
     if [[ ! -f "/usr/local/bin/feroxbuster" ]]; then
@@ -533,8 +582,9 @@ download_pentest_tools() {
     TOOLS_DIR="/opt/pentest-tools"
     LINUX_DIR="$TOOLS_DIR/linux"
     WINDOWS_DIR="$TOOLS_DIR/windows"
+    MISC_DIR="$TOOLS_DIR/misc"
 
-    mkdir -p "$LINUX_DIR" "$WINDOWS_DIR"
+    mkdir -p "$LINUX_DIR" "$WINDOWS_DIR" "$MISC_DIR"
 
     # Enhanced download functions with silent operation
     download_executable() {
@@ -614,7 +664,7 @@ download_pentest_tools() {
         fi
 
         if [[ ! -f "kr" ]]; then
-            download_and_extract "https://github.com/assetnote/kiterunner/releases/download/v1.0.2/kiterrunner_1.0.2_linux_amd64.tar.gz" "." "kiterrunner"
+            download_and_extract "https://github.com/assetnote/kiterrunner/releases/download/v1.0.2/kiterrunner_1.0.2_linux_amd64.tar.gz" "." "kiterrunner"
             chmod +x kr 2>/dev/null || true
             ln -sf "$LINUX_DIR/kr" "/usr/local/bin/kr" 2>/dev/null || true
         fi
@@ -682,36 +732,29 @@ download_pentest_tools() {
         print_success "Windows tools download complete"
     }
 
-    download_basic_tools() {
-        print_info "Downloading basic tools..."
-        cd "$TOOLS_DIR"
+    download_misc_tools() {
+        print_info "Downloading miscellaneous tools..."
+        cd "$MISC_DIR"
 
-        download_file "https://raw.githubusercontent.com/SpecterOps/BloodHound/main/examples/docker-compose/docker-compose.yml" "bloodhound-docker-compose.yml"
+        # BloodHound CE Docker Compose
+        download_file "https://raw.githubusercontent.com/SpecterOps/BloodHound/main/examples/docker-compose/docker-compose.yml" "/opt/bloodhoundce/bloodhound-docker-compose.yml"
+        
+        # Network and tunneling tools
         clone_repo "https://github.com/iagox86/dnscat2.git" "dnscat2"
         clone_repo "https://github.com/utoni/ptunnel-ng.git" "ptunnel-ng"
         clone_repo "https://github.com/nccgroup/SocksOverRDP.git" "SocksOverRDP"
+        
+        # OSINT and reconnaissance
         clone_repo "https://github.com/sm00v/Dehashed.git" "Dehashed"
         
-        if [[ ! -f "$HOME/.gdbinit-gef.py" ]]; then
-            printf "${PURPLE}Installing GEF...${NC}\n"
-            bash -c "$(curl -fsSL https://gef.blah.cat/sh)" > /dev/null
-        fi
-        
-        if [[ ! -d "/usr/share/fuzzDicts" ]]; then
-            mkdir -p /usr/share/fuzzDicts
-            clone_repo "https://github.com/TheKingOfDuck/fuzzDicts.git" "/usr/share/fuzzDicts"
-        fi
 
-        print_success "Basic tools download complete"
+        print_success "Miscellaneous tools download complete"
     }
 
     create_symlinks() {
         print_info "Creating symlinks in /usr/local/bin..."
         
-        ln -sf "$LINUX_DIR/linpeas.sh" "/usr/local/bin/linpeas" 2>/dev/null || true
-        ln -sf "$LINUX_DIR/LinEnum.sh" "/usr/local/bin/linenum" 2>/dev/null || true
-        ln -sf "$LINUX_DIR/linux-exploit-suggester.sh" "/usr/local/bin/linux-exploit-suggester" 2>/dev/null || true
-        ln -sf "$LINUX_DIR/kr" "/usr/local/bin/kr" 2>/dev/null || true
+        # ln -sf "$LINUX_DIR/linpeas.sh" "/usr/local/bin/linpeas" 2>/dev/null || true
         
         print_success "Symlinks creation completed"
     }
@@ -725,18 +768,21 @@ download_pentest_tools() {
         windows) 
             download_windows_tools
             ;;
-        basic) 
-            download_basic_tools
+        misc) 
+            download_misc_tools
             ;;
         *)
             download_linux_tools
             download_windows_tools
-            download_basic_tools
+            download_misc_tools
             create_symlinks
             ;;
     esac
 
     print_success "Tools downloaded to: $TOOLS_DIR"
+    print_info "  - Linux tools: $LINUX_DIR"
+    print_info "  - Windows tools: $WINDOWS_DIR"
+    print_info "  - Miscellaneous tools: $MISC_DIR"
 }
 
 # =============================================================================
