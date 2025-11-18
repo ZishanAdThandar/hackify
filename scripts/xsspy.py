@@ -155,26 +155,26 @@ class XSSScanner:
         """Display tool banner and information"""
         banner = """
                                         
-              +++ XSSPy Advanced v5.0 +++
-               Enhanced Security Scanner
-                Zishan Ahamed Thandar
-           https://ZishanAdThandar.GitHub.io
++++ XSSPy Advanced v5.0 +++
+Enhanced Security Scanner
+Zishan Ahamed Thandar
+https://ZishanAdThandar.GitHub.io
 
         """
         
         usage = """
-        Usage: 
-          Basic scan: xsspy -u https://example.com
-          Comprehensive: xsspy -u example.com -e
-          Verbose output: xsspy -u example.com -v
-          With cookies: xsspy -u example.com -c "session=abc" "user=123"
+Usage: 
+Basic scan: xsspy -u https://example.com
+Comprehensive: xsspy -u example.com -e
+Verbose output: xsspy -u example.com -v
+With cookies: xsspy -u example.com -c "session=abc" "user=123"
         """
         
         description = """
-        Description: 
-        XSSPy is an advanced Python tool for detecting Cross-Site Scripting 
-        vulnerabilities. It performs comprehensive website traversal, 
-        intelligent payload injection, and detailed vulnerability reporting.
+Description: 
+XSSPy is an advanced Python tool for detecting Cross-Site Scripting 
+vulnerabilities. It performs comprehensive website traversal, 
+intelligent payload injection, and detailed vulnerability reporting.
         """
         
         print(ColorFormatter.format(banner, ColorFormatter.RED, bold=True))

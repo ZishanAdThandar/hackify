@@ -89,7 +89,7 @@ EOF
 # Initialize workspace
 setup_workspace() {
     local domain=$1
-    readonly WORK_DIR="${SCRIPT_DIR}/${domain}_scan_${TIMESTAMP}"
+    readonly WORK_DIR="${SCRIPT_DIR}/"
     
     mkdir -p "$WORK_DIR"
     cd "$WORK_DIR"
