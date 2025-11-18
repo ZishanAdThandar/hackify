@@ -141,8 +141,11 @@ install_custom_scripts() {
     print_status "Installing custom automation scripts..."
 
     local -A scripts=(
-        ["subauto"]="https://raw.githubusercontent.com/ZishanAdThandar/pentest/main/scripts/subauto.sh"
+        ["subauto"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/subauto.sh"
+        ["gitpull"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/gitpull.sh"
+        ["gitpush"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/gitpush.sh"
         ["nmapAutomator"]="https://raw.githubusercontent.com/21y4d/nmapAutomator/refs/heads/master/nmapAutomator.sh"
+        ["xsspy"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/xsspy.py"
     )
 
     for script_name in "${!scripts[@]}"; do
@@ -321,7 +324,7 @@ install_python_tools() {
         "arjun" "bloodyad" "certipy-ad" "git-dumper" "mitm6" "pwncat" 
         "sherlock-project" "smtp-user-enum" "uro" "wafw00f" "waymore" 
         "website-dorker-pro" "dirsearch" "hashid" "ldap3" "lfimap" 
-        "pwntools" "sublist3r"
+        "powerview" "pwntools" "sublist3r"
     )
 
     for tool in "${pip_tools[@]}"; do
@@ -734,15 +737,15 @@ download_pentest_tools() {
 
     download_misc_tools() {
         print_info "Downloading miscellaneous tools..."
-        cd "$MISC_DIR"
 
         # BloodHound CE Docker Compose
+        mkdir -p /opt/bloodhoundce
         download_file "https://raw.githubusercontent.com/SpecterOps/BloodHound/main/examples/docker-compose/docker-compose.yml" "/opt/bloodhoundce/bloodhound-docker-compose.yml"
         
         # Network and tunneling tools
-        clone_repo "https://github.com/iagox86/dnscat2.git" "dnscat2"
-        clone_repo "https://github.com/utoni/ptunnel-ng.git" "ptunnel-ng"
-        clone_repo "https://github.com/nccgroup/SocksOverRDP.git" "SocksOverRDP"
+        clone_repo "https://github.com/iagox86/dnscat2.git" "$MISC_DIR/dnscat2"
+        clone_repo "https://github.com/utoni/ptunnel-ng.git" "$MISC_DIR/ptunnel-ng"
+        clone_repo "https://github.com/nccgroup/SocksOverRDP.git" "$MISC_DIR/SocksOverRDP"
         
         # OSINT and reconnaissance
         clone_repo "https://github.com/sm00v/Dehashed.git" "Dehashed"
