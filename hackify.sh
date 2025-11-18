@@ -3,7 +3,6 @@
 # =============================================================================
 # HACKIFY - Ultimate Penetration Testing Tools Installer
 # Author: ZishanAdThandar
-# Version: 3.1
 # Description: Automated installation of 200+ hacking tools for penetration testing
 # =============================================================================
 
