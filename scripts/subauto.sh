@@ -1,14 +1,13 @@
 #!/bin/bash
 
-
-set -euo pipefail  # Exit on error, undefined variables, and pipe failures
+set -euo pipefail
 
 # Color codes for output
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 readonly YELLOW='\033[1;33m'
 readonly BLUE='\033[0;34m'
-readonly NC='\033[0m' # No Color
+readonly NC='\033[0m'
 
 # Logging functions
 log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
@@ -86,18 +85,23 @@ Output Files:
 EOF
 }
 
-# Initialize workspace
+# Initialize workspace - FIXED
 setup_workspace() {
     local domain=$1
-    readonly WORK_DIR="${SCRIPT_DIR}/"
+    # Use current directory or home directory instead of /usr/local/bin/
+    if [[ -w "." ]]; then
+        readonly WORK_DIR="$(pwd)"
+    else
+        readonly WORK_DIR="${HOME}/subdomain_scan"
+        mkdir -p "$WORK_DIR"
+    fi
     
-    mkdir -p "$WORK_DIR"
     cd "$WORK_DIR"
     
     log_info "Created workspace: $WORK_DIR"
 }
 
-# Run subdomain discovery tools
+# Run subdomain discovery tools - FIXED file creation
 run_subdomain_discovery() {
     local domain=$1
     
@@ -110,27 +114,47 @@ run_subdomain_discovery() {
     local assetfinder_out="${domain}_assetfinder.txt" 
     local amass_out="${domain}_amass.txt"
     
+    # Check if we can write to current directory
+    if ! touch "${domain}_test.txt" 2>/dev/null; then
+        log_error "Cannot write to directory: $WORK_DIR"
+        log_error "Please run in a directory where you have write permissions"
+        exit 1
+    fi
+    rm -f "${domain}_test.txt"
+    
     (
-        subfinder -silent -d "$domain" -all -o "$subfinder_out" >/dev/null 2>&1
-        log_success "Subfinder completed: $(wc -l < "$subfinder_out") subdomains"
+        if subfinder -silent -d "$domain" -all -o "$subfinder_out" >/dev/null 2>&1; then
+            log_success "Subfinder completed: $(wc -l < "$subfinder_out" 2>/dev/null || echo 0) subdomains"
+        else
+            log_warning "Subfinder failed or found no results"
+            touch "$subfinder_out"
+        fi
     ) &
     
     (
-        assetfinder "$domain" > "$assetfinder_out"
-        log_success "Assetfinder completed: $(wc -l < "$assetfinder_out") subdomains"
+        if assetfinder "$domain" > "$assetfinder_out" 2>/dev/null; then
+            log_success "Assetfinder completed: $(wc -l < "$assetfinder_out" 2>/dev/null || echo 0) subdomains"
+        else
+            log_warning "Assetfinder failed or found no results"
+            touch "$assetfinder_out"
+        fi
     ) &
     
     (
-        amass enum -active -timeout 5 -brute -min-for-recursive 2 \
+        if amass enum -active -timeout 5 -brute -min-for-recursive 2 \
                   -max-dns-queries 500 -d "$domain" -o "$amass_out" \
-                  -r 8.8.8.8,1.1.1.1,8.8.4.4,1.0.0.1 >/dev/null 2>&1
-        log_success "Amass completed: $(wc -l < "$amass_out") subdomains"
+                  -r 8.8.8.8,1.1.1.1,8.8.4.4,1.0.0.1 >/dev/null 2>&1; then
+            log_success "Amass completed: $(wc -l < "$amass_out" 2>/dev/null || echo 0) subdomains"
+        else
+            log_warning "Amass failed or found no results"
+            touch "$amass_out"
+        fi
     ) &
     
     wait  # Wait for all background jobs to complete
 }
 
-# Process and combine results
+# Process and combine results - FIXED file handling
 process_results() {
     local domain=$1
     
@@ -139,7 +163,13 @@ process_results() {
     local combined="${domain}_combined.txt"
     local unique="${domain}_subdomains.txt"
     
-    cat "${domain}"_*finder.txt "${domain}_amass.txt" > "$combined" 2>/dev/null || true
+    # Create combined file safely
+    touch "$combined"
+    for file in "${domain}"_*finder.txt "${domain}_amass.txt"; do
+        if [[ -f "$file" && -s "$file" ]]; then
+            cat "$file" >> "$combined" 2>/dev/null || true
+        fi
+    done
     
     if [[ ! -s "$combined" ]]; then
         log_error "No subdomains found. Please check your input and tools."
@@ -156,8 +186,13 @@ process_results() {
     }' | \
     sort -u > "$unique"
     
-    local total_count=$(wc -l < "$unique")
-    log_success "Found $total_count unique subdomains"
+    local total_count=$(wc -l < "$unique" 2>/dev/null || echo 0)
+    if [[ $total_count -gt 0 ]]; then
+        log_success "Found $total_count unique subdomains"
+    else
+        log_error "No valid subdomains found after processing"
+        exit 1
+    fi
 }
 
 # Find active HTTP/HTTPS services
@@ -170,6 +205,12 @@ find_active_services() {
     local httprobe_out="${domain}_httprobe.txt"
     local active_https="${domain}_https.txt"
     local final_subs="${domain}_subs.txt"
+    
+    if [[ ! -s "$subdomains_file" ]]; then
+        log_warning "No subdomains to probe"
+        touch "$active_https" "$final_subs"
+        return
+    fi
     
     # Probe with timeout and parallel processing
     cat "$subdomains_file" | \
@@ -194,7 +235,8 @@ find_active_services() {
     # Create clean subdomain list
     sed 's|^https://||' "$active_https" | sort -u > "$final_subs"
     
-    log_success "Found $(wc -l < "$active_https") active services"
+    local active_count=$(wc -l < "$active_https" 2>/dev/null || echo 0)
+    log_success "Found $active_count active services"
 }
 
 # Resolve IP addresses
@@ -205,13 +247,20 @@ resolve_ips() {
     
     log_info "Resolving IP addresses..."
     
+    if [[ ! -s "$subs_file" ]]; then
+        log_warning "No subdomains to resolve"
+        touch "$ips_file"
+        return
+    fi
+    
     # Parallel DNS resolution with timeout
     cat "$subs_file" | \
     xargs -P 20 -I {} sh -c \
         'ip=$(dig +timeout=3 +short "$1" 2>/dev/null | grep -E "^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$" | head -1); [ -n "$ip" ] && echo "$ip"' _ {} | \
     sort -u > "$ips_file"
     
-    log_success "Resolved $(wc -l < "$ips_file") unique IP addresses"
+    local ip_count=$(wc -l < "$ips_file" 2>/dev/null || echo 0)
+    log_success "Resolved $ip_count unique IP addresses"
 }
 
 # Check for subdomain takeovers
@@ -318,7 +367,7 @@ ${NC}"
     
     echo
     log_info "Final files:"
-    ls -la "${domain}"_*.txt | awk '{print " - " $9 " (" $5 " bytes)"}'
+    ls -la "${domain}"_*.txt 2>/dev/null | awk '{print " - " $9 " (" $5 " bytes)"}' || log_warning "No output files found"
 }
 
 # Script entry point
