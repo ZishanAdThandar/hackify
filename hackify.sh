@@ -386,6 +386,7 @@ install_python_tools() {
     install_tool "/usr/local/bin/certipy" "certipy-ad" 
     install_tool "/usr/local/bin/git-dumper" "git-dumper"    
     install_tool "/usr/local/bin/mitm6" "mitm6"    
+    install_tool "/usr/local/bin/powerview" "powerview"    
     install_tool "/usr/local/bin/pwncat" "pwncat"    
     install_tool "/usr/local/bin/sherlock" "sherlock-project" 
     install_tool "/usr/local/bin/smtp-user-enum" "smtp-user-enum" 
