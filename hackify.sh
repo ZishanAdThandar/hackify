@@ -141,8 +141,11 @@ install_custom_scripts() {
     print_status "Installing custom automation scripts..."
 
     local -A scripts=(
-        ["subauto"]="https://raw.githubusercontent.com/ZishanAdThandar/pentest/main/scripts/subauto.sh"
+        ["subauto"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/subauto.sh"
+        ["gitpull"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/gitpull.sh"
+        ["gitpush"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/gitpush.sh"
         ["nmapAutomator"]="https://raw.githubusercontent.com/21y4d/nmapAutomator/refs/heads/master/nmapAutomator.sh"
+        ["xsspy"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/xsspy.py"
     )
 
     for script_name in "${!scripts[@]}"; do
