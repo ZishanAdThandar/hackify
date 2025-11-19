@@ -146,6 +146,7 @@ install_custom_scripts() {
         ["gitpush"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/gitpush.sh"
         ["nmapAutomator"]="https://raw.githubusercontent.com/21y4d/nmapAutomator/refs/heads/master/nmapAutomator.sh"
         ["xsspy"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/xsspy.py"
+        ["winrmexec"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/winrmexec.py"
     )
 
     for script_name in "${!scripts[@]}"; do
@@ -385,8 +386,7 @@ install_python_tools() {
     install_tool "/usr/local/bin/bloodyAD" "bloodyad"  
     install_tool "/usr/local/bin/certipy" "certipy-ad" 
     install_tool "/usr/local/bin/git-dumper" "git-dumper"    
-    install_tool "/usr/local/bin/mitm6" "mitm6"    
-    install_tool "/usr/local/bin/powerview" "powerview"    
+    install_tool "/usr/local/bin/mitm6" "mitm6"      
     install_tool "/usr/local/bin/pwncat" "pwncat"    
     install_tool "/usr/local/bin/sherlock" "sherlock-project" 
     install_tool "/usr/local/bin/smtp-user-enum" "smtp-user-enum" 
@@ -408,6 +408,7 @@ install_python_tools() {
     print_status "Installing Git-based Python tools..."
     install_git_tool "/usr/local/bin/paramspider" "https://github.com/devanshbatham/ParamSpider/archive/master.zip" "paramspider"
     install_git_tool "/usr/local/bin/ghauri" "https://github.com/r0oth3x49/ghauri/archive/master.zip" "ghauri"
+    install_tool "/usr/local/bin/powerview" "git+https://github.com/aniqfakhrul/powerview.py" "powerview"
 
     # Special tools with custom handling
     print_status "Installing special tools..."
@@ -749,9 +750,6 @@ download_pentest_tools() {
             download_file "https://github.com/jpillora/chisel/releases/download/v1.10.1/chisel_1.10.1_linux_amd64.gz" "chisel-linux.gz"
             gunzip -f chisel-linux.gz && chmod +x chisel-linux
         fi
-        
-        download_executable "https://raw.githubusercontent.com/ozelis/winrmexec/refs/heads/main/winrmexec.py" "winrmexec.py"
-        ln -sf "$LINUX_DIR/winrmexec.py" "/usr/local/bin/winrmexec" 2>/dev/null || true
 
         download_and_extract "https://github.com/nicocha30/ligolo-ng/releases/download/v0.8.2/ligolo-ng_proxy_0.8.2_linux_amd64.tar.gz" "ligolo" "ligolo-ng"
         if [[ -d "ligolo" ]]; then
