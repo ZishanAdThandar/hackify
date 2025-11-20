@@ -147,7 +147,9 @@ install_custom_scripts() {
         ["nmapAutomator"]="https://raw.githubusercontent.com/21y4d/nmapAutomator/refs/heads/master/nmapAutomator.sh"
         ["xsspy"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/xsspy.py"
         ["winrmexec"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/winrmexec.py"
+        ["ReconSpider.py"]="https://raw.githubusercontent.com/ZishanAdThandar/hackify/refs/heads/main/scripts/ReconSpider.py"
     )
+
 
     for script_name in "${!scripts[@]}"; do
         local script_path="/usr/local/bin/$script_name"
@@ -319,7 +321,7 @@ install_python_tools() {
 
         # Check if the Python module is already installed
         if python3 -c "import $import_name" 2>/dev/null; then
-            print_info "$import_name is already installed"
+            print_info "Already installed: $import_name"
         else
             if python3 -m pip install "$install_name" --break-system-packages >/dev/null 2>&1; then
                 print_success "$install_name installed successfully"
@@ -336,7 +338,7 @@ install_python_tools() {
         local tool_name="$3"      
         
         if [ -f "$tool_path" ]; then
-            print_info "$tool_name already installed"
+            print_info "Already installed: $tool_name"
         else
             print_status "Installing $tool_name..."
             if python3 -m pip install "$tool_source" --break-system-packages >/dev/null 2>&1; then
@@ -363,7 +365,7 @@ install_python_tools() {
         local tool_name="$2"      
         
         if [ -f "$tool_path" ]; then
-            print_info "$tool_name already installed"
+            print_info "Already installed: $tool_name"
         else
             print_status "Installing $tool_name..."
             if python3 -m pip install "$tool_name" --break-system-packages >/dev/null 2>&1; then
@@ -426,7 +428,7 @@ install_python_tools() {
             print_success "yt-dlp installed via direct download"
         fi
     else
-        print_info "yt-dlp already installed"
+        print_info "Already installed: yt-dlp"
     fi
 
     # LinkFinder
@@ -437,17 +439,9 @@ install_python_tools() {
             print_success "linkfinder installed successfully"
         fi
     else
-        print_info "linkfinder already installed"
+        print_info "Already installed: linkfinder"
     fi
 
-    # ReconSpider
-    if [ ! -f "/usr/local/bin/ReconSpider.py" ]; then
-        curl -ks https://gist.githubusercontent.com/ZishanAdThandar/27217f687e742293ce54f67b97101e0a/raw/860bccc9808627c2ae45e2f469b2f3094347fdaf/ReconSpider.py > /usr/local/bin/ReconSpider.py
-        chmod +x /usr/local/bin/ReconSpider.py
-        print_success "ReconSpider.py installed successfully"
-    else
-        print_info "ReconSpider.py already installed"
-    fi
 
     # Install advanced Python tools (SQLMap, Impacket, etc.)
     install_advanced_python_tools
