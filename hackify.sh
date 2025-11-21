@@ -69,7 +69,7 @@ install_apt_packages() {
         "hashcat" "hcxdumptool" "httrack" "hydra" "jq" "lolcat" "ltrace" 
         "masscan" "macchanger" "nbtscan" "ndiff" "nikto" "onesixtyone" 
         "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" 
-        "python3" "rdesktop" "reaver" "rlwrap" "smbmap" "sshpass" "sshuttle" 
+        "python3" "rdesktop" "reaver" "redis-tools" "rlwrap" "smbmap" "sshpass" "sshuttle" 
         "stegcracker" "steghide" "stegseek" "strace" "tmux" "tor" "toilet" 
         "tree" "whatweb" "whois" "wifite" "wireshark"
     )
