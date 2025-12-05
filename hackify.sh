@@ -410,7 +410,8 @@ install_python_tools() {
     print_status "Installing Git-based Python tools..."
     install_git_tool "/usr/local/bin/paramspider" "https://github.com/devanshbatham/ParamSpider/archive/master.zip" "paramspider"
     install_git_tool "/usr/local/bin/ghauri" "https://github.com/r0oth3x49/ghauri/archive/master.zip" "ghauri"
-    install_tool "/usr/local/bin/powerview" "git+https://github.com/aniqfakhrul/powerview.py" "powerview"
+    install_git_tool "/usr/local/bin/powerview" "git+https://github.com/aniqfakhrul/powerview.py" "powerview"
+    install_git_tool "/usr/local/bin/wifiphisher" "git+https://github.com/wifiphisher/wifiphisher/archive/master.zip" "wifiphisher"
 
     # Special tools with custom handling
     print_status "Installing special tools..."
