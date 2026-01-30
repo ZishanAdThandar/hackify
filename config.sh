@@ -12,14 +12,11 @@ set_config() {
     echo "${key}=${value}" >> "$file"
 }
 
-# Set DNS server
-set_config "DNS" "1.1.1.1"
+# Set DNS server set_config "DNS" "1.1.1.1"
 
-# Enable DNS over TLS
-set_config "DNSOverTLS" "yes"
+# Enable DNS over TLS set_config "DNSOverTLS" "yes"
 
-# Restart the service
-systemctl restart systemd-resolved
+# Restart the service systemctl restart systemd-resolved
 
 echo "DNS configuration updated successfully"
 '
