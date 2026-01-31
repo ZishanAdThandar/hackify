@@ -69,8 +69,4 @@ bash wordlist.sh
 ⚠️ **Warning** Misuse of this tool or installed tool can lead to legal complications.
 
 
-# Be a Sponsor  
-
-1. https://ZishanAdThandar.github.io/sponsor/
-
 
