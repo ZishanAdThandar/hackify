@@ -60,8 +60,11 @@ prepare_system() {
 # =============================================================================
 # STAGE 1: Package Manager Installations
 # =============================================================================
-
 install_apt_packages() {
+    # Force non-interactive mode to prevent hanging
+    export DEBIAN_FRONTEND=noninteractive
+    export NEEDRESTART_MODE=a
+    
     local -a core_packages=(
         "docker.io" "aircrack-ng" "apktool" "audacity" "axiom" "beef" "braa" 
         "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" 
@@ -77,9 +80,58 @@ install_apt_packages() {
     local installed_count=0
     local failed_packages=()
     
+    # Pre-configure packages that are known to ask questions
+    print_status "Configuring package settings..."
+    echo "wireshark-common wireshark-common/install-setuid boolean true" | debconf-set-selections
+    echo "macchanger macchanger/automatically_run boolean true" | debconf-set-selections
+    echo "parcellite parcellite/enable-autostart boolean false" | debconf-set-selections
+    
+    print_status "Updating package lists..."
+    if ! apt update -qq; then
+        print_error "Failed to update package lists"
+        return 1
+    fi
+    
     print_status "Installing ${#core_packages[@]} core packages via APT..."
+    
+    # Function to install a package with retry logic
+    install_package() {
+        local pkg="$1"
+        local max_retries=2
+        
+        for ((retry=1; retry<=max_retries; retry++)); do
+            print_status "Attempt $retry for: $pkg"
+            
+            # Use apt-get with non-interactive flags
+            if apt-get install -y \
+                --no-install-recommends \
+                --allow-downgrades \
+                --allow-change-held-packages \
+                -o Dpkg::Options::="--force-confdef" \
+                -o Dpkg::Options::="--force-confold" \
+                "$pkg" >/tmp/apt-install.log 2>&1; then
+                
+                return 0
+            fi
+            
+            # If it failed, check if it's a network issue
+            if grep -q "Temporary failure resolving" /tmp/apt-install.log || \
+               grep -q "Failed to fetch" /tmp/apt-install.log; then
+                print_warning "Network issue, waiting 5 seconds..."
+                sleep 5
+            else
+                # Other error, show last few lines of log
+                print_warning "Install error:"
+                tail -3 /tmp/apt-install.log
+                break
+            fi
+        done
+        
+        return 1
+    }
 
     for pkg in "${core_packages[@]}"; do
+        # Check if package is already installed
         if dpkg -l "$pkg" 2>/dev/null | grep -q "^ii"; then
             print_info "Already installed: $pkg"
             ((installed_count++))
@@ -87,12 +139,18 @@ install_apt_packages() {
         fi
         
         print_status "Installing: $pkg"
-        if apt install -y "$pkg" >/dev/null 2>&1; then
+        
+        if install_package "$pkg"; then
             print_success "Successfully installed: $pkg"
             ((installed_count++))
         else
             print_error "Failed to install: $pkg"
             failed_packages+=("$pkg")
+            
+            # Check if package exists in repository
+            if ! apt-cache show "$pkg" >/dev/null 2>&1; then
+                print_warning "Package '$pkg' not found in repository"
+            fi
         fi
     done
 
@@ -110,7 +168,8 @@ install_apt_packages() {
         if [[ ! -f "$bin_path" ]]; then
             local pkg_name="${special_packages[$bin_path]}"
             print_status "Installing: $pkg_name"
-            if apt install -y "$pkg_name" >/dev/null 2>&1; then
+            
+            if install_package "$pkg_name"; then
                 print_success "Successfully installed: $pkg_name"
             else
                 print_error "Failed to install: $pkg_name"
@@ -120,6 +179,13 @@ install_apt_packages() {
             print_info "Already available: $(basename "$bin_path")"
         fi
     done
+
+    # Fix any broken packages
+    print_status "Checking for broken packages..."
+    if dpkg -l | grep -q "^..r"; then
+        print_warning "Found broken packages, attempting to fix..."
+        apt --fix-broken install -y >/dev/null 2>&1
+    fi
 
     # Summary report
     print_success "APT installation completed: $installed_count/${#core_packages[@]} packages installed"
@@ -131,8 +197,12 @@ install_apt_packages() {
         done
         print_info "You can try installing them manually with: sudo apt install -y <package-name>"
     fi
+    
+    # Clean up temporary files
+    rm -f /tmp/apt-install.log
+    
+    return 0
 }
-
 # =============================================================================
 # STAGE 2: Custom Scripts & Docker Setup
 # =============================================================================
@@ -887,7 +957,7 @@ download_pentest_tools() {
 main() {
     show_banner
     check_privileges "$@"
-    prepare_system
+  #  prepare_system
 
     print_status "Starting comprehensive tool installation..."
     
