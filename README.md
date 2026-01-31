@@ -63,9 +63,9 @@ bash wordlist.sh
 
 ---
 
-⚠️ **Warning** Use this tool at your own risk. 
-
-⚠️ **Warning** Misuse of this tool or installed tool can lead to legal complications.
+> [!WARNING] 
+> Use this tool at your own risk. 
+> Misuse of this tool or installed tool can lead to legal complications.
 
 
 
