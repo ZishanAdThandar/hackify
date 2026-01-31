@@ -272,7 +272,7 @@ setup_nodejs() {
 # =============================================================================
 
 setup_golang() {
-    local go_version="1.25.4"
+    local go_version="1.25.6"
     local go_tarball="go${go_version}.linux-amd64.tar.gz"
 
     if [[ -f "/usr/local/go/bin/go" ]]; then
@@ -454,10 +454,7 @@ install_python_tools() {
     print_status "Installing Python tools with binary verification..."
     
     # Tools that install binaries in /usr/local/bin
-    install_tool "/usr/local/bin/arjun" "arjun" 
-    install_tool "/usr/local/bin/bloodyAD" "bloodyad"  
-    install_tool "/usr/local/bin/certipy" "certipy-ad" 
-    install_tool "/usr/local/bin/git-dumper" "git-dumper"    
+    install_tool "/usr/local/bin/arjun" "arjun"    
     install_tool "/usr/local/bin/mitm6" "mitm6"      
     install_tool "/usr/local/bin/pwncat" "pwncat"    
     install_tool "/usr/local/bin/sherlock" "sherlock-project" 
@@ -466,20 +463,25 @@ install_python_tools() {
     install_tool "/usr/local/bin/wafw00f" "wafw00f"   
     install_tool "/usr/local/bin/waymore" "waymore"  
     install_tool "/usr/local/bin/wdp" "website-dorker-pro"  
+    install_tool "/usr/local/bin/bloodyAD" "bloodyad"  
+    install_tool "/usr/local/bin/certipy" "certipy-ad" 
+    install_tool "/usr/local/bin/git-dumper" "git-dumper" 
 
     # Python modules (import-based check)
     print_status "Installing Python modules..."
-    install_python_module "dirsearch" "dirsearch"
     install_python_module "hashid" "hashid"
     install_python_module "ldap3" "ldap3"
     install_python_module "lfimap" "lfimap"
     install_python_module "pwn" "pwntools"
     install_python_module "sublist3r" "sublist3r"
 
+    install_python_module "dirsearch" "dirsearch"
+
     # Git-based tools
     print_status "Installing Git-based Python tools..."
     install_git_tool "/usr/local/bin/paramspider" "https://github.com/devanshbatham/ParamSpider/archive/master.zip" "paramspider"
     install_git_tool "/usr/local/bin/ghauri" "https://github.com/r0oth3x49/ghauri/archive/master.zip" "ghauri"
+
     install_git_tool "/usr/local/bin/powerview" "git+https://github.com/aniqfakhrul/powerview.py" "powerview"
     install_git_tool "/usr/local/bin/wifiphisher" "git+https://github.com/wifiphisher/wifiphisher/archive/master.zip" "wifiphisher"
 
