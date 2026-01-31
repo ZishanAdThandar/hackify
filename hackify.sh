@@ -692,12 +692,38 @@ setup_rust_environment() {
     install_rust_tool "rusthound-ce" "cargo install rusthound-ce --locked"
 
     # FeroxBuster
-    if [[ ! -f "/usr/local/bin/feroxbuster" ]]; then
-        curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/main/install-nix.sh | bash >/dev/null 2>&1
-        [[ -f "$HOME/.cargo/bin/feroxbuster" ]] && cp "$HOME/.cargo/bin/feroxbuster" "/usr/local/bin/feroxbuster"
-        print_success "Installed: FeroxBuster"
+# FeroxBuster installation
+if [[ ! -f "/usr/local/bin/feroxbuster" ]]; then
+    print_status "Installing FeroxBuster..."
+    
+    # Download the install script first
+    curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/master/install-nix.sh -o /tmp/install-ferox.sh 2>/dev/null
+    
+    if [[ -f "/tmp/install-ferox.sh" ]]; then
+        chmod +x /tmp/install-ferox.sh
+        
+        # Run with explicit directory
+        if /tmp/install-ferox.sh /usr/local/bin >/dev/null 2>&1; then
+            print_success "Installed: FeroxBuster"
+        else
+            # Fallback to cargo install
+            if command -v cargo >/dev/null 2>&1; then
+                cargo install feroxbuster --locked >/dev/null 2>&1 && print_success "Installed: FeroxBuster via cargo"
+            fi
+        fi
+        
+        rm -f /tmp/install-ferox.sh
+    else
+        # Direct binary download fallback
+        curl -sL https://github.com/epi052/feroxbuster/releases/latest/download/x86_64-linux-feroxbuster.zip -o /tmp/ferox.zip 2>/dev/null
+        unzip -q -o /tmp/ferox.zip -d /tmp/ 2>/dev/null
+        [[ -f "/tmp/feroxbuster" ]] && cp /tmp/feroxbuster /usr/local/bin/ && chmod +x /usr/local/bin/feroxbuster
+        rm -f /tmp/ferox.zip
+        print_success "Installed: FeroxBuster via direct download"
     fi
+fi
 
+# =========
     # Permanent PATH setup
     grep -q "\.cargo/bin" "$HOME/.bashrc" || echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "$HOME/.bashrc"
 }
