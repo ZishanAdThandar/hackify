@@ -566,7 +566,7 @@ install_advanced_python_tools() {
         rm -f /usr/local/bin/sqlmap /usr/bin/sqlmap
         
         git clone -q --depth 1 https://github.com/sqlmapproject/sqlmap.git /opt/sqlmap
-        echo '#!/bin/bash\npython3 /opt/sqlmap/sqlmap.py "$@"' > /usr/local/bin/sqlmap
+        echo 'python3 /opt/sqlmap/sqlmap.py "$@"' > /usr/local/bin/sqlmap
         chmod +x /usr/local/bin/sqlmap
         
         # Optimize SQLMap configuration
