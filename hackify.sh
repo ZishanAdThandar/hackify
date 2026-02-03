@@ -376,118 +376,152 @@ install_go_tools() {
 # =============================================================================
 # STAGE 3: Python Tools Installation (Improved Version)
 # =============================================================================
-
 install_python_tools() {
-    printf "\n${CYAN}Installing Python Tools for user ROOT.${NC}\n"
-
+    printf "\n${CYAN}Installing Python Tools...${NC}\n"
+    
     # Basic Python setup
-    [ ! -f "/usr/bin/python3" ] && apt install python3 -y  
-    python3 -m pip cache purge &> /dev/null 
-
-    # Function to check and install a Python module (separate import and install names)
-    install_python_module() {
-        local import_name="$1"    # Module to import (e.g., "pwn")
-        local install_name="$2"   # Module to install (e.g., "pwntools")
-
-        # Check if the Python module is already installed
-        if python3 -c "import $import_name" 2>/dev/null; then
-            print_info "Already installed: $import_name"
-        else
-            if python3 -m pip install "$install_name" --break-system-packages >/dev/null 2>&1; then
-                print_success "$install_name installed successfully"
-            else
-                print_warning "Failed to install: $install_name"
-            fi
-        fi
-    }
-
-    # Function to check and install a tool from git
-    install_git_tool() {
-        local tool_path="$1"      
-        local tool_source="$2"      
-        local tool_name="$3"      
-        
-        if [ -f "$tool_path" ]; then
-            print_info "Already installed: $tool_name"
-        else
-            print_status "Installing $tool_name..."
-            if python3 -m pip install "$tool_source" --break-system-packages >/dev/null 2>&1; then
-                if [ -f "$tool_path" ]; then
-                    print_success "$tool_name installed successfully"
-                else
-                    # Try to create the tool manually if it doesn't auto-install
-                    local module_name=$(basename "$tool_source" | sed 's/\.zip//' | sed 's/-master//')
-                    if python3 -c "import $module_name" 2>/dev/null; then
-                        echo "#!/usr/bin/env python3\npython3 -m $module_name \"\$@\"" > "$tool_path"
-                        chmod +x "$tool_path"
-                        print_success "$tool_name created manually"
-                    fi
-                fi
-            else
-                print_warning "Failed to install: $tool_name"
-            fi
-        fi
-    }
-
-    # Function to check and install a tool via filename
-    install_tool() {
-        local tool_path="$1"      
-        local tool_name="$2"      
-        
-        if [ -f "$tool_path" ]; then
-            print_info "Already installed: $tool_name"
-        else
-            print_status "Installing $tool_name..."
-            if python3 -m pip install "$tool_name" --break-system-packages >/dev/null 2>&1; then
-                if [ -f "$tool_path" ]; then
-                    print_success "$tool_name installed successfully"
-                else
-                    print_warning "$tool_name installed but binary not found at $tool_path"
-                fi
-            else
-                print_warning "Failed to install: $tool_name"
-            fi
-        fi
-    }
-
-    # Install tools with binary checks
-    print_status "Installing Python tools with binary verification..."
+    [ ! -f "/usr/bin/python3" ] && apt install python3 python3-pip -y >/dev/null 2>&1
+    python3 -m pip cache purge >/dev/null 2>&1
     
-    # Tools that install binaries in /usr/local/bin
-    install_tool "/usr/local/bin/arjun" "arjun"    
-    install_tool "/usr/local/bin/mitm6" "mitm6"      
-    install_tool "/usr/local/bin/pwncat" "pwncat"    
-    install_tool "/usr/local/bin/sherlock" "sherlock-project" 
-    install_tool "/usr/local/bin/smtp-user-enum" "smtp-user-enum" 
-    install_tool "/usr/local/bin/uro" "uro"
-    install_tool "/usr/local/bin/wafw00f" "wafw00f"   
-    install_tool "/usr/local/bin/waymore" "waymore"  
-    install_tool "/usr/local/bin/wdp" "website-dorker-pro"  
-    install_tool "/usr/local/bin/bloodyAD" "bloodyad"  
-    install_tool "/usr/local/bin/certipy" "certipy-ad" 
-    install_tool "/usr/local/bin/git-dumper" "git-dumper" 
+    # Function to extract tool name from URL
+    get_tool_name() {
+        local url="$1"
+        # Extract tool name from various URL formats
+        if [[ "$url" == git+https://* ]]; then
+            # git+https://github.com/user/repo.git -> repo
+            echo "$url" | sed -E 's|.*/([^/]+)\.git$|\1|' || \
+            echo "$url" | sed -E 's|.*/([^/]+)/archive/.*|\1|' || \
+            echo "$url" | sed -E 's|.*/([^/]+)\.py$|\1|'
+        elif [[ "$url" == http*.zip ]]; then
+            # https://.../repo-master.zip -> repo
+            echo "$url" | sed -E 's|.*/([^/]+)-[^/]+\.zip$|\1|' || \
+            echo "$url" | sed -E 's|.*/([^/]+)\.zip$|\1|'
+        else
+            # Regular package name
+            echo "$url"
+        fi
+    }
+    
+    # Function to install Python packages
+    pip_install() {
+        local package="$1"
+        local binary_check="${2:-}"
+        local tool_name=$(get_tool_name "$package")
+        
+        # Check if already installed
+        if [[ -n "$binary_check" ]] && [ -f "$binary_check" ]; then
+            print_info "Already installed: $tool_name"
+            return 0
+        fi
+        
+        print_status "Installing: $tool_name"
+        
+        # Try with increased timeout and retry
+        for attempt in {1..2}; do
+            if python3 -m pip install "$package" --break-system-packages --timeout 60 >/dev/null 2>&1; then
+                print_success "Installed: $tool_name"
+                return 0
+            elif [[ $attempt -eq 1 ]]; then
+                print_warning "Retrying: $tool_name"
+                sleep 2
+            fi
+        done
+        
+        print_warning "Failed: $tool_name"
+        return 1
+    }
+    
+    # Install PyPI packages (binary-checking tools)
+    print_status "Installing PyPI packages with binaries..."
+    local -A pypi_tools=(
+        ["/usr/local/bin/arjun"]="arjun"
+        ["/usr/local/bin/mitm6"]="mitm6"
+        ["/usr/local/bin/pwncat"]="pwncat"
+        ["/usr/local/bin/sherlock"]="sherlock-project"
+        ["/usr/local/bin/smtp-user-enum"]="smtp-user-enum"
+        ["/usr/local/bin/uro"]="uro"
+        ["/usr/local/bin/wafw00f"]="wafw00f"
+        ["/usr/local/bin/waymore"]="waymore"
+        ["/usr/local/bin/wdp"]="website-dorker-pro"
+        ["/usr/local/bin/bloodyAD"]="bloodyad"
+        ["/usr/local/bin/certipy"]="certipy-ad"
+        ["/usr/local/bin/git-dumper"]="git-dumper"
+        ["/usr/local/bin/yt-dlp"]="yt-dlp[default]"
+        ["/usr/local/bin/dirsearch"]="dirsearch"
+    )
+    
+    for binary_path in "${!pypi_tools[@]}"; do
+        pip_install "${pypi_tools[$binary_path]}" "$binary_path"
+    done
+    
+    # Special handling for AD tools with dnspython conflict
+    [ ! -f /usr/local/bin/certipy ] && \
+        python3 -m pip install bloodyAD certipy-ad --break-system-packages --ignore-installed dnspython >/dev/null 2>&1
+    
 
-    # Python modules (import-based check)
+# wifiphisher despendencies check and installation to counter errors 
+# This will run apt install only if dpkg check fails
+dpkg -s libnl-3-dev >/dev/null 2>&1 || sudo apt install -y libnl-3-dev >/dev/null 2>&1
+dpkg -s libnl-genl-3-dev >/dev/null 2>&1 || sudo apt install -y libnl-genl-3-dev >/dev/null 2>&1
+
+
+    # Install Git-based tools with better names
+    print_status "Installing Git-based tools..."
+    local -A git_tools=(
+        ["paramspider"]="https://github.com/devanshbatham/ParamSpider/archive/master.zip"
+        ["ghauri"]="https://github.com/r0oth3x49/ghauri/archive/master.zip"
+        ["crackmapexec"]="git+https://github.com/byt3bl33d3r/CrackMapExec.git"
+        ["nxc"]="git+https://github.com/Pennyw0rth/NetExec"
+        ["powerview"]="git+https://github.com/aniqfakhrul/powerview.py"
+        ["wifiphisher"]="https://github.com/wifiphisher/wifiphisher/archive/master.zip"
+        ["linkfinder"]="git+https://github.com/GerbenJavado/LinkFinder"
+        ["impacket"]="git+https://github.com/fortra/impacket"
+    )
+    
+    for tool_name in "${!git_tools[@]}"; do
+        print_status "Installing: $tool_name"
+        python3 -m pip install "${git_tools[$tool_name]}" --break-system-packages --no-deps --timeout 120 >/dev/null 2>&1 && \
+            print_success "Installed: $tool_name" || \
+            print_warning "Failed: $tool_name"
+    done
+    
+
+    
+    # Install Python modules (no binaries)
     print_status "Installing Python modules..."
-    install_python_module "hashid" "hashid"
-    install_python_module "ldap3" "ldap3"
-    install_python_module "lfimap" "lfimap"
-    install_python_module "pwn" "pwntools"
-    install_python_module "sublist3r" "sublist3r"
-
-    install_python_module "dirsearch" "dirsearch"
-
-    # Git-based tools
-    print_status "Installing Git-based Python tools..."
-    install_git_tool "/usr/local/bin/paramspider" "https://github.com/devanshbatham/ParamSpider/archive/master.zip" "paramspider"
-    install_git_tool "/usr/local/bin/ghauri" "https://github.com/r0oth3x49/ghauri/archive/master.zip" "ghauri"
-
-    install_git_tool "/usr/local/bin/powerview" "git+https://github.com/aniqfakhrul/powerview.py" "powerview"
-    install_git_tool "/usr/local/bin/wifiphisher" "git+https://github.com/wifiphisher/wifiphisher/archive/master.zip" "wifiphisher"
-
-    # Special tools with custom handling
-    print_status "Installing special tools..."
+    local -a python_modules=(
+        "hashid"
+        "ldap3"
+        "lfimap"
+        "pwntools"
+        "sublist3r"
+        "beautifulsoup4"
+        "requests"
+        "colorama"
+        "rich"
+        "typing-extensions"
+        "sqlalchemy"
+    )
     
+    for module in "${python_modules[@]}"; do
+        pip_install "$module"
+    done
+    
+    # Install advanced Python tools
+    install_advanced_python_tools
+    
+    print_success "Python tools installation completed"
+
+
+
+    # Create LinkFinder wrapper
+    [ ! -f "/usr/local/bin/linkfinder" ] && {
+        echo 'python3 -m linkfinder "$@"' > /usr/local/bin/linkfinder
+        chmod +x /usr/local/bin/linkfinder
+        print_success "Created: linkfinder wrapper"
+    }
+    
+
     # yt-dlp
     if [ ! -f "/usr/local/bin/yt-dlp" ]; then
         apt purge yt-dlp -y >/dev/null 2>&1
@@ -507,7 +541,7 @@ install_python_tools() {
     # LinkFinder
     if [ ! -f "/usr/local/bin/linkfinder" ]; then
         if python3 -m pip install "git+https://github.com/GerbenJavado/LinkFinder" --break-system-packages >/dev/null 2>&1; then
-            echo "#!/usr/bin/env python3\npython3 -m linkfinder \"\$@\"" > /usr/local/bin/linkfinder
+            echo "python3 -m linkfinder \"\$@\"" > /usr/local/bin/linkfinder
             chmod +x /usr/local/bin/linkfinder
             print_success "linkfinder installed successfully"
         fi
@@ -542,13 +576,11 @@ install_advanced_python_tools() {
 
     # Impacket
     if [[ ! -f "/usr/local/bin/GetNPUsers.py" ]]; then
-        if python3 -m pip install "git+https://github.com/fortra/impacket" --break-system-packages >/dev/null 2>&1; then
-            git clone -q https://github.com/fortra/impacket /tmp/impacket
-            chmod +x /tmp/impacket/examples/*.py 
-            cp /tmp/impacket/examples/*.py /usr/local/bin/
-            rm -rf /tmp/impacket
-            print_success "Impacket toolkit installed"
-        fi
+        git clone -q https://github.com/fortra/impacket /tmp/impacket
+        chmod +x /tmp/impacket/examples/*.py 
+        cp /tmp/impacket/examples/*.py /usr/local/bin/
+        rm -rf /tmp/impacket
+        print_success "Impacket toolkit installed"
     fi
 
     # Responder
@@ -566,18 +598,6 @@ install_advanced_python_tools() {
         fi
     fi
 
-    # CrackMapExec/NetExec
-    if [[ ! -f "/usr/local/bin/crackmapexec" ]]; then
-        if python3 -m pip install "git+https://github.com/byt3bl33d3r/CrackMapExec" --break-system-packages >/dev/null 2>&1; then
-            print_success "CrackMapExec installed"
-        fi
-    fi
-
-    if [[ ! -f "/usr/local/bin/nxc" ]]; then
-        if python3 -m pip install "git+https://github.com/Pennyw0rth/NetExec.git" --break-system-packages >/dev/null 2>&1; then
-            print_success "NetExec installed"
-        fi
-    fi
 }
 
 # =============================================================================
@@ -689,6 +709,9 @@ setup_rust_environment() {
     install_rust_tool "rustscan" "cargo install rustscan --locked"
     install_rust_tool "x8" "cargo install x8 --locked"
     install_rust_tool "rcat" "cargo install rustcat --locked"
+
+# rusthound-ce despendenci check
+for pkg in gcc clang libclang-dev libgssapi-krb5-2 libkrb5-dev libsasl2-modules-gssapi-mit musl-tools gcc-mingw-w64-x86-64; do dpkg -s "$pkg" >/dev/null 2>&1 || echo "Installing missing dependency for rusthound-ce: $pkg" && sudo apt-get install -y "$pkg"   >/dev/null 2>&1 ; done
     install_rust_tool "rusthound-ce" "cargo install rusthound-ce --locked"
 
     # FeroxBuster

@@ -60,8 +60,11 @@ prepare_system() {
 # =============================================================================
 # STAGE 1: Package Manager Installations
 # =============================================================================
-
 install_apt_packages() {
+    # Force non-interactive mode to prevent hanging
+    export DEBIAN_FRONTEND=noninteractive
+    export NEEDRESTART_MODE=a
+    
     local -a core_packages=(
         "docker.io" "aircrack-ng" "apktool" "audacity" "axiom" "beef" "braa" 
         "bully" "cargo" "cewl" "cherrytree" "cowpatty" "crunch" "dirb" "dnsenum" 
@@ -69,7 +72,7 @@ install_apt_packages() {
         "hashcat" "hcxdumptool" "httrack" "hydra" "jq" "lolcat" "ltrace" 
         "masscan" "macchanger" "nbtscan" "ndiff" "nikto" "onesixtyone" 
         "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" 
-        "python3" "rdesktop" "reaver" "rlwrap" "smbmap" "sshpass" "sshuttle" 
+        "python3" "rdesktop" "reaver" "redis-tools" "rlwrap" "smbmap" "sshpass" "sshuttle" 
         "stegcracker" "steghide" "stegseek" "strace" "tmux" "tor" "toilet" 
         "tree" "whatweb" "whois" "wifite" "wireshark"
     )
@@ -77,9 +80,58 @@ install_apt_packages() {
     local installed_count=0
     local failed_packages=()
     
+    # Pre-configure packages that are known to ask questions
+    print_status "Configuring package settings..."
+    echo "wireshark-common wireshark-common/install-setuid boolean true" | debconf-set-selections
+    echo "macchanger macchanger/automatically_run boolean true" | debconf-set-selections
+    echo "parcellite parcellite/enable-autostart boolean false" | debconf-set-selections
+    
+    print_status "Updating package lists..."
+    if ! apt update -qq; then
+        print_error "Failed to update package lists"
+        return 1
+    fi
+    
     print_status "Installing ${#core_packages[@]} core packages via APT..."
+    
+    # Function to install a package with retry logic
+    install_package() {
+        local pkg="$1"
+        local max_retries=2
+        
+        for ((retry=1; retry<=max_retries; retry++)); do
+            print_status "Attempt $retry for: $pkg"
+            
+            # Use apt-get with non-interactive flags
+            if apt-get install -y \
+                --no-install-recommends \
+                --allow-downgrades \
+                --allow-change-held-packages \
+                -o Dpkg::Options::="--force-confdef" \
+                -o Dpkg::Options::="--force-confold" \
+                "$pkg" >/tmp/apt-install.log 2>&1; then
+                
+                return 0
+            fi
+            
+            # If it failed, check if it's a network issue
+            if grep -q "Temporary failure resolving" /tmp/apt-install.log || \
+               grep -q "Failed to fetch" /tmp/apt-install.log; then
+                print_warning "Network issue, waiting 5 seconds..."
+                sleep 5
+            else
+                # Other error, show last few lines of log
+                print_warning "Install error:"
+                tail -3 /tmp/apt-install.log
+                break
+            fi
+        done
+        
+        return 1
+    }
 
     for pkg in "${core_packages[@]}"; do
+        # Check if package is already installed
         if dpkg -l "$pkg" 2>/dev/null | grep -q "^ii"; then
             print_info "Already installed: $pkg"
             ((installed_count++))
@@ -87,12 +139,18 @@ install_apt_packages() {
         fi
         
         print_status "Installing: $pkg"
-        if apt install -y "$pkg" >/dev/null 2>&1; then
+        
+        if install_package "$pkg"; then
             print_success "Successfully installed: $pkg"
             ((installed_count++))
         else
             print_error "Failed to install: $pkg"
             failed_packages+=("$pkg")
+            
+            # Check if package exists in repository
+            if ! apt-cache show "$pkg" >/dev/null 2>&1; then
+                print_warning "Package '$pkg' not found in repository"
+            fi
         fi
     done
 
@@ -110,7 +168,8 @@ install_apt_packages() {
         if [[ ! -f "$bin_path" ]]; then
             local pkg_name="${special_packages[$bin_path]}"
             print_status "Installing: $pkg_name"
-            if apt install -y "$pkg_name" >/dev/null 2>&1; then
+            
+            if install_package "$pkg_name"; then
                 print_success "Successfully installed: $pkg_name"
             else
                 print_error "Failed to install: $pkg_name"
@@ -120,6 +179,13 @@ install_apt_packages() {
             print_info "Already available: $(basename "$bin_path")"
         fi
     done
+
+    # Fix any broken packages
+    print_status "Checking for broken packages..."
+    if dpkg -l | grep -q "^..r"; then
+        print_warning "Found broken packages, attempting to fix..."
+        apt --fix-broken install -y >/dev/null 2>&1
+    fi
 
     # Summary report
     print_success "APT installation completed: $installed_count/${#core_packages[@]} packages installed"
@@ -131,8 +197,12 @@ install_apt_packages() {
         done
         print_info "You can try installing them manually with: sudo apt install -y <package-name>"
     fi
+    
+    # Clean up temporary files
+    rm -f /tmp/apt-install.log
+    
+    return 0
 }
-
 # =============================================================================
 # STAGE 2: Custom Scripts & Docker Setup
 # =============================================================================
@@ -202,7 +272,7 @@ setup_nodejs() {
 # =============================================================================
 
 setup_golang() {
-    local go_version="1.25.4"
+    local go_version="1.25.6"
     local go_tarball="go${go_version}.linux-amd64.tar.gz"
 
     if [[ -f "/usr/local/go/bin/go" ]]; then
@@ -384,10 +454,7 @@ install_python_tools() {
     print_status "Installing Python tools with binary verification..."
     
     # Tools that install binaries in /usr/local/bin
-    install_tool "/usr/local/bin/arjun" "arjun" 
-    install_tool "/usr/local/bin/bloodyAD" "bloodyad"  
-    install_tool "/usr/local/bin/certipy" "certipy-ad" 
-    install_tool "/usr/local/bin/git-dumper" "git-dumper"    
+    install_tool "/usr/local/bin/arjun" "arjun"    
     install_tool "/usr/local/bin/mitm6" "mitm6"      
     install_tool "/usr/local/bin/pwncat" "pwncat"    
     install_tool "/usr/local/bin/sherlock" "sherlock-project" 
@@ -396,21 +463,31 @@ install_python_tools() {
     install_tool "/usr/local/bin/wafw00f" "wafw00f"   
     install_tool "/usr/local/bin/waymore" "waymore"  
     install_tool "/usr/local/bin/wdp" "website-dorker-pro"  
+    install_tool "/usr/local/bin/bloodyAD" "bloodyad"  
+    install_tool "/usr/local/bin/certipy" "certipy-ad" 
+    install_tool "/usr/local/bin/git-dumper" "git-dumper" 
+
+[ -f /usr/local/bin/certipy] && python3 -m pip install bloodyAD certipy-ad --break-system-packages --ignore-installed dnspython >/dev/null 2>&1
 
     # Python modules (import-based check)
     print_status "Installing Python modules..."
-    install_python_module "dirsearch" "dirsearch"
     install_python_module "hashid" "hashid"
     install_python_module "ldap3" "ldap3"
     install_python_module "lfimap" "lfimap"
     install_python_module "pwn" "pwntools"
     install_python_module "sublist3r" "sublist3r"
 
+    install_python_module "dirsearch" "dirsearch"
+
     # Git-based tools
     print_status "Installing Git-based Python tools..."
     install_git_tool "/usr/local/bin/paramspider" "https://github.com/devanshbatham/ParamSpider/archive/master.zip" "paramspider"
     install_git_tool "/usr/local/bin/ghauri" "https://github.com/r0oth3x49/ghauri/archive/master.zip" "ghauri"
-    install_tool "/usr/local/bin/powerview" "git+https://github.com/aniqfakhrul/powerview.py" "powerview"
+    install_git_tool "/usr/local/bin/crackmapexec" "git+https://github.com/byt3bl33d3r/CrackMapExec.git" "crackmapexec"
+    install_git_tool "/usr/local/bin/nxc" "git+https://github.com/Pennyw0rth/NetExec" "nxc"
+
+    install_git_tool "/usr/local/bin/powerview" "git+https://github.com/aniqfakhrul/powerview.py" "powerview"
+    install_git_tool "/usr/local/bin/wifiphisher" "git+https://github.com/wifiphisher/wifiphisher/archive/master.zip" "wifiphisher"
 
     # Special tools with custom handling
     print_status "Installing special tools..."
@@ -434,7 +511,7 @@ install_python_tools() {
     # LinkFinder
     if [ ! -f "/usr/local/bin/linkfinder" ]; then
         if python3 -m pip install "git+https://github.com/GerbenJavado/LinkFinder" --break-system-packages >/dev/null 2>&1; then
-            echo "#!/usr/bin/env python3\npython3 -m linkfinder \"\$@\"" > /usr/local/bin/linkfinder
+            echo "python3 -m linkfinder \"\$@\"" > /usr/local/bin/linkfinder
             chmod +x /usr/local/bin/linkfinder
             print_success "linkfinder installed successfully"
         fi
@@ -493,18 +570,6 @@ install_advanced_python_tools() {
         fi
     fi
 
-    # CrackMapExec/NetExec
-    if [[ ! -f "/usr/local/bin/crackmapexec" ]]; then
-        if python3 -m pip install "git+https://github.com/byt3bl33d3r/CrackMapExec" --break-system-packages >/dev/null 2>&1; then
-            print_success "CrackMapExec installed"
-        fi
-    fi
-
-    if [[ ! -f "/usr/local/bin/nxc" ]]; then
-        if python3 -m pip install "git+https://github.com/Pennyw0rth/NetExec.git" --break-system-packages >/dev/null 2>&1; then
-            print_success "NetExec installed"
-        fi
-    fi
 }
 
 # =============================================================================
@@ -619,12 +684,38 @@ setup_rust_environment() {
     install_rust_tool "rusthound-ce" "cargo install rusthound-ce --locked"
 
     # FeroxBuster
-    if [[ ! -f "/usr/local/bin/feroxbuster" ]]; then
-        curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/main/install-nix.sh | bash >/dev/null 2>&1
-        [[ -f "$HOME/.cargo/bin/feroxbuster" ]] && cp "$HOME/.cargo/bin/feroxbuster" "/usr/local/bin/feroxbuster"
-        print_success "Installed: FeroxBuster"
+# FeroxBuster installation
+if [[ ! -f "/usr/local/bin/feroxbuster" ]]; then
+    print_status "Installing FeroxBuster..."
+    
+    # Download the install script first
+    curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/master/install-nix.sh -o /tmp/install-ferox.sh 2>/dev/null
+    
+    if [[ -f "/tmp/install-ferox.sh" ]]; then
+        chmod +x /tmp/install-ferox.sh
+        
+        # Run with explicit directory
+        if /tmp/install-ferox.sh /usr/local/bin >/dev/null 2>&1; then
+            print_success "Installed: FeroxBuster"
+        else
+            # Fallback to cargo install
+            if command -v cargo >/dev/null 2>&1; then
+                cargo install feroxbuster --locked >/dev/null 2>&1 && print_success "Installed: FeroxBuster via cargo"
+            fi
+        fi
+        
+        rm -f /tmp/install-ferox.sh
+    else
+        # Direct binary download fallback
+        curl -sL https://github.com/epi052/feroxbuster/releases/latest/download/x86_64-linux-feroxbuster.zip -o /tmp/ferox.zip 2>/dev/null
+        unzip -q -o /tmp/ferox.zip -d /tmp/ 2>/dev/null
+        [[ -f "/tmp/feroxbuster" ]] && cp /tmp/feroxbuster /usr/local/bin/ && chmod +x /usr/local/bin/feroxbuster
+        rm -f /tmp/ferox.zip
+        print_success "Installed: FeroxBuster via direct download"
     fi
+fi
 
+# =========
     # Permanent PATH setup
     grep -q "\.cargo/bin" "$HOME/.bashrc" || echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "$HOME/.bashrc"
 }
@@ -886,7 +977,7 @@ download_pentest_tools() {
 main() {
     show_banner
     check_privileges "$@"
-    prepare_system
+  #  prepare_system
 
     print_status "Starting comprehensive tool installation..."
     
