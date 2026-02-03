@@ -29,9 +29,9 @@ bash wordlist.sh
 - [https://hub.docker.com/r/kasmweb/remnux-focal-desktop](https://github.com/ZishanAdThandar/hacknotes/tree/main/RevEng)
 - BloodHound
   - Goto the folder `sudo cd /opt/bloodhoundce`
-  - pull images `sudo docker-compose -f /opt/bloodhoundce/docker-compose.yml pull`
-  - Start Docker `sudo docker-compose -f /opt/bloodhoundce/docker-compose.yml up` # first time tun will give temp password
-  - To remove and start over `sudo docker-compose -f /opt/bloodhoundce/docker-compose.yml down`
+  - pull images `sudo docker-compose -f bloodhound-docker-compose.yml up -d`
+  - Start Docker `docker logs bloodhoundce-bloodhound-1 |grep "Initial Password Set To"` # first time tun will give temp password
+  - Open 127.0.0.1:8080 and use username admin and password from log, then set new password.
 
 - Ciphey `docker run -it --rm remnux/ciphey`
 
