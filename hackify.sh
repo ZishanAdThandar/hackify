@@ -448,6 +448,7 @@ install_python_tools() {
         ["/usr/local/bin/git-dumper"]="git-dumper"
         ["/usr/local/bin/yt-dlp"]="yt-dlp[default]"
         ["/usr/local/bin/dirsearch"]="dirsearch"
+        ["/usr/local/bin/wapiti"]="wapiti3"
     )
     
     for binary_path in "${!pypi_tools[@]}"; do
