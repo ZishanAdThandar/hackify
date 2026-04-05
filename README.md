@@ -28,7 +28,7 @@ bash wordlist.sh
 ## Dockers
 - [https://hub.docker.com/r/kasmweb/remnux-focal-desktop](https://github.com/ZishanAdThandar/hacknotes/tree/main/RevEng)
 - BloodHound
-  - Download the compose file `curl -ks https://raw.githubusercontent.com/SpecterOps/BloodHound/main/examples/docker-compose/docker-compose.yml > /opt/bloodhoundce/bloodhound-docker-compose.yml`
+  - Download the compose file `mkdir /opt/bloodhoundce && curl -ks https://raw.githubusercontent.com/SpecterOps/BloodHound/main/examples/docker-compose/docker-compose.yml > /opt/bloodhoundce/bloodhound-docker-compose.yml`
   - Goto the folder `sudo cd /opt/bloodhoundce`
   - pull images `sudo docker-compose -f bloodhound-docker-compose.yml up -d`
   - Start Docker `docker logs bloodhoundce-bloodhound-1 |grep "Initial Password Set To"` # first time tun will give temp password
