@@ -449,6 +449,7 @@ install_python_tools() {
         ["/usr/local/bin/yt-dlp"]="yt-dlp[default]"
         ["/usr/local/bin/dirsearch"]="dirsearch"
         ["/usr/local/bin/wapiti"]="wapiti3"
+        ["/usr/local/bin/exegol"]="exegol"
     )
     
     for binary_path in "${!pypi_tools[@]}"; do
@@ -587,7 +588,7 @@ install_advanced_python_tools() {
     # Responder
     if [[ ! -d "/opt/responder" ]]; then
         git clone -q https://github.com/lgandx/Responder.git /opt/responder
-        echo '#!/bin/bash\npython3 /opt/responder/Responder.py "$@"' > /usr/local/bin/responder
+        echo 'python3 /opt/responder/Responder.py "$@"' > /usr/local/bin/responder
         chmod +x /usr/local/bin/responder
         print_success "Responder installed"
     fi
@@ -647,7 +648,7 @@ install_compiled_tools() {
         git clone -q https://github.com/openwall/john -b bleeding-jumbo /opt/john
         cd /opt/john/src && ./configure >/dev/null 2>&1
         make -s clean && make -sj4 >/dev/null 2>&1 && make shell-completion >/dev/null 2>&1
-        echo '#!/bin/bash\n/opt/john/run/john "$@"' > /usr/local/bin/john
+        echo '/opt/john/run/john "$@"' > /usr/local/bin/john
         chmod +x /usr/local/bin/john /opt/john/run/john
         print_success "Installed: John the Ripper (optimized)"
     fi
@@ -710,6 +711,7 @@ setup_rust_environment() {
     install_rust_tool "rustscan" "cargo install rustscan --locked"
     install_rust_tool "x8" "cargo install x8 --locked"
     install_rust_tool "rcat" "cargo install rustcat --locked"
+    install_rust_tool "ares" "cargo install ciphey --locked"
 
 # rusthound-ce despendenci check
 for pkg in gcc clang libclang-dev libgssapi-krb5-2 libkrb5-dev libsasl2-modules-gssapi-mit musl-tools gcc-mingw-w64-x86-64; do dpkg -s "$pkg" >/dev/null 2>&1 || echo "Installing missing dependency for rusthound-ce: $pkg" && sudo apt-get install -y "$pkg"   >/dev/null 2>&1 ; done
