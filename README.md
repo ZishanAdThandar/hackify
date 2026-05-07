@@ -62,6 +62,10 @@ bash wordlist.sh
   - `~/.conkyrc`, `/etc/conky/conky.conf`, ` ~/.config/conky/conky.conf`
   - [Sample Conky.conf](configs/conky.conf)
 
+## Known Issues
+- In ParrotOS, it is breaking `Network Manager`.
+
+
 ---
 
 > [!WARNING] 
