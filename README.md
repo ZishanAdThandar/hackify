@@ -65,6 +65,9 @@ bash wordlist.sh
 ## Known Issues
 - In ParrotOS, it is breaking `Network Manager`.
 
+## Test Status
+✅ **Linux Mint 22.3 Zena** (Tested March 8, 2026)
+
 
 ---
 
