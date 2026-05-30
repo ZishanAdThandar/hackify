@@ -3,7 +3,7 @@
 Hackify is an open-source script for Debian-based operating systems, coded in bash. This script streamlines the installation of pentesting wordlists and tools with a single command, making it easier for cybersecurity enthusiasts and professionals to set up their pentesting environment quickly and efficiently.
 
 [![ZishanAdThandar's Hackify Repo stars](https://img.shields.io/github/stars/ZishanAdThandar/hackify)](https://github.com/ZishanAdThandar/hackify)
-[![LinkTree](https://img.shields.io/badge/Link-Tree-bbd343)](https://zishanhack.com/links)
+[![LinkTree](https://img.shields.io/badge/Link-Tree-bbd343)](https://zishanhack.com/links/)
 
 ![Banner Hackify](./banner.png)
 
