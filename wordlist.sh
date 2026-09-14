@@ -7,16 +7,23 @@ Cyan='\033[0;36m'     White='\033[0;37m'  Nc='\033[0m' # No Color
 
 # ====================== BANNER ======================
 clear
-printf "\n\n${Green}Hacking Wordlist Installer by,\n\n\n"
-printf "${Red}" # banner bg and fg color
-cat << "EOF"
-  _____    _                _      _ _____ _                 _          
- |_  (_)__| |_  __ _ _ _   /_\  __| |_   _| |_  __ _ _ _  __| |__ _ _ _ 
-  / /| (_-| ' \/ _` | ' \ / _ \/ _` | | | | ' \/ _` | ' \/ _` / _` | '_|
- /___|_/__|_||_\__,_|_||_/_/ \_\__,_| |_| |_||_\__,_|_||_\__,_\__,_|_|  
+# Banner and ASCII Art
+show_banner() {
+    clear
+    printf "${Yellow}"
+    cat << "EOF"
+
+    ▄▖▘  ▌       ▄▖ ▌  ▄▖▌      ▌    
+    ▗▘▌▛▘▛▌▀▌▛▌  ▌▌▛▌  ▐ ▛▌▀▌▛▌▛▌▀▌▛▘
+    ▙▖▌▄▌▌▌█▌▌▌  ▛▌▙▌  ▐ ▌▌█▌▌▌▙▌█▌▌ 
+                                 
 EOF
-printf "\n\n${Cyan}Profile: https://zishanadthandar.github.io\nLinkTree: https://zishanadthandar.github.io/linktree\nLinkedIn: https://linkedin.com/in/zishanadthandar${Nc}\n\n"
-sleep 2
+    printf "\n"
+    printf "    Hackify Powered by ZishanHack\n"
+    printf "    About Me: https://ZishanHack.com/about/ \n"
+    printf "    Links: https://ZishanHack.com/links/ ${NC}\n\n"
+}
+show_banner
 
 # ====================== CHECK ROOT ======================
 if [[ "$EUID" -ne 0 ]]; then

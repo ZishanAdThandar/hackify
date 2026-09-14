@@ -20,18 +20,18 @@ readonly NC='\033[0m'
 # Banner and ASCII Art
 show_banner() {
     clear
-    printf "\n\n${GREEN}Hacking Tools and Wordlist Installer written by,\n\n\n"
-    printf "${RED}"
+    printf "${YELLOW}"
     cat << "EOF"
-  _____    _                _      _ _____ _                 _          
- |_  (_)__| |_  __ _ _ _   /_\  __| |_   _| |_  __ _ _ _  __| |__ _ _ _ 
-  / /| (_-| ' \/ _` | ' \ / _ \/ _` | | | | ' \/ _` | ' \/ _` / _` | '_|
- /___|_/__|_||_\__,_|_||_/_/ \_\__,_| |_| |_||_\__,_|_||_\__,_\__,_|_|  
- 
+
+    ▄▖▘  ▌       ▄▖ ▌  ▄▖▌      ▌    
+    ▗▘▌▛▘▛▌▀▌▛▌  ▌▌▛▌  ▐ ▛▌▀▌▛▌▛▌▀▌▛▘
+    ▙▖▌▄▌▌▌█▌▌▌  ▛▌▙▌  ▐ ▌▌█▌▌▌▙▌█▌▌ 
+                                 
 EOF
-    printf "\n\n${CYAN}Profile: https://zishanadthandar.github.io\n"
-    printf "LinkTree: https://zishanadthandar.github.io/linktree\n"
-    printf "LinkedIn: https://linkedin.com/in/zishanadthandar${NC}\n\n"
+    printf "\n"
+    printf "    Hackify Powered by ZishanHack\n"
+    printf "    About Me: https://ZishanHack.com/about/ \n"
+    printf "    Links: https://ZishanHack.com/links/ ${NC}\n\n"
 }
 
 # Utility Functions
