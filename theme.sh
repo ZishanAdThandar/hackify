@@ -65,6 +65,15 @@ readonly CONKY_DST="$HOME/.config/conky/hackify.conf"
 readonly CONKY_AUTOSTART="$HOME/.config/autostart/hackify-conky.desktop"
 
 # -----------------------------------------------------------------------------
+# Redshift (eye protection at night)
+# -----------------------------------------------------------------------------
+readonly REDSHIFT_TEMP_DAY=6500
+readonly REDSHIFT_TEMP_NIGHT=4500
+readonly REDSHIFT_TRANSITION=60
+readonly REDSHIFT_CONFIG="$HOME/.config/redshift/redshift.conf"
+readonly REDSHIFT_AUTOSTART="$HOME/.config/autostart/hackify-redshift.desktop"
+
+# -----------------------------------------------------------------------------
 # Banner
 # -----------------------------------------------------------------------------
 show_banner() {
@@ -88,8 +97,35 @@ warn() { printf "${YELLOW}[!]${NC} %s\n" "$*"; }
 err()  { printf "${RED}[x]${NC} %s\n" "$*"; }
 ok()   { printf "${GREEN}[✓]${NC} %s\n" "$*"; }
 
+# -----------------------------------------------------------------------------
+# Helper: safely write a file into $HOME even if root owns it (from old sudo runs)
+# -----------------------------------------------------------------------------
+safe_write() {
+    local path="$1"
+    local dir
+    dir=$(dirname "$path")
+
+    # Ensure dir exists and is owned by the current user
+    if [ ! -d "$dir" ]; then
+        mkdir -p "$dir" 2>/dev/null || sudo mkdir -p "$dir"
+    fi
+    if [ ! -w "$dir" ]; then
+        sudo chown -R "$USER":"$USER" "$dir" 2>/dev/null || true
+        sudo chmod u+rwx "$dir" 2>/dev/null || true
+    fi
+
+    # If the file itself exists and is not writable, fix ownership
+    if [ -e "$path" ] && [ ! -w "$path" ]; then
+        sudo chown "$USER":"$USER" "$path" 2>/dev/null || true
+        sudo chmod u+rw "$path" 2>/dev/null || true
+    fi
+
+    # Write from stdin
+    cat > "$path"
+}
+
 # =============================================================================
-# 1) DNS (from config.sh)
+# 1) DNS
 # =============================================================================
 configure_dns() {
     log "Configuring DNS (Cloudflare) + DNS-over-TLS ..."
@@ -368,8 +404,7 @@ start_conky() {
 }
 
 setup_conky_autostart() {
-    mkdir -p "$(dirname "$CONKY_AUTOSTART")"
-    cat > "$CONKY_AUTOSTART" <<EOF
+    safe_write "$CONKY_AUTOSTART" <<EOF
 [Desktop Entry]
 Type=Application
 Name=Hackify Conky
@@ -383,16 +418,12 @@ EOF
 }
 
 maybe_configure_conky() {
-    # Nothing to do if the bundled config isn't present
     if [ ! -f "$CONKY_SRC" ]; then
         warn "No theme/conky.conf found next to this script — skipping conky."
         return 0
     fi
 
-    # ---------------------------------------------------------------------
-    # Fully applied already? (installed + config copied + running our config
-    # + autostart in place) → silently succeed, no prompts.
-    # ---------------------------------------------------------------------
+    # Fully applied → silently succeed, no prompts
     if conky_is_installed \
        && conky_config_installed \
        && conky_is_running_with_hackify \
@@ -401,10 +432,7 @@ maybe_configure_conky() {
         return 0
     fi
 
-    # ---------------------------------------------------------------------
-    # Conky is installed + running our config, but autostart is missing.
-    # Ask ONLY about autostart — not about applying conky again.
-    # ---------------------------------------------------------------------
+    # Running but no autostart → ask only about autostart
     if conky_is_installed \
        && conky_config_installed \
        && conky_is_running_with_hackify \
@@ -419,9 +447,6 @@ maybe_configure_conky() {
         return 0
     fi
 
-    # ---------------------------------------------------------------------
-    # Not fully set up — report state and ask once.
-    # ---------------------------------------------------------------------
     if ! conky_is_installed; then
         warn "Conky is not installed."
     elif conky_is_running; then
@@ -440,8 +465,8 @@ maybe_configure_conky() {
     conky_is_installed || install_conky || return 1
     start_conky
 
-    # After applying, offer autostart ONLY if not already configured
-    if [ -f "$CONKY_AUTOSTART" ]; then
+    # Only ask about autostart if it's not already there
+    if conky_autostart_configured; then
         ok "Conky autostart already configured — skipping prompt."
     else
         printf "\n"
@@ -454,7 +479,152 @@ maybe_configure_conky() {
 }
 
 # =============================================================================
-# 4) Shell history
+# 4) Redshift (auto-install; no prompt to install)
+# =============================================================================
+redshift_is_installed() {
+    command -v redshift >/dev/null 2>&1
+}
+
+redshift_is_running() {
+    pgrep -u "$USER" -x redshift >/dev/null 2>&1
+}
+
+redshift_autostart_configured() {
+    [ -f "$REDSHIFT_AUTOSTART" ] && grep -q "$REDSHIFT_CONFIG" "$REDSHIFT_AUTOSTART" 2>/dev/null
+}
+
+redshift_config_configured() {
+    [ -f "$REDSHIFT_CONFIG" ] && grep -q 'temp-day=' "$REDSHIFT_CONFIG" 2>/dev/null
+}
+
+install_redshift() {
+    log "Installing redshift (eye protection) ..."
+    if   command -v apt-get >/dev/null 2>&1; then
+        sudo apt-get update -qq && sudo apt-get install -y redshift redshift-gtk
+    elif command -v dnf >/dev/null 2>&1; then
+        sudo dnf install -y redshift redshift-gtk
+    elif command -v pacman >/dev/null 2>&1; then
+        sudo pacman -S --noconfirm redshift
+    elif command -v zypper >/dev/null 2>&1; then
+        sudo zypper install -y redshift
+    elif command -v apk >/dev/null 2>&1; then
+        sudo apk add redshift
+    else
+        warn "Unknown package manager. Install redshift manually."
+        return 1
+    fi
+    redshift_is_installed && ok "redshift installed." || warn "redshift install failed."
+}
+
+write_redshift_config() {
+    safe_write "$REDSHIFT_CONFIG" <<EOF
+; Hackify eye-care redshift config
+; Warm but not aggressive — 6500K day, 4500K night, 60s transition.
+
+[redshift]
+temp-day=$REDSHIFT_TEMP_DAY
+temp-night=$REDSHIFT_TEMP_NIGHT
+transition=$REDSHIFT_TRANSITION
+gamma=1.0:1.0:1.0
+adjustment-method=randr
+location-provider=manual
+
+[manual]
+lat=22.57
+lon=88.36
+EOF
+
+    if ! command -v xrandr >/dev/null 2>&1 && command -v geoclue >/dev/null 2>&1; then
+        sed -i 's/^adjustment-method=randr/adjustment-method=wayland/' "$REDSHIFT_CONFIG" 2>/dev/null || true
+    fi
+
+    ok "Redshift config written: $REDSHIFT_CONFIG"
+}
+
+setup_redshift_autostart() {
+    safe_write "$REDSHIFT_AUTOSTART" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Hackify Redshift
+Comment=Eye protection — warm screen tint at night
+Exec=redshift -c $REDSHIFT_CONFIG
+X-GNOME-Autostart-enabled=true
+Hidden=false
+NoDisplay=false
+Terminal=false
+EOF
+    ok "Redshift autostart entry created: $REDSHIFT_AUTOSTART"
+}
+
+start_redshift() {
+    if redshift_is_running; then
+        warn "redshift already running — restarting to load new config."
+        pkill -u "$USER" -x redshift
+        sleep 1
+    fi
+    nohup redshift -c "$REDSHIFT_CONFIG" >/dev/null 2>&1 &
+    sleep 1
+    if redshift_is_running; then
+        ok "Redshift started (day ${REDSHIFT_TEMP_DAY}K / night ${REDSHIFT_TEMP_NIGHT}K)."
+    else
+        warn "Redshift did not start — check $REDSHIFT_CONFIG."
+        warn "On Wayland, redshift may need 'gammastep' instead."
+    fi
+}
+
+maybe_configure_redshift() {
+    # Fully applied → silently succeed, no prompts
+    if redshift_is_installed \
+       && redshift_config_configured \
+       && redshift_is_running \
+       && redshift_autostart_configured; then
+        ok "Redshift already installed, running, and set to autostart — skipping."
+        return 0
+    fi
+
+    # Installed + config + running, but no autostart → ask only about autostart
+    if redshift_is_installed \
+       && redshift_config_configured \
+       && redshift_is_running \
+       && ! redshift_autostart_configured; then
+        ok "Redshift already applied and running."
+        printf "\n"
+        read -rp "Add redshift to autostart on login? [y/N] " ans
+        case "$ans" in
+            [yY]|[yY][eE][sS]) setup_redshift_autostart ;;
+            *) warn "Redshift autostart skipped." ;;
+        esac
+        return 0
+    fi
+
+    # Not fully set up → auto-install and configure (no install prompt)
+    if ! redshift_is_installed; then
+        warn "Redshift is not installed — installing automatically."
+        install_redshift || return 1
+    elif ! redshift_config_configured; then
+        warn "Redshift is installed but no Hackify config found — writing it."
+    elif ! redshift_is_running; then
+        warn "Redshift is configured but not running — starting it."
+    fi
+
+    write_redshift_config
+    start_redshift
+
+    # Only ask about autostart if not already configured
+    if redshift_autostart_configured; then
+        ok "Redshift autostart already configured — skipping prompt."
+    else
+        printf "\n"
+        read -rp "Add redshift to autostart on login? [y/N] " ans
+        case "$ans" in
+            [yY]|[yY][eE][sS]) setup_redshift_autostart ;;
+            *) warn "Redshift autostart skipped." ;;
+        esac
+    fi
+}
+
+# =============================================================================
+# 5) Shell history
 # =============================================================================
 configure_shell_history() {
     local rc="$HOME/.bashrc"
@@ -483,7 +653,7 @@ EOF
 }
 
 # =============================================================================
-# 5) Terminal detection / theme
+# 6) Terminal detection / theme
 # =============================================================================
 detect_terminal() {
     local p=$$ t depth=0
@@ -754,7 +924,8 @@ EOF
 [general]
 import = ["~/.config/alacritty/theme-hackify.toml"]
 EOF
-    elif ! grep -q 'theme-hackify.toml' "$main"; then        cp "$main" "$main.bak.$(date +%s)"
+    elif ! grep -q 'theme-hackify.toml' "$main"; then
+        cp "$main" "$main.bak.$(date +%s)"
         warn "Existing alacritty.toml found. Add this manually:"
         printf '\n    [general]\n    import = ["~/.config/alacritty/theme-hackify.toml"]\n\n'
     fi
@@ -836,6 +1007,9 @@ main() {
 
     # 5) Conky (idempotent)
     maybe_configure_conky
+
+    # 6) Redshift (auto-install; idempotent)
+    maybe_configure_redshift
 
     printf "\n"
     ok "All done."
