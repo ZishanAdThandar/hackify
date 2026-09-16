@@ -272,7 +272,7 @@ setup_nodejs() {
 # =============================================================================
 
 setup_golang() {
-    local go_version="1.25.6"
+    local go_version="1.27.1"
     local go_tarball="go${go_version}.linux-amd64.tar.gz"
 
     if [[ -f "/usr/local/go/bin/go" ]]; then
@@ -295,10 +295,12 @@ setup_golang() {
         for path_cmd in "${go_paths[@]}"; do
             grep -q "$path_cmd" "$user_dir/.bashrc" 2>/dev/null || echo "$path_cmd" >> "$user_dir/.bashrc"
         done
-        source "$user_dir/.bashrc" 2>/dev/null || true
     done
 
     chmod -R 755 /usr/local/go/bin
+    export PATH=/usr/local/go/bin:$PATH
+    export GOROOT=/usr/local/go
+    export GOBIN=/usr/local/go/bin
     export GO111MODULE="on"
     
     print_success "GoLang $go_version installed and configured"
@@ -306,10 +308,14 @@ setup_golang() {
 
 install_go_tools() {
     print_status "Installing Go-based security tools..."
+    export PATH=/usr/local/go/bin:$PATH
+    export GOROOT=/usr/local/go
+    export GOBIN=/usr/local/go/bin
+    export GO111MODULE=on
 
     declare -A go_tools=(
         ["afrog"]="github.com/zan8in/afrog/v3/cmd/afrog@latest"
-        ["amass"]="github.com/owasp-amass/amass/v3/...@master"
+        ["amass"]="github.com/owasp-amass/amass/v3/cmd/amass@master"
         ["assetfinder"]="github.com/tomnomnom/assetfinder@latest"
         ["chaos"]="github.com/projectdiscovery/chaos-client/cmd/chaos@latest"
         ["crlfuzz"]="github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest"
@@ -417,13 +423,13 @@ install_python_tools() {
         print_status "Installing: $tool_name"
         
         # Try with increased timeout and retry
-        for attempt in {1..2}; do
-            if python3 -m pip install "$package" --break-system-packages --timeout 60 >/dev/null 2>&1; then
+        for attempt in {1..3}; do
+            if python3 -m pip install "$package" --break-system-packages --timeout 300 >/dev/null 2>&1; then
                 print_success "Installed: $tool_name"
                 return 0
-            elif [[ $attempt -eq 1 ]]; then
+            elif [[ $attempt -lt 3 ]]; then
                 print_warning "Retrying: $tool_name"
-                sleep 2
+                sleep 3
             fi
         done
         
@@ -677,11 +683,11 @@ install_compiled_tools() {
     # NMap from source
     if [[ ! -f "/usr/local/bin/nmap" ]]; then
         wget https://nmap.org/dist/nmap-7.95.tar.bz2 --directory-prefix=/tmp/ >/dev/null 2>&1
-        cd /tmp && tar xvjf /tmp/nmap-7.95.tar.bz2 >/dev/null 2>&1
+        tar xvjf /tmp/nmap-7.95.tar.bz2 -C /tmp >/dev/null 2>&1
         cd /tmp/nmap-7.95 && ./configure >/dev/null 2>&1
         make install -C /tmp/nmap-7.95 >/dev/null 2>&1
         cp /usr/local/bin/nmap /usr/bin/nmap 2>/dev/null || true
-        rm -rf /tmp/nmap-7.95* >/dev/null 2>&1
+        cd / && rm -rf /tmp/nmap-7.95* >/dev/null 2>&1
         print_success "Installed: NMap (from source)"
     fi
 }
@@ -691,15 +697,21 @@ setup_rust_environment() {
 
     if ! command -v rustup >/dev/null 2>&1; then
         RUSTUP_INIT_SKIP_PATH_CHECK=yes curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y >/dev/null 2>&1
-        source "$HOME/.cargo/env"
+        if [[ -f "$HOME/.cargo/env" ]]; then
+            source "$HOME/.cargo/env"
+        else
+            print_warning "Rustup installer did not create environment; will try rustup commands anyway"
+        fi
     fi
 
-    rustup install stable >/dev/null 2>&1
-    rustup default stable >/dev/null 2>&1
-    rustup update >/dev/null 2>&1
-
-    export PATH="$HOME/.cargo/bin:$PATH"
+    export PATH="$PATH:$HOME/.cargo/bin:$HOME/.rustup/bin:/usr/local/cargo/bin"
+    export CARGO_HOME="$HOME/.cargo"
+    export RUSTUP_HOME="$HOME/.rustup"
     export CARGO_TARGET_DIR="/usr/local/bin"
+
+    rustup install stable >/dev/null 2>&1 || true
+    rustup default stable >/dev/null 2>&1 || true
+    rustup update >/dev/null 2>&1 || true
 
     # Install build dependencies
     local -a build_deps=("build-essential" "libssl-dev" "pkg-config" "liblzma-dev" "libfontconfig1-dev")
