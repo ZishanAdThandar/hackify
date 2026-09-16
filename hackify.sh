@@ -73,7 +73,7 @@ install_apt_packages() {
         "masscan" "macchanger" "nbtscan" "ndiff" "nikto" "onesixtyone" 
         "openvpn" "parcellite" "pipx" "pixiewps" "pngcheck" "proxychains" 
         "python3" "rdesktop" "reaver" "redis-tools" "rlwrap" "smbmap" "sshpass" "sshuttle" 
-        "stegcracker" "steghide" "stegseek" "strace" "tmux" "tor" "toilet" 
+        "stegcracker" "steghide" "stegseek" "strace" "tigervnc-viewer" "tmux" "tor" "toilet" 
         "tree" "whatweb" "whois" "wifite" "wireshark"
     )
 
