@@ -28,7 +28,7 @@ fi
 
 
 echo "[+]------ Starting Subdomain Enumeration ------[+]";
-echo "[+]https://ZishanAdThandar.GitHub.io/linktree[+]";
+echo "[+]https://zishanhack.com/links/ [+]";
 echo "[+]------ Zishan Ahamed Thandar ------[+]";
 
 echo "[+] Running Subfinder [+]"
