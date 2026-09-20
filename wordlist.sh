@@ -21,7 +21,7 @@ EOF
     printf "\n"
     printf "    Hackify Powered by ZishanHack\n"
     printf "    About Me: https://ZishanHack.com/about/ \n"
-    printf "    Links: https://ZishanHack.com/links/ ${NC}\n\n"
+    printf "    Links: https://ZishanHack.com/links/ ${Nc}\n\n"
 }
 show_banner
 
@@ -39,15 +39,21 @@ printf "We are in $(pwd).\n\n$WORDLIST_DIR/ contains:\n"
 ls
 
 # ====================== FUNCTIONS ======================
-git config --global http.version HTTP/1.1 ##fixing git error
+# Fix git HTTP/1.1 error — only write the global config once, not on every run
+if [[ "$(git config --global --get http.version 2>/dev/null)" != "HTTP/1.1" ]]; then
+    git config --global http.version HTTP/1.1
+fi
 
 download_git() {
     local name=$1
     local repo=$2
     if [[ -d "$WORDLIST_DIR/$name" ]]; then
         printf "${Green}$name already installed${Nc}\n"
+    elif git clone --depth=1 "$repo" "$WORDLIST_DIR/$name"; then
+        printf "${Purple}$name downloaded successfully\n${Nc}"
     else
-        git clone --depth=1 "$repo" "$WORDLIST_DIR/$name" && printf "${Purple}$name downloaded successfully\n${Nc}"
+        printf "${Red}Failed to download $name from $repo${Nc}\n" >&2
+        exit 1
     fi
 }
 
@@ -56,22 +62,62 @@ download_wget() {
     local url=$2
     if [[ -f "$WORDLIST_DIR/$filename" ]]; then
         printf "${Green}$filename already downloaded${Nc}\n"
+    elif wget --progress=bar:force -O "$WORDLIST_DIR/$filename" "$url"; then
+        printf "${Purple}$filename downloaded\n${Nc}"
     else
-        wget --progress=bar:force -O "$WORDLIST_DIR/$filename" "$url" && printf "${Purple}$filename downloaded\n${Nc}"
+        printf "${Red}Failed to download $filename from $url${Nc}\n" >&2
+        exit 1
+    fi
+}
+
+
+download_zip() {
+    local name=$1
+    local url=$2
+    local zipfile="$WORDLIST_DIR/${name}.zip"
+    if [[ -d "$WORDLIST_DIR/$name" ]]; then
+        printf "${Green}$name already installed${Nc}\n"
+    else
+        if ! command -v unzip >/dev/null 2>&1; then
+            printf "${Red}unzip is required but not installed — run: sudo apt install unzip${Nc}\n" >&2
+            exit 1
+        fi
+        if wget --progress=bar:force -O "$zipfile" "$url"; then
+            if unzip -q "$zipfile" -d "$WORDLIST_DIR/"; then
+                rm -f "$zipfile"
+                # GitHub archive zips extract into <name>-master/ — rename to target name
+                if [[ -d "$WORDLIST_DIR/${name}-master" && ! -d "$WORDLIST_DIR/$name" ]]; then
+                    mv "$WORDLIST_DIR/${name}-master" "$WORDLIST_DIR/$name"
+                    printf "${Purple}$name downloaded and extracted\n${Nc}"
+                else
+                    printf "${Red}Unexpected extraction layout for $name${Nc}\n" >&2
+                    exit 1
+                fi
+            else
+                printf "${Red}Failed to unzip $name${Nc}\n" >&2
+                exit 1
+            fi
+        else
+            printf "${Red}Failed to download $name from $url${Nc}\n" >&2
+            exit 1
+        fi
     fi
 }
 
 # ====================== WORDLIST SOURCES ======================
 declare -A GIT_WORDLISTS=(
     [PayloadsAllTheThings]="https://github.com/swisskyrepo/PayloadsAllTheThings.git"
-    [SecLists]="https://github.com/danielmiessler/SecLists.git"
     [fuzzdb]="https://github.com/fuzzdb-project/fuzzdb.git"
     [api_wordlist]="https://github.com/chrislockard/api_wordlist.git"
 )
 
 declare -A WGET_WORDLISTS=(
     [all.txt]="https://gist.githubusercontent.com/jhaddix/86a06c5dc309d08580a018c66354a056/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt"
-    [markdownxss.txt]="https://raw.githubusercontent.com/cujanovic/Markdown-XSS-Payloads/master/Markdown-XSS-Payloads.txt"
+    [markdownxss.txt]="https://raw.githubusercontent.com/cujanovic/Markdown-XSS-Payloads/refs/heads/master/Markdown-XSS-Payloads.txt"
+)
+
+declare -A ZIP_WORDLISTS=(
+    [SecLists]="https://github.com/danielmiessler/SecLists/archive/master.zip"
 )
 
 # ====================== DOWNLOAD WORDLISTS ======================
@@ -81,6 +127,10 @@ done
 
 for file in "${!WGET_WORDLISTS[@]}"; do
     download_wget "$file" "${WGET_WORDLISTS[$file]}"
+done
+
+for name in "${!ZIP_WORDLISTS[@]}"; do
+    download_zip "$name" "${ZIP_WORDLISTS[$name]}"
 done
 
 # ====================== UNZIP ROCKYOU ======================
@@ -97,11 +147,13 @@ fi
 mkdir -p "/usr/share/wordlists"
 
 # Check if SecLists directory exists and no symbolic link exists at target, then create link
-[ -d "/opt/wordlists/SecLists" ] && [ ! -L "/usr/share/seclists" ] && ln -s "/opt/wordlists/SecLists" "/usr/share/seclists"
-[ -d "/opt/wordlists/SecLists" ] && [ ! -L "/usr/share/wordlists/SecLists" ] && ln -s "/opt/wordlists/SecLists" "/usr/share/wordlists/SecLists"
+# Only create links when nothing exists at the target yet — [ ! -L ] alone isn't
+# enough: a pre-existing regular file or directory also makes ln -s fail.
+[ -d "/opt/wordlists/SecLists" ] && [ ! -e "/usr/share/seclists" ] && [ ! -L "/usr/share/seclists" ] && ln -s "/opt/wordlists/SecLists" "/usr/share/seclists"
+[ -d "/opt/wordlists/SecLists" ] && [ ! -e "/usr/share/wordlists/SecLists" ] && [ ! -L "/usr/share/wordlists/SecLists" ] && ln -s "/opt/wordlists/SecLists" "/usr/share/wordlists/SecLists"
 
 # Check if rockyou.txt file exists and no symbolic link exists at target, then create link
-[ -f "/opt/wordlists/rockyou.txt" ] && [ ! -L "/usr/share/wordlists/rockyou.txt" ] && ln -s "/opt/wordlists/rockyou.txt" "/usr/share/wordlists/rockyou.txt"
+[ -f "/opt/wordlists/rockyou.txt" ] && [ ! -e "/usr/share/wordlists/rockyou.txt" ] && [ ! -L "/usr/share/wordlists/rockyou.txt" ] && ln -s "/opt/wordlists/rockyou.txt" "/usr/share/wordlists/rockyou.txt"
 
 
 # ====================== ASSETNOTE API WORDLIST (Optional) ======================
