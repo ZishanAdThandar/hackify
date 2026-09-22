@@ -507,7 +507,30 @@ dpkg -s libnl-genl-3-dev >/dev/null 2>&1 || apt install -y libnl-genl-3-dev >/de
         ["impacket"]="git+https://github.com/fortra/impacket"
     )
     
+    # Console-script each git tool provides (empty = detect via pip show only)
+    local -A git_tool_binaries=(
+        ["paramspider"]="paramspider"
+        ["ghauri"]="ghauri"
+        ["crackmapexec"]="cme"
+        ["dirsearch"]="dirsearch"
+        ["nxc"]="nxc"
+        ["powerview"]="powerview"
+        ["wifiphisher"]="wifiphisher"
+        ["linkfinder"]="linkfinder"
+        ["impacket"]=""
+    )
+
     for tool_name in "${!git_tools[@]}"; do
+        local bin="${git_tool_binaries[$tool_name]:-}"
+
+        # Skip if the console-script is already on PATH or pip already knows the
+        # distribution (covers linkfinder, which installs no console-script).
+        if { [ -n "$bin" ] && command -v "$bin" >/dev/null 2>&1; } || \
+           python3 -m pip show "$tool_name" >/dev/null 2>&1; then
+            print_info "Already installed: $tool_name"
+            continue
+        fi
+
         print_status "Installing: $tool_name"
         python3 -m pip install "${git_tools[$tool_name]}" --break-system-packages --no-deps --timeout 120 >/dev/null 2>&1 && \
             print_success "Installed: $tool_name" || \
