@@ -753,7 +753,7 @@ setup_rust_environment() {
     install_rust_tool "binwalk" "cargo install binwalk --locked"
     install_rust_tool "rustscan" "cargo install rustscan --locked"
     install_rust_tool "x8" "cargo install x8 --locked"
-    install_rust_tool "rustcat" "cargo install rustcat --locked"
+    install_rust_tool "rustc" "cargo install rustcat --locked"
     install_rust_tool "ciphey" "cargo install ciphey --locked"
 
 # rusthound-ce dependency check
