@@ -20,7 +20,7 @@ readonly NC='\033[0m'
 # Banner and ASCII Art
 show_banner() {
     clear
-    printf "${YELLOW}"
+    printf '%b' "$YELLOW"
     cat << "EOF"
 
     ▄▖▘  ▌       ▄▖ ▌  ▄▖▌      ▌    
@@ -31,21 +31,24 @@ EOF
     printf "\n"
     printf "    Hackify Powered by ZishanHack\n"
     printf "    About Me: https://ZishanHack.com/about/ \n"
-    printf "    Links: https://ZishanHack.com/links/ ${NC}\n\n"
+    printf '    Links: https://ZishanHack.com/links/ %b\n\n' "$NC"
 }
 
 # Utility Functions
-print_status() { printf "${CYAN}[*]${NC} %s\n" "$1"; }
-print_success() { printf "${GREEN}[+]${NC} %s\n" "$1"; }
-print_warning() { printf "${YELLOW}[!]${NC} %s\n" "$1"; }
-print_error() { printf "${RED}[-]${NC} %s\n" "$1"; }
-print_info() { printf "${BLUE}[i]${NC} %s\n" "$1"; }
+print_status() { printf '%b[*]%b %s\n' "$CYAN" "$NC" "$1"; }
+print_success() { printf '%b[+]%b %s\n' "$GREEN" "$NC" "$1"; }
+print_warning() { printf '%b[!]%b %s\n' "$YELLOW" "$NC" "$1"; }
+print_error() { printf '%b[-]%b %s\n' "$RED" "$NC" "$1"; }
+print_info() { printf '%b[i]%b %s\n' "$BLUE" "$NC" "$1"; }
 
 # Check Root Privileges
 check_privileges() {
     if [[ $EUID -ne 0 ]]; then
         print_error "Please run as root. Elevating privileges..."
-        exec sudo "$0" "$@"
+        if ! exec sudo "$0" "$@"; then
+            print_error "Failed to elevate privileges. Re-run with sudo."
+            exit 1
+        fi
     fi
     print_success "Running with root privileges"
 }
@@ -79,6 +82,8 @@ install_apt_packages() {
 
     local installed_count=0
     local failed_packages=()
+    local apt_log
+    apt_log=$(mktemp /tmp/apt-install.XXXXXX)
     
     # Pre-configure packages that are known to ask questions
     print_status "Configuring package settings..."
@@ -109,20 +114,20 @@ install_apt_packages() {
                 --allow-change-held-packages \
                 -o Dpkg::Options::="--force-confdef" \
                 -o Dpkg::Options::="--force-confold" \
-                "$pkg" >/tmp/apt-install.log 2>&1; then
+                "$pkg" >"$apt_log" 2>&1; then
                 
                 return 0
             fi
             
             # If it failed, check if it's a network issue
-            if grep -q "Temporary failure resolving" /tmp/apt-install.log || \
-               grep -q "Failed to fetch" /tmp/apt-install.log; then
+            if grep -q "Temporary failure resolving" "$apt_log" || \
+               grep -q "Failed to fetch" "$apt_log"; then
                 print_warning "Network issue, waiting 5 seconds..."
                 sleep 5
             else
                 # Other error, show last few lines of log
                 print_warning "Install error:"
-                tail -3 /tmp/apt-install.log
+                tail -3 "$apt_log"
                 break
             fi
         done
@@ -134,7 +139,7 @@ install_apt_packages() {
         # Check if package is already installed
         if dpkg -l "$pkg" 2>/dev/null | grep -q "^ii"; then
             print_info "Already installed: $pkg"
-            ((installed_count++))
+            installed_count=$((installed_count + 1))
             continue
         fi
         
@@ -142,7 +147,7 @@ install_apt_packages() {
         
         if install_package "$pkg"; then
             print_success "Successfully installed: $pkg"
-            ((installed_count++))
+            installed_count=$((installed_count + 1))
         else
             print_error "Failed to install: $pkg"
             failed_packages+=("$pkg")
@@ -199,7 +204,7 @@ install_apt_packages() {
     fi
     
     # Clean up temporary files
-    rm -f /tmp/apt-install.log
+    rm -f "$apt_log"
     
     return 0
 }
@@ -224,10 +229,11 @@ install_custom_scripts() {
     for script_name in "${!scripts[@]}"; do
         local script_path="/usr/local/bin/$script_name"
         if [[ ! -f "$script_path" ]]; then
-            if curl -ks "${scripts[$script_name]}" > "$script_path" 2>/dev/null; then
+            if curl -fsSL "${scripts[$script_name]}" -o "$script_path" 2>/dev/null; then
                 chmod +x "$script_path"
                 print_success "Installed: $script_name"
             else
+                rm -f "$script_path"
                 print_error "Failed to install: $script_name"
             fi
         fi
@@ -235,12 +241,18 @@ install_custom_scripts() {
 
     # Docker Compose
     if [[ ! -f "/usr/local/bin/docker-compose" ]]; then
-        rm -f /usr/bin/docker-compose
-        local arch_suffix="$(uname -s)-$(uname -m)"
-        if curl -ks -L "https://github.com/docker/compose/releases/download/v2.32.1/docker-compose-$arch_suffix" \
-            -o /usr/local/bin/docker-compose; then
-            chmod +x /usr/local/bin/docker-compose
+        local arch_suffix tmp_compose
+        arch_suffix="$(uname -s)-$(uname -m)"
+        tmp_compose=$(mktemp /tmp/docker-compose.XXXXXX)
+        if curl -fsSL "https://github.com/docker/compose/releases/download/v2.32.1/docker-compose-$arch_suffix" \
+            -o "$tmp_compose"; then
+            rm -f /usr/bin/docker-compose
+            install -m 755 "$tmp_compose" /usr/local/bin/docker-compose
+            rm -f "$tmp_compose"
             print_success "Installed: docker-compose"
+        else
+            rm -f "$tmp_compose"
+            print_error "Failed to download docker-compose"
         fi
     fi
 }
@@ -282,8 +294,17 @@ setup_golang() {
 
     print_status "Installing GoLang $go_version..."
     
-    cd /tmp && wget -q "https://go.dev/dl/$go_tarball"
-    tar -C /usr/local/ -xzf "$go_tarball" >/dev/null 2>&1
+    if ! wget -q "https://go.dev/dl/$go_tarball" -O "/tmp/$go_tarball" || [[ ! -s "/tmp/$go_tarball" ]]; then
+        print_error "Failed to download GoLang $go_tarball"
+        rm -f "/tmp/$go_tarball"
+        return 1
+    fi
+    if ! tar -C /usr/local/ -xzf "/tmp/$go_tarball" >/dev/null 2>&1; then
+        print_error "Failed to extract GoLang archive"
+        rm -f "/tmp/$go_tarball"
+        return 1
+    fi
+    rm -f "/tmp/$go_tarball"
 
     # Set up environment for all users
     local go_paths=('export PATH=$PATH:/usr/local/go/bin' 
@@ -350,14 +371,14 @@ install_go_tools() {
     for tool in "${!go_tools[@]}"; do
         if [[ -f "/usr/local/go/bin/$tool" ]] || command -v "$tool" >/dev/null 2>&1; then
             print_info "Already installed: $tool"
-            ((installed_count++))
+            installed_count=$((installed_count + 1))
             continue
         fi
         
         print_status "Installing: $tool"
         if go install -v "${go_tools[$tool]}" >/dev/null 2>&1; then
             print_success "Successfully installed: $tool"
-            ((installed_count++))
+            installed_count=$((installed_count + 1))
         else
             print_warning "Failed to install: $tool"
             failed_tools+=("$tool")
@@ -383,7 +404,7 @@ install_go_tools() {
 # STAGE 3: Python Tools Installation (Improved Version)
 # =============================================================================
 install_python_tools() {
-    printf "\n${CYAN}Installing Python Tools...${NC}\n"
+    printf "\n%bInstalling Python Tools...%b\n" "$CYAN" "$NC"
     
     # Basic Python setup
     [ ! -f "/usr/bin/python3" ] && apt install python3 python3-pip -y >/dev/null 2>&1
@@ -391,21 +412,22 @@ install_python_tools() {
     
     # Function to extract tool name from URL
     get_tool_name() {
-        local url="$1"
-        # Extract tool name from various URL formats
-        if [[ "$url" == git+https://* ]]; then
-            # git+https://github.com/user/repo.git -> repo
-            echo "$url" | sed -E 's|.*/([^/]+)\.git$|\1|' || \
-            echo "$url" | sed -E 's|.*/([^/]+)/archive/.*|\1|' || \
-            echo "$url" | sed -E 's|.*/([^/]+)\.py$|\1|'
-        elif [[ "$url" == http*.zip ]]; then
-            # https://.../repo-master.zip -> repo
-            echo "$url" | sed -E 's|.*/([^/]+)-[^/]+\.zip$|\1|' || \
-            echo "$url" | sed -E 's|.*/([^/]+)\.zip$|\1|'
-        else
-            # Regular package name
-            echo "$url"
+        local url="$1" name parent
+        # Last path segment without known suffixes
+        name="${url##*/}"
+        name="${name%.git}"
+        name="${name%.zip}"
+        name="${name%.py}"
+        # .../repo/archive/master.zip -> repo
+        if [[ "$name" == "master" || "$name" == "main" ]]; then
+            parent="${url%/*/*}"
+            name="${parent##*/}"
         fi
+        # repo-master.zip / repo-main.zip -> repo
+        if [[ "$url" == *.zip && "$name" == *-* ]]; then
+            name="${name%-*}"
+        fi
+        printf '%s\n' "${name:-$url}"
     }
     
     # Function to install Python packages
@@ -453,9 +475,7 @@ install_python_tools() {
         ["/usr/local/bin/certipy"]="certipy-ad"
         ["/usr/local/bin/git-dumper"]="git-dumper"
         ["/usr/local/bin/yt-dlp"]="yt-dlp[default]"
-        ["/usr/local/bin/dirsearch"]="dirsearch"
         ["/usr/local/bin/wapiti"]="wapiti3"
-        ["/usr/local/bin/exegol"]="exegol"
     )
     
     for binary_path in "${!pypi_tools[@]}"; do
@@ -469,8 +489,8 @@ install_python_tools() {
 
 # wifiphisher despendencies check and installation to counter errors 
 # This will run apt install only if dpkg check fails
-dpkg -s libnl-3-dev >/dev/null 2>&1 || sudo apt install -y libnl-3-dev >/dev/null 2>&1
-dpkg -s libnl-genl-3-dev >/dev/null 2>&1 || sudo apt install -y libnl-genl-3-dev >/dev/null 2>&1
+dpkg -s libnl-3-dev >/dev/null 2>&1 || apt install -y libnl-3-dev >/dev/null 2>&1
+dpkg -s libnl-genl-3-dev >/dev/null 2>&1 || apt install -y libnl-genl-3-dev >/dev/null 2>&1
 
 
     # Install Git-based tools with better names
@@ -479,6 +499,7 @@ dpkg -s libnl-genl-3-dev >/dev/null 2>&1 || sudo apt install -y libnl-genl-3-dev
         ["paramspider"]="https://github.com/devanshbatham/ParamSpider/archive/master.zip"
         ["ghauri"]="https://github.com/r0oth3x49/ghauri/archive/master.zip"
         ["crackmapexec"]="git+https://github.com/byt3bl33d3r/CrackMapExec.git"
+        ["dirsearch"]="git+https://github.com/maurosoria/dirsearch.git"
         ["nxc"]="git+https://github.com/Pennyw0rth/NetExec"
         ["powerview"]="git+https://github.com/aniqfakhrul/powerview.py"
         ["wifiphisher"]="https://github.com/wifiphisher/wifiphisher/archive/master.zip"
@@ -517,10 +538,6 @@ dpkg -s libnl-genl-3-dev >/dev/null 2>&1 || sudo apt install -y libnl-genl-3-dev
     
     # Install advanced Python tools
     install_advanced_python_tools
-    
-    print_success "Python tools installation completed"
-
-
 
     # Create LinkFinder wrapper
     [ ! -f "/usr/local/bin/linkfinder" ] && {
@@ -538,28 +555,17 @@ dpkg -s libnl-genl-3-dev >/dev/null 2>&1 || sudo apt install -y libnl-genl-3-dev
             print_success "yt-dlp installed successfully"
         else
             # Fallback to direct download
-            curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp 2>/dev/null
-            chmod +x /usr/local/bin/yt-dlp
-            print_success "yt-dlp installed via direct download"
+            if curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp 2>/dev/null; then
+                chmod +x /usr/local/bin/yt-dlp
+                print_success "yt-dlp installed via direct download"
+            else
+                rm -f /usr/local/bin/yt-dlp
+                print_error "Failed to install yt-dlp"
+            fi
         fi
     else
         print_info "Already installed: yt-dlp"
     fi
-
-    # LinkFinder
-    if [ ! -f "/usr/local/bin/linkfinder" ]; then
-        if python3 -m pip install "git+https://github.com/GerbenJavado/LinkFinder" --break-system-packages >/dev/null 2>&1; then
-            echo "python3 -m linkfinder \"\$@\"" > /usr/local/bin/linkfinder
-            chmod +x /usr/local/bin/linkfinder
-            print_success "linkfinder installed successfully"
-        fi
-    else
-        print_info "Already installed: linkfinder"
-    fi
-
-
-    # Install advanced Python tools (SQLMap, Impacket, etc.)
-    install_advanced_python_tools
 
     print_success "Python tools installation completed"
 }
@@ -637,11 +643,21 @@ install_ruby_tools() {
 
     # Metasploit Framework
     if ! command -v msfconsole >/dev/null 2>&1; then
-        curl -s https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall
-        chmod 755 msfinstall && ./msfinstall >/dev/null 2>&1
-        rm msfinstall /etc/apt/sources.list.d/metasploit-framework.list
-        apt update -y >/dev/null 2>&1
-        print_success "Installed: Metasploit Framework"
+        local msfinstall
+        msfinstall=$(mktemp /tmp/msfinstall.XXXXXX)
+        if curl -fsSL https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > "$msfinstall"; then
+            chmod 755 "$msfinstall"
+            if "$msfinstall" >/dev/null 2>&1; then
+                print_success "Installed: Metasploit Framework"
+            else
+                print_error "Metasploit installer failed"
+            fi
+            rm -f "$msfinstall"
+            apt update -y >/dev/null 2>&1
+        else
+            rm -f "$msfinstall"
+            print_error "Failed to download Metasploit installer"
+        fi
     fi
 }
 
@@ -652,43 +668,58 @@ install_compiled_tools() {
     if [[ ! -f "/opt/john/run/john" ]]; then
         apt purge john -y >/dev/null 2>&1
         git clone -q https://github.com/openwall/john -b bleeding-jumbo /opt/john
-        cd /opt/john/src && ./configure >/dev/null 2>&1
-        make -s clean && make -sj4 >/dev/null 2>&1 && make shell-completion >/dev/null 2>&1
-        echo '/opt/john/run/john "$@"' > /usr/local/bin/john
-        chmod +x /usr/local/bin/john /opt/john/run/john
-        print_success "Installed: John the Ripper (optimized)"
+        if ( cd /opt/john/src && ./configure >/dev/null 2>&1 && \
+             make -s clean && make -sj4 >/dev/null 2>&1 && make shell-completion >/dev/null 2>&1 ); then
+            echo '/opt/john/run/john "$@"' > /usr/local/bin/john
+            chmod +x /usr/local/bin/john /opt/john/run/john
+            print_success "Installed: John the Ripper (optimized)"
+        else
+            print_error "Failed to build John the Ripper"
+        fi
     fi
 
     # JoomScan
     if [[ ! -f "/usr/local/bin/joomscan" ]]; then
         git clone -q https://github.com/OWASP/joomscan /opt/joomscan
-        echo 'perl /opt/joomscan/joomscan.pl $@' > /usr/local/bin/joomscan
+        echo 'perl /opt/joomscan/joomscan.pl "$@"' > /usr/local/bin/joomscan
         chmod +x /usr/local/bin/joomscan
         print_success "Installed: JoomScan"
     fi
 
     # Enum4Linux & Enum4Linux-ng
     [[ ! -f "/usr/bin/enum4linux" ]] && {
-        curl -s -k https://raw.githubusercontent.com/CiscoCXSecurity/enum4linux/master/enum4linux.pl > /usr/bin/enum4linux
-        chmod +x /usr/bin/enum4linux
-        print_success "Installed: Enum4Linux"
+        if curl -fsSL https://raw.githubusercontent.com/CiscoCXSecurity/enum4linux/master/enum4linux.pl -o /usr/bin/enum4linux; then
+            chmod +x /usr/bin/enum4linux
+            print_success "Installed: Enum4Linux"
+        else
+            rm -f /usr/bin/enum4linux
+            print_error "Failed to install Enum4Linux"
+        fi
     }
 
     [[ ! -f "/usr/bin/enum4linux-ng" ]] && {
-        curl -s -k https://raw.githubusercontent.com/cddmp/enum4linux-ng/refs/heads/master/enum4linux-ng.py > /usr/bin/enum4linux-ng
-        chmod +x /usr/bin/enum4linux-ng
-        print_success "Installed: Enum4Linux-ng"
+        if curl -fsSL https://raw.githubusercontent.com/cddmp/enum4linux-ng/refs/heads/master/enum4linux-ng.py -o /usr/bin/enum4linux-ng; then
+            chmod +x /usr/bin/enum4linux-ng
+            print_success "Installed: Enum4Linux-ng"
+        else
+            rm -f /usr/bin/enum4linux-ng
+            print_error "Failed to install Enum4Linux-ng"
+        fi
     }
 
     # NMap from source
     if [[ ! -f "/usr/local/bin/nmap" ]]; then
-        wget https://nmap.org/dist/nmap-7.95.tar.bz2 --directory-prefix=/tmp/ >/dev/null 2>&1
-        tar xvjf /tmp/nmap-7.95.tar.bz2 -C /tmp >/dev/null 2>&1
-        cd /tmp/nmap-7.95 && ./configure >/dev/null 2>&1
-        make install -C /tmp/nmap-7.95 >/dev/null 2>&1
-        cp /usr/local/bin/nmap /usr/bin/nmap 2>/dev/null || true
-        cd / && rm -rf /tmp/nmap-7.95* >/dev/null 2>&1
-        print_success "Installed: NMap (from source)"
+        if wget -q "https://nmap.org/dist/nmap-7.95.tar.bz2" -O /tmp/nmap-7.95.tar.bz2 && \
+           tar xjf /tmp/nmap-7.95.tar.bz2 -C /tmp >/dev/null 2>&1 && \
+           [[ -d /tmp/nmap-7.95 ]] && \
+           ( cd /tmp/nmap-7.95 && ./configure ) >/dev/null 2>&1 && \
+           make -C /tmp/nmap-7.95 install >/dev/null 2>&1; then
+            cp /usr/local/bin/nmap /usr/bin/nmap 2>/dev/null || true
+            print_success "Installed: NMap (from source)"
+        else
+            print_error "Failed to build NMap from source"
+        fi
+        cd / && rm -rf /tmp/nmap-7.95 /tmp/nmap-7.95.tar.bz2 >/dev/null 2>&1
     fi
 }
 
@@ -707,7 +738,7 @@ setup_rust_environment() {
     export PATH="$PATH:$HOME/.cargo/bin:$HOME/.rustup/bin:/usr/local/cargo/bin"
     export CARGO_HOME="$HOME/.cargo"
     export RUSTUP_HOME="$HOME/.rustup"
-    export CARGO_TARGET_DIR="/usr/local/bin"
+    unset CARGO_TARGET_DIR
 
     rustup install stable >/dev/null 2>&1 || true
     rustup default stable >/dev/null 2>&1 || true
@@ -722,11 +753,16 @@ setup_rust_environment() {
     install_rust_tool "binwalk" "cargo install binwalk --locked"
     install_rust_tool "rustscan" "cargo install rustscan --locked"
     install_rust_tool "x8" "cargo install x8 --locked"
-    install_rust_tool "rcat" "cargo install rustcat --locked"
-    install_rust_tool "ares" "cargo install ciphey --locked"
+    install_rust_tool "rustcat" "cargo install rustcat --locked"
+    install_rust_tool "ciphey" "cargo install ciphey --locked"
 
-# rusthound-ce despendenci check
-for pkg in gcc clang libclang-dev libgssapi-krb5-2 libkrb5-dev libsasl2-modules-gssapi-mit musl-tools gcc-mingw-w64-x86-64; do dpkg -s "$pkg" >/dev/null 2>&1 || echo "Installing missing dependency for rusthound-ce: $pkg" && sudo apt-get install -y "$pkg"   >/dev/null 2>&1 ; done
+# rusthound-ce dependency check
+for pkg in gcc clang libclang-dev libgssapi-krb5-2 libkrb5-dev libsasl2-modules-gssapi-mit musl-tools gcc-mingw-w64-x86-64; do
+    if ! dpkg -s "$pkg" >/dev/null 2>&1; then
+        print_status "Installing missing dependency for rusthound-ce: $pkg"
+        apt-get install -y "$pkg" >/dev/null 2>&1
+    fi
+done
     install_rust_tool "rusthound-ce" "cargo install rusthound-ce --locked"
 
     # FeroxBuster
@@ -735,29 +771,37 @@ if [[ ! -f "/usr/local/bin/feroxbuster" ]]; then
     print_status "Installing FeroxBuster..."
     
     # Download the install script first
-    curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/master/install-nix.sh -o /tmp/install-ferox.sh 2>/dev/null
+    curl -fsSL https://raw.githubusercontent.com/epi052/feroxbuster/master/install-nix.sh -o /tmp/install-ferox.sh 2>/dev/null
     
-    if [[ -f "/tmp/install-ferox.sh" ]]; then
+    if [[ -f "/tmp/install-ferox.sh" && -s "/tmp/install-ferox.sh" ]]; then
         chmod +x /tmp/install-ferox.sh
         
         # Run with explicit directory
-        if /tmp/install-ferox.sh /usr/local/bin >/dev/null 2>&1; then
+        if /tmp/install-ferox.sh /usr/local/bin >/dev/null 2>&1 && [[ -f "/usr/local/bin/feroxbuster" ]]; then
             print_success "Installed: FeroxBuster"
         else
             # Fallback to cargo install
-            if command -v cargo >/dev/null 2>&1; then
-                cargo install feroxbuster --locked >/dev/null 2>&1 && print_success "Installed: FeroxBuster via cargo"
+            if command -v cargo >/dev/null 2>&1 && cargo install feroxbuster --locked >/dev/null 2>&1; then
+                [[ -f "$HOME/.cargo/bin/feroxbuster" ]] && cp "$HOME/.cargo/bin/feroxbuster" /usr/local/bin/
+                print_success "Installed: FeroxBuster via cargo"
+            else
+                print_warning "Failed to install: FeroxBuster"
             fi
         fi
         
         rm -f /tmp/install-ferox.sh
     else
+        rm -f /tmp/install-ferox.sh
         # Direct binary download fallback
-        curl -sL https://github.com/epi052/feroxbuster/releases/latest/download/x86_64-linux-feroxbuster.zip -o /tmp/ferox.zip 2>/dev/null
+        curl -fsSL https://github.com/epi052/feroxbuster/releases/latest/download/x86_64-linux-feroxbuster.zip -o /tmp/ferox.zip 2>/dev/null
         unzip -q -o /tmp/ferox.zip -d /tmp/ 2>/dev/null
-        [[ -f "/tmp/feroxbuster" ]] && cp /tmp/feroxbuster /usr/local/bin/ && chmod +x /usr/local/bin/feroxbuster
+        if [[ -f "/tmp/feroxbuster" ]]; then
+            cp /tmp/feroxbuster /usr/local/bin/ && chmod +x /usr/local/bin/feroxbuster
+            print_success "Installed: FeroxBuster via direct download"
+        else
+            print_warning "Failed to install: FeroxBuster"
+        fi
         rm -f /tmp/ferox.zip
-        print_success "Installed: FeroxBuster via direct download"
     fi
 fi
 
@@ -768,20 +812,20 @@ fi
 
 install_rust_tool() {
     local tool=$1 cmd=$2
-    if [[ -f "/usr/local/bin/$tool" ]]; then
+    if [[ -f "/usr/local/bin/$tool" ]] || command -v "$tool" >/dev/null 2>&1; then
         return
     fi
-    if eval "$cmd" >/dev/null 2>&1; then
-        [[ -f "$HOME/.cargo/bin/$tool" ]] && cp "$HOME/.cargo/bin/$tool" "/usr/local/bin/$tool"
-        print_success "Installed: $tool"
-    else
-        # Try without --locked flag
-        if eval "${cmd//--locked/}" >/dev/null 2>&1; then
-            [[ -f "$HOME/.cargo/bin/$tool" ]] && cp "$HOME/.cargo/bin/$tool" "/usr/local/bin/$tool"
-            print_success "Installed: $tool (without --locked)"
+    if eval "$cmd" >/dev/null 2>&1 || eval "${cmd//--locked/}" >/dev/null 2>&1; then
+        if [[ -f "$HOME/.cargo/bin/$tool" ]]; then
+            cp "$HOME/.cargo/bin/$tool" "/usr/local/bin/$tool"
+            print_success "Installed: $tool"
+        elif command -v "$tool" >/dev/null 2>&1; then
+            print_success "Installed: $tool"
         else
-            print_warning "Failed to install: $tool"
+            print_warning "Built $tool but the binary was not found"
         fi
+    else
+        print_warning "Failed to install: $tool"
     fi
 }
 
@@ -823,40 +867,62 @@ download_pentest_tools() {
     # Enhanced download functions with silent operation
     download_executable() {
         if [[ ! -f "$2" ]]; then
-            printf "${PURPLE}Downloading $(basename "$2")...${NC}\n"
-            curl -s -L -o "$2" "$1"
-            chmod +x "$2"
+            printf '%bDownloading %s...%b\n' "$PURPLE" "$(basename "$2")" "$NC"
+            if curl -fsSL -o "$2" "$1"; then
+                chmod +x "$2"
+            else
+                rm -f "$2"
+                print_error "Failed: $(basename "$2")"
+            fi
         fi
     }
 
     download_file() {
         if [[ ! -f "$2" ]]; then
-            printf "${PURPLE}Downloading $(basename "$2")...${NC}\n"
-            curl -s -L -o "$2" "$1"
+            printf '%bDownloading %s...%b\n' "$PURPLE" "$(basename "$2")" "$NC"
+            if ! curl -fsSL -o "$2" "$1"; then
+                rm -f "$2"
+                print_error "Failed: $(basename "$2")"
+            fi
         fi
     }
 
     download_and_extract() {
         local target_dir="$2"
         local archive_name="$3"
+        local archive
         
         if [[ ! -d "$target_dir" ]]; then
-            printf "${PURPLE}Downloading and extracting $archive_name...${NC}\n"
-            curl -s -L -o temp.archive "$1"
+            printf '%bDownloading and extracting %s...%b\n' "$PURPLE" "$archive_name" "$NC"
+            archive=$(mktemp /tmp/hackify-archive.XXXXXX)
+            if ! curl -fsSL -o "$archive" "$1"; then
+                rm -f "$archive"
+                print_error "Failed: $archive_name"
+                return 1
+            fi
             mkdir -p "$target_dir"
             if [[ "$1" == *.tar.gz ]]; then
-                tar -xzf temp.archive -C "$target_dir" --strip-components=1
+                tar -xzf "$archive" -C "$target_dir" --strip-components=1 || {
+                    rm -f "$archive"; print_error "Failed to extract: $archive_name"; return 1; }
             elif [[ "$1" == *.zip ]]; then
-                unzip -qq temp.archive -d "$target_dir"
+                unzip -qq "$archive" -d "$target_dir" || {
+                    rm -f "$archive"; print_error "Failed to extract: $archive_name"; return 1; }
             fi
-            rm -f temp.archive
+            # Only clean up a directory we created (never "." or "..")
+            if [[ "$target_dir" != "." && "$target_dir" != ".." && "$target_dir" != "/" ]]; then
+                if ! compgen -G "$target_dir/*" >/dev/null; then
+                    rmdir "$target_dir" 2>/dev/null
+                fi
+            fi
+            rm -f "$archive"
         fi
     }
 
     clone_repo() {
         if [[ ! -d "$2" ]]; then
-            printf "${PURPLE}Cloning $(basename "$2")...${NC}\n"
-            git clone --quiet "$1" "$2"
+            printf '%bCloning %s...%b\n' "$PURPLE" "$(basename "$2")" "$NC"
+            git clone --quiet "$1" "$2" || {
+                rm -rf "$2"; print_error "Failed to clone: $(basename "$2")"; return 1; }
         fi
     }
 
@@ -888,7 +954,14 @@ download_pentest_tools() {
             [[ -f "ligolo/proxy" ]] && mv ligolo/proxy ligolo/ligolo-proxy && chmod +x ligolo/ligolo-proxy
         fi
 
-        download_and_extract "https://github.com/nicocha30/ligolo-ng/releases/download/v0.8.2/ligolo-ng_agent_0.8.2_linux_amd64.tar.gz" "ligolo" "ligolo-ng agent"
+        if [[ ! -d "ligolo-agent.tmp" ]]; then
+            download_and_extract "https://github.com/nicocha30/ligolo-ng/releases/download/v0.8.2/ligolo-ng_agent_0.8.2_linux_amd64.tar.gz" "ligolo-agent.tmp" "ligolo-ng agent"
+        fi
+        if [[ -d "ligolo-agent.tmp" ]]; then
+            mkdir -p ligolo
+            mv ligolo-agent.tmp/* ligolo/ 2>/dev/null
+            rmdir ligolo-agent.tmp 2>/dev/null
+        fi
         if [[ -d "ligolo" ]]; then
             rm -rf ligolo/LICENSE ligolo/README.md
             [[ -f "ligolo/agent" ]] && mv ligolo/agent ligolo/ligolo-agent && chmod +x ligolo/ligolo-agent
@@ -1023,7 +1096,6 @@ download_pentest_tools() {
 main() {
     show_banner
     check_privileges "$@"
-  #  prepare_system
 
     print_status "Starting comprehensive tool installation..."
     
@@ -1058,12 +1130,12 @@ main() {
 
     # Completion Message
     print_success "Hackify installation completed successfully!"
-    printf "\n${YELLOW}Recommendations:${NC}\n"
+    printf "\n%bRecommendations:%b\n" "$YELLOW" "$NC"
     printf "  • Run this script multiple times for complete installation\n"
-    printf "  • Restart your terminal or run: ${GREEN}source ~/.bashrc${NC}\n"
-    printf "  • Check individual tools with: ${GREEN}tool_name --help${NC}\n"
-    printf "  • Pentest tools are available in: ${GREEN}/opt/pentest-tools/${NC}\n"
-    printf "\n${GREEN}Happy Hacking! 🚀${NC}\n\n"
+    printf "  • Restart your terminal or run: %bsource ~/.bashrc%b\n" "$GREEN" "$NC"
+    printf "  • Check individual tools with: %btool_name --help%b\n" "$GREEN" "$NC"
+    printf "  • Pentest tools are available in: %b/opt/pentest-tools/%b\n" "$GREEN" "$NC"
+    printf "\n%bHappy Hacking! 🚀%b\n\n" "$GREEN" "$NC"
 }
 
 # Execute main function
