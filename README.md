@@ -50,10 +50,12 @@ bash theme.sh
 
 ## Firefox Themes
 - [CyberTerminus Theme](https://addons.mozilla.org/en-US/firefox/addon/zishanadthandar-cyberterminus/)
+- [Soft Dark for eye comfort](https://addons.mozilla.org/en-US/firefox/addon/soft-dark-zishanadthandar/)
 - [MrRobot Theme](https://addons.mozilla.org/en-US/firefox/addon/mrrobothacker/)
 
 ## Firefox Addon
-- [Burp Suite Proxy Switch](https://addons.mozilla.org/en-US/firefox/addon/burp-proxy-toggler-lite/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search)
+- [Hacker Proxy Pro](https://addons.mozilla.org/en-US/firefox/addon/hackerproxypro/)
+- [Recon Kit](https://addons.mozilla.org/en-US/firefox/addon/reconkit/)
 
 ## Theme (Personal preference)
 - Plank Dock
