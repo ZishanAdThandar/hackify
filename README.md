@@ -1,6 +1,7 @@
 # Hackify by Zishan Ahamed Thandar
 
 [![ZishanAdThandar's Hackify Repo stars](https://img.shields.io/github/stars/ZishanAdThandar/hackify)](https://github.com/ZishanAdThandar/hackify)
+
 Hackify is an open-source script for Debian-based operating systems, coded in bash. This script streamlines the installation of pentesting wordlists and tools with a single command, making it easier for cybersecurity enthusiasts and professionals to set up their pentesting environment quickly and efficiently.
 
 [![LinkTree](https://img.shields.io/badge/LinkTree-0f172b?style=for-the-badge&logo=linktree&logoColor=7761f4)](https://zishanhack.com/links/)
