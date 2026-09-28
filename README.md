@@ -23,6 +23,9 @@ bash hackify.sh
 # To install wordlists
 chmod +x wordlist.sh
 bash wordlist.sh
+# To improve theme 
+chmod +x theme.sh
+bash theme.sh
 ```
 
 ## Dockers
