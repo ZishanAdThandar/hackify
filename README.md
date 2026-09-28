@@ -66,8 +66,8 @@ bash theme.sh
 - In ParrotOS, it is breaking `Network Manager`.
 
 ## Test Status
-✅ **Linux Mint 22.3 Zena** (Tested March 8, 2026)
-✅ **Kali Linux VMWare** (Tested Spetember 20, 2026)
+- ✅ **Linux Mint 22.3 Zena** (Tested September 15, 2026)
+- ✅ **Kali Linux VMWare** (Tested September 20, 2026)
 
 
 ---
