@@ -3,7 +3,9 @@
 Hackify is an open-source script for Debian-based operating systems, coded in bash. This script streamlines the installation of pentesting wordlists and tools with a single command, making it easier for cybersecurity enthusiasts and professionals to set up their pentesting environment quickly and efficiently.
 
 [![ZishanAdThandar's Hackify Repo stars](https://img.shields.io/github/stars/ZishanAdThandar/hackify)](https://github.com/ZishanAdThandar/hackify)
-[![LinkTree](https://img.shields.io/badge/Link-Tree-bbd343)](https://zishanhack.com/links/)
+[![LinkTree](https://img.shields.io/badge/LinkTree-0f172b?style=for-the-badge&logo=linktree&logoColor=7761f4)](https://zishanhack.com/links/)
+[![Blog](https://img.shields.io/badge/blog-0f172b?style=for-the-badge&logo=storyblok&logoColor=7761f4)](https://zishanhack.com/about/)
+[![About Me](https://img.shields.io/badge/About_Me-0f172b?style=for-the-badge&logo=z.ai&logoColor=7761f4)](https://zishanhack.com/about/)
 
 ![Banner Hackify](./banner.png)
 
@@ -59,17 +61,13 @@ bash theme.sh
 - Dark Background Solid color wallpaper
 - add generic monitor `apt install xfce4-genmon-plugin -y` (for xfce desktop) to the panel to get ips with code `sh -c 'ip a | grep -q "tun0" && ip -4 addr show tun0 | awk "/inet/ {print \$2}" | cut -d/ -f1 || curl -s ifconfig.me'`
 
-- Conky Clock
-  - Conky install with `apt install conky-all -y` or `apt install conky -y`
-  - Replace alignment for position, location for weather of particular area and timezones if you need
-  - `~/.conkyrc`, `/etc/conky/conky.conf`, ` ~/.config/conky/conky.conf`
-  - [Sample Conky.conf](configs/conky.conf)
 
 ## Known Issues
 - In ParrotOS, it is breaking `Network Manager`.
 
 ## Test Status
 ✅ **Linux Mint 22.3 Zena** (Tested March 8, 2026)
+✅ **Kali Linux VMWare** (Tested Spetember 20, 2026)
 
 
 ---
