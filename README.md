@@ -9,10 +9,10 @@ Hackify is an open-source script for Debian-based operating systems, coded in ba
 ![Banner Hackify](./banner.png)
 
 - [Installation Command (Tools and Wordlist)](#installation-command)
-- [Dockers](#dockers)
 - [Manual Install](#manual-install)
 - [Firefox Themes](#firefox-themes)
-- [Firefox Addon](#firefox-addon)
+- [Firefox Addons](#firefox-addosn)
+- [Test Status](#test-status)
 
 ## Installation Command
 
@@ -29,17 +29,6 @@ chmod +x theme.sh
 bash theme.sh
 ```
 
-## Dockers
-- [https://hub.docker.com/r/kasmweb/remnux-focal-desktop](https://github.com/ZishanAdThandar/hacknotes/tree/main/RevEng)
-- BloodHound
-  - Download the compose file `mkdir /opt/bloodhoundce && curl -ks https://raw.githubusercontent.com/SpecterOps/BloodHound/main/examples/docker-compose/docker-compose.yml > /opt/bloodhoundce/bloodhound-docker-compose.yml`
-  - Goto the folder `sudo cd /opt/bloodhoundce`
-  - pull images `sudo docker-compose -f bloodhound-docker-compose.yml up -d`
-  - Start Docker `docker logs bloodhoundce-bloodhound-1 |grep "Initial Password Set To"` # first time tun will give temp password
-  - Open http://127.0.0.1:8080 or http://localhost:8080 and use username admin and password from log, then set new password.
-
-- Ciphey `docker run -it --rm remnux/ciphey`
-
 ## Manual Install
 - Crypto Graphy: [Ciphey](https://github.com/bee-san/Ciphey), [Katana](https://github.com/JohnHammond/katana) 
 - Web: [Arachni](https://github.com/Arachni/arachni/wiki/Installation#linux), Acunetix, BurpSuitePro
@@ -53,7 +42,7 @@ bash theme.sh
 - [Soft Dark for eye comfort](https://addons.mozilla.org/en-US/firefox/addon/soft-dark-zishanadthandar/)
 - [MrRobot Theme](https://addons.mozilla.org/en-US/firefox/addon/mrrobothacker/)
 
-## Firefox Addon
+## Firefox Addons
 - [Hacker Proxy Pro](https://addons.mozilla.org/en-US/firefox/addon/hackerproxypro/)
 - [Recon Kit](https://addons.mozilla.org/en-US/firefox/addon/reconkit/)
 
@@ -68,8 +57,6 @@ bash theme.sh
 
 > [!CAUTION]
 > In ParrotOS, running hackify is breaking `Network Manager`. (Tested March, 2026)
-
-
 
 > [!WARNING] 
 > Use this tool at your own risk. 
