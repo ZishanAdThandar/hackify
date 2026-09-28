@@ -56,21 +56,19 @@ bash theme.sh
 ## Firefox Addon
 - [Burp Suite Proxy Switch](https://addons.mozilla.org/en-US/firefox/addon/burp-proxy-toggler-lite/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search)
 
-## Theme (Personal peference)
+## Theme (Personal preference)
 - Plank Dock
-- Dark Background Solid color wallpaper
-- add generic monitor `apt install xfce4-genmon-plugin -y` (for xfce desktop) to the panel to get ips with code `sh -c 'ip a | grep -q "tun0" && ip -4 addr show tun0 | awk "/inet/ {print \$2}" | cut -d/ -f1 || curl -s ifconfig.me'`
+- add generic monitor `apt install xfce4-genmon-plugin -y` (for XFCE Desktop) to the panel to get IPs with code `sh -c 'ip a | grep -q "tun0" && ip -4 addr show tun0 | awk "/inet/ {print \$2}" | cut -d/ -f1 || curl -s ifconfig.me'`
 
-
-## Known Issues
-- In ParrotOS, it is breaking `Network Manager`.
 
 ## Test Status
-- ✅ **Linux Mint 22.3 Zena** (Tested September 15, 2026)
-- ✅ **Kali Linux VMWare** (Tested September 20, 2026)
+- ✅ **Linux Mint 22.3 Zena** (Tested September, 2026)
+- ✅ **Kali Linux VMWare** (Tested September, 2026)
+
+> [!CAUTION]
+> In ParrotOS, running hackify is breaking `Network Manager`. (Tested March, 2026)
 
 
----
 
 > [!WARNING] 
 > Use this tool at your own risk. 
