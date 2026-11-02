@@ -284,7 +284,7 @@ setup_nodejs() {
 # =============================================================================
 
 setup_golang() {
-    local go_version="1.27.1"
+    local go_version="1.27.3"
     local go_tarball="go${go_version}.linux-amd64.tar.gz"
 
     if [[ -f "/usr/local/go/bin/go" ]]; then
@@ -336,11 +336,13 @@ install_go_tools() {
 
     declare -A go_tools=(
         ["afrog"]="github.com/zan8in/afrog/v3/cmd/afrog@latest"
+        ["alterx"]="github.com/projectdiscovery/alterx/cmd/alterx@latest"
         ["amass"]="github.com/owasp-amass/amass/v3/cmd/amass@master"
         ["assetfinder"]="github.com/tomnomnom/assetfinder@latest"
         ["chaos"]="github.com/projectdiscovery/chaos-client/cmd/chaos@latest"
         ["crlfuzz"]="github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest"
         ["dalfox"]="github.com/hahwul/dalfox@latest"
+        ["dnsx"]="github.com/projectdiscovery/dnsx/cmd/dnsx@latest"
         ["ffuf"]="github.com/ffuf/ffuf@latest"
         ["gau"]="github.com/lc/gau/v2/cmd/gau@latest"
         ["gauplus"]="github.com/bp0lr/gauplus@latest"
@@ -358,13 +360,14 @@ install_go_tools() {
         ["misconfig-mapper"]="github.com/intigriti/misconfig-mapper/cmd/misconfig-mapper@latest"
         ["naabu"]="github.com/projectdiscovery/naabu/v2/cmd/naabu@latest"
         ["nuclei"]="github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest"
+        ["puredns"]="github.com/d3mondev/puredns/v2@latest"
         ["qsreplace"]="github.com/tomnomnom/qsreplace@latest"
         ["waybackurls"]="github.com/tomnomnom/waybackurls@latest"
         ["subfinder"]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
         ["subzy"]="github.com/PentestPad/subzy@latest"
         ["tlsx"]="github.com/projectdiscovery/tlsx/cmd/tlsx@latest"
     )
-
+sudo rm -f /usr/local/bin/httpx # remove python httpx if present
     local installed_count=0
     local failed_tools=()
 
