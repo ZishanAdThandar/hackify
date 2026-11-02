@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ============================================
-# Subdomain Enumeration - Final Solid Version
+# Subdomain Enumeration - Final Fixed Version
 # - subs.txt : DNS-live subdomains only
 # - urls.txt : HTTP-live URLs (any status, HTTPS preferred)
 # - ips.txt  : IPv4 A records
@@ -31,12 +31,10 @@ OUT="${D}_enum"
 WORKDIR="$(mktemp -d)"
 trap 'rm -rf "$WORKDIR"' EXIT
 
-# Persistent resolver cache
 CACHE_DIR="$HOME/.cache/subdomain-enum/${D}"
 mkdir -p "$CACHE_DIR"
 RESOLVERS="$CACHE_DIR/resolvers.txt"
 
-# SecLists wordlist (try common paths)
 WORDLIST=""
 for p in \
     "/usr/share/wordlists/SecLists/Discovery/DNS/subdomains-top1million-110000.txt" \
@@ -73,7 +71,7 @@ else
     echo "    [!] subfinder not found"
 fi
 
-# ---------- 2. crt.sh (retry + JSON validation) ----------
+# ---------- 2. crt.sh ----------
 echo "[+] Querying crt.sh [+]"
 touch "$WORKDIR/crtsh.txt"
 for attempt in 1 2 3; do
@@ -177,7 +175,7 @@ echo "[+] Building candidate list [+]"
 } | tr -d '\r' | sed '/^$/d' | grep -E "$DOMAIN_RE" | sort -u > "$WORKDIR/candidates.txt"
 echo "    Candidates: $(wc -l < "$WORKDIR/candidates.txt")"
 
-# ---------- 11. DNS-live filter (subs.txt = only resolving hosts) ----------
+# ---------- 11. DNS-live filter ----------
 echo "[+] Filtering to DNS-live subdomains [+]"
 : > "$OUT/subs.txt"
 : > "$OUT/dns_records.txt"
@@ -211,16 +209,17 @@ else
     echo "    DNS-live subdomains (dig fallback): $(wc -l < "$OUT/subs.txt")"
 fi
 
-# ---------- 12. httpx (HTTP-live, any status, HTTPS-preferred) ----------
+# ---------- 12. httpx (explicit protocols, all status codes) ----------
 echo "[+] Probing with httpx [+]"
 RAW_URLS="$WORKDIR/httpx_raw.txt"
 touch "$RAW_URLS"
 
 if command -v httpx >/dev/null 2>&1 && [[ -s "$OUT/subs.txt" ]]; then
+    # Explicit scheme per port avoids httpx assuming HTTPS for HTTP services.
+    # No -mc filter  -> every HTTP response (2xx,3xx,4xx,5xx) is captured.
     httpx -l "$OUT/subs.txt" -silent -no-color \
-        -ports 80,443,8080,8443,8000,8888,3000,4000,5000,9000 \
+        -ports http:80,http:3000,http:4000,http:5000,http:8000,http:8080,http:8888,http:9000,https:443,https:8443 \
         -nf \
-        -mc 100-599 \
         -o "$RAW_URLS"
 
     awk '
