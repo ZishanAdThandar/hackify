@@ -217,10 +217,10 @@ touch "$RAW_URLS"
 if command -v httpx >/dev/null 2>&1 && [[ -s "$OUT/subs.txt" ]]; then
     # Explicit scheme per port avoids httpx assuming HTTPS for HTTP services.
     # No -mc filter  -> every HTTP response (2xx,3xx,4xx,5xx) is captured.
-    httpx -l "$OUT/subs.txt" -silent -no-color \
-        -ports http:80,http:3000,http:4000,http:5000,http:8000,http:8080,http:8888,http:9000,https:443,https:8443 \
-        -nf \
-        -o "$RAW_URLS"
+httpx -l "$OUT/subs.txt" -silent -no-color \
+    -ports 80,443,3000,4000,5000,8000,8080,8443,8888,9000 \
+    -nf \
+    -o "$RAW_URLS"
 
     awk '
         {
